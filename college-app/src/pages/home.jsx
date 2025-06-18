@@ -16,14 +16,11 @@ export function Home() {
 
   return (
     <div>
-      <div> {/* This div contains the welcome message */}
+      <div>
         <h2>Welcome to the Home Page!</h2>
-        <p>This is where your main content will go.</p>
+        <p>My Content</p>
       </div>
-      
-      {/* Use React's onClick prop (camelCase) and pass the signOut function directly */}
       <a href="#" onClick={signOut}>Sign out</a>
-      {/* The <script> tag is removed as JavaScript logic goes directly in the component */}
     </div>
   );
 }
