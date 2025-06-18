@@ -1,0 +1,19 @@
+import './App.css'
+import { HashRouter, Routes, Route} from 'react-router-dom'
+import { First } from './pages/first.jsx'
+import { Login } from './pages/login.jsx'
+import { Home } from './pages/home.jsx'
+
+function App () {
+  return (
+    <HashRouter>
+      <Routes>
+        <Route path ="/" element={<First/>}/>
+        <Route path ="/login" element={<Login/>}/>
+        <Route path= "/home" element={<Home/>}/>
+      </Routes>
+    </HashRouter>
+  )
+}
+
+export default App
