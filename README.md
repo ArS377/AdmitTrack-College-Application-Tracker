@@ -8,6 +8,8 @@ pip install -r requirements.txt
 
 ## How to run the Local Web App
 
+### Add your MongoDB URI to backend/config.env
+
 ### Create two Terminal Windows.
 
 ### First Terminal Window: Start Up the Node.js server
