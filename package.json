@@ -2,9 +2,12 @@
   "dependencies": {
     "@react-oauth/google": "^0.12.2",
     "dotenv": "^16.5.0",
+    "fs": "^0.0.1-security",
     "gapi": "^0.0.3",
     "jwt-decode": "^4.0.0",
     "mongodb": "^6.17.0",
-    "react-router-dom": "^7.6.2"
+    "react-icons": "^5.5.0",
+    "react-router-dom": "^7.6.2",
+    "regex": "^6.0.1"
   }
 }

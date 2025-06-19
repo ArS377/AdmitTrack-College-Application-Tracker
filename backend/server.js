@@ -42,3 +42,24 @@ app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
   connectToDatabase();
 });
+
+
+//search component serverside
+app.get('/api/search', async (req, res) => {
+  //get searched query
+  const searched = req.query.q
+  if (!searched) {
+    return res.status(400).json({ error: "Search query 'q' is required." });
+  }
+
+  const searchPattern = new RegExp(searched, 'i');
+  const mongoQuery = {
+    $or: [
+      { name: { $regex: searchPattern } },//search in the 'name' field
+      { description: { $regex: searchPattern } }//search in the 'description' field}
+    ]
+  };
+  const collection = db.collection('collegeinfo');
+  const results = await collection.find(mongoQuery).toArray();
+  res.status(200).json(results); //sends to frontend
+});
