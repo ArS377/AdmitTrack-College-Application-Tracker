@@ -51,15 +51,19 @@ app.get('/api/search', async (req, res) => {
   if (!searched) {
     return res.status(400).json({ error: "Search query 'q' is required." });
   }
-
-  const searchPattern = new RegExp(searched, 'i');
-  const mongoQuery = {
-    $or: [
-      { name: { $regex: searchPattern } },//search in the 'name' field
-      { description: { $regex: searchPattern } }//search in the 'description' field}
-    ]
-  };
-  const collection = db.collection('collegeinfo');
-  const results = await collection.find(mongoQuery).toArray();
-  res.status(200).json(results); //sends to frontend
+  try{
+    const searchPattern = new RegExp(searched, 'i');
+    const mongoQuery = {
+      $or: [
+        { collegeName: { $regex: searchPattern } },//search in the 'name' field
+        { location: { $regex: searchPattern } }//search in the 'description' field}
+      ]
+    };
+    const collection = db.collection('collegeinfo');
+    const results = await collection.find(mongoQuery).toArray();
+    res.status(200).json(results); //sends to frontend
+  } catch (e) {
+    console.error("Error during search in /api/search:", e);
+    res.status(500).json({ error: "Failed to perform search." });
+  }
 });
