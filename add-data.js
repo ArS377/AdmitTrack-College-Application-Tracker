@@ -34,7 +34,10 @@ async function getCollegeDataFromJson(filePath) {
         satScores: {
           reading25: parseInt(collegeDetails["SAT Reading 25%"]),
           reading50: parseInt(collegeDetails["SAT Reading 50%"]),
-          reading75: parseInt(collegeDetails["SAT Reading 75%"])
+          reading75: parseInt(collegeDetails["SAT Reading 75%"]),
+          math25: parseInt(collegeDetails["SAT Math 25%"]),
+          math50: parseInt(collegeDetails["SAT Math 50%"]),
+          math75: parseInt(collegeDetails["SAT Math 75%"])
         },
 
         actScores: {
