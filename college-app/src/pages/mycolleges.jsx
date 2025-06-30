@@ -1,6 +1,20 @@
 import React, {useState} from 'react';
 import {FaSearch} from 'react-icons/fa'
 import './mycolleges.css'
+import {useNavigate} from 'react-router-dom'
+
+const ProfileButton = () => {
+    const navigate = useNavigate()
+    const goToMyProfile = () => {
+      navigate('/profile')
+    }
+  
+    return (
+      <button className="button" onClick={goToMyProfile}>
+      My Profile
+      </button>
+    )
+  }
 
 const SearchBar = ({ setResults, setSelectedCollege }) => {
     const [input, setInput] = useState('');
@@ -115,15 +129,16 @@ export function MyColleges() {
                 <h3>{selectedCollege.collegeName} Information </h3>
                 <p>Homepage: {selectedCollege.homepage}</p>
                 <p>Acceptance Rate: {selectedCollege.acceptanceRate}</p>
-                <div className="sat-table">
                     <table className='standardized-testing-table'>
-                        <tbody>
+                        <thead>
                         <tr>
                             <th>Standardized Test</th>
                             <th>25 Percentile</th>
                             <th>50 Percentile</th>
                             <th>75 Percentile</th>
                         </tr>
+                        </thead>
+                        <tbody>
                         <tr>
                             <td>SAT Math</td>
                             <td>{selectedCollege.satScores.reading25}</td>
@@ -144,10 +159,10 @@ export function MyColleges() {
                         </tr>
                         </tbody>
                     </table>
-                </div>
+                <button className='addButton' onClick={addCollegeToList}>Add College</button>
+                <button className='addButton' >What are my chances?</button>
             </div>
         )}
-        <button className='button' onClick={addCollegeToList}>Add College</button>
         </div>
 
         <div>
@@ -158,11 +173,15 @@ export function MyColleges() {
               <div key={college._id}>
                 <p>{college.collegeName}</p>
                 <button className='delete-button' onClick={() => deleteCollegeFromList(college._id)}>Delete</button>
+                <button className='select-major'>Choose Intended Major</button>
               </div>
 
             ))) : (
             <p>Search for colleges to add them to your list.</p>
           )}
+        </div>
+        <div>
+          <ProfileButton/>
         </div>
         </div>
       <a href="#" onClick={signOut}>Sign out</a>

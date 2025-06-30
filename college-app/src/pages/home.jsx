@@ -28,6 +28,19 @@ const CollegeButton = () => {
   )
 }
 
+const ProfileButton = () => {
+  const navigate = useNavigate()
+  const goToMyProfile = () => {
+    navigate('/profile')
+  }
+
+  return (
+    <button className="button" onClick={goToMyProfile}>
+    My Profile
+    </button>
+  )
+}
+
 export function Home() {
   return (
     <>
@@ -36,6 +49,12 @@ export function Home() {
         <p>My Content</p>
         <div>
           <CollegeButton/>
+        </div>
+        <div>
+        <br></br>
+        </div>
+        <div>
+          <ProfileButton/>
         </div>
       </div>
 

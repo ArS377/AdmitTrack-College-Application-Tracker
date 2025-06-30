@@ -27,23 +27,24 @@ async function getCollegeDataFromJson(filePath) {
       const collegeDetails = collegesObject[collegeName];
       return {
         collegeName: collegeName,
+        unitId: collegeDetails["Unit ID"],
         location: collegeDetails.Location,
         homepage: collegeDetails.Homepage,
         acceptanceRate: collegeDetails["Acceptance Rate"],
 
         satScores: {
-          reading25: parseInt(collegeDetails["SAT Reading 25%"]),
-          reading50: parseInt(collegeDetails["SAT Reading 50%"]),
-          reading75: parseInt(collegeDetails["SAT Reading 75%"]),
-          math25: parseInt(collegeDetails["SAT Math 25%"]),
-          math50: parseInt(collegeDetails["SAT Math 50%"]),
-          math75: parseInt(collegeDetails["SAT Math 75%"])
+          reading25: collegeDetails["SAT Reading 25%"],
+          reading50: collegeDetails["SAT Reading 50%"],
+          reading75: collegeDetails["SAT Reading 75%"],
+          math25: collegeDetails["SAT Math 25%"],
+          math50: collegeDetails["SAT Math 50%"],
+          math75: collegeDetails["SAT Math 75%"]
         },
 
         actScores: {
-          composite25: parseInt(collegeDetails["ACT Composite 25%"]),
-          composite50: parseInt(collegeDetails["ACT Composite 50%"]),
-          composite75: parseInt(collegeDetails["ACT Composite 75%"])
+          composite25: collegeDetails["ACT Composite 25%"],
+          composite50: collegeDetails["ACT Composite 50%"],
+          composite75: collegeDetails["ACT Composite 75%"]
         }
       };
     });

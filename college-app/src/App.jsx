@@ -4,6 +4,7 @@ import { First } from './pages/first.jsx'
 import { Login } from './pages/login.jsx'
 import { Home } from './pages/home.jsx'
 import { MyColleges } from './pages/mycolleges.jsx'
+import { Profile } from './pages/profile.jsx'
 
 function App () {
   return (
@@ -13,6 +14,7 @@ function App () {
         <Route path ="/login" element={<Login/>}/>
         <Route path= "/home" element={<Home/>}/>
         <Route path = "/mycolleges" element={<MyColleges/>}/>
+        <Route path = "/profile" element={<Profile/>}/>
       </Routes>
     </HashRouter>
   )
