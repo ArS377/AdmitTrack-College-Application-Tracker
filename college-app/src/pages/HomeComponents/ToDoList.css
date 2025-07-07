@@ -1,0 +1,155 @@
+/* Overall container to center the entire app and set base font */
+.main-app {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    max-width: 500px; /* Adjust max width as desired */
+    margin: 40px auto; /* Centers the container horizontally */
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 0 10px lightgrey;;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 2em; /* Larger for the main title */
+}
+
+/* Input Section */
+.input-section {
+    display: flex;
+    justify-content: center; /* Center the input and button */
+    gap: 10px;
+    margin-bottom: 40px; /* Space below the input section */
+}
+
+.input-section input[type="text"] {
+    width: 300px; /* Fixed width for input when centered */
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    outline: none;
+}
+
+.input-section input[type="text"]:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.custom-field.one button {
+    padding: 10px 20px;
+    background-color: #4a6bd6;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s ease;
+}
+
+.custom-field.one button:hover {
+    background-color: #0056b3;
+}
+
+/* --- Key Changes for Side-by-Side Lists --- */
+.task-status {
+    display: flex; /* Make this the flex container */
+    justify-content: space-around; /* Distribute space around children */
+    gap: 30px; /* Space between the two columns */
+    flex-wrap: wrap; /* Allows columns to wrap to the next line on small screens */
+    margin-bottom: 40px; /* Space below the list sections */
+}
+
+.current-tasks-section,
+.completed-tasks-section {
+    flex: 1; /* Allows both sections to grow and shrink equally */
+    min-width: 300px; /* Minimum width for each section to prevent crushing */
+    max-width: 48%; /* Max width to ensure they don't take up too much space and allow for gap */
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+}
+
+/* Headings within the sections */
+.current-tasks-section h3,
+.completed-tasks-section h3 {
+    text-align: center;
+    color: #555;
+    margin-top: 0; /* Remove default top margin */
+    margin-bottom: 20px;
+    font-size: 1.5em; /* Adjust font size relative to h1 */
+}
+
+/* Paragraph for empty list messages */
+.current-tasks-section p,
+.completed-tasks-section p {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin-top: 20px;
+}
+
+/* --- List Items (li) Styling (ensure consistency) --- */
+.todo-items, .completed-items {
+    list-style: none; /* Remove bullet points */
+    padding: 0;
+}
+
+.todo-items li, .completed-items li {
+    background-color: white;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    display: flex; /* For inner items (check, text, delete) */
+    align-items: center; /* Vertically center content */
+    gap: 8px; /* Space between elements */
+    font-size: 17px;
+    color: #555;
+    box-shadow: 0 0px 10px lightgrey;
+}
+
+.todo-items li span, .completed-items li span {
+    flex-grow: 1; /* Task text takes up available space */
+}
+
+/* Button styles (check and remove) */
+.complete-button {
+    background-color: #28a745; /* Green */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+    margin-right: 2px;
+}
+.complete-button:hover { background-color: #218838; }
+
+.remove-button {
+    background-color: #dc3545; /* Red */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+    
+}
+.remove-button:hover { background-color: #c82333; }
+
+/* (Add your .profile-section, .profile-button, .sign-out-link styles here if you add them to the JSX) */

@@ -1,6 +1,19 @@
 import React, { useState, useEffect } from 'react'; // <-- Keep useEffect
 import './profile.css';
 import { getUser } from '../User.jsx';
+import {useNavigate} from 'react-router-dom'
+
+const ReturnButton = () => {
+    const navigate = useNavigate()
+    const goToMyHome = () => {
+      navigate('/home')
+    }
+    return (
+      <button className="button" onClick={goToMyHome}>
+      Cancel
+      </button>
+    )
+  }
 
 export function Profile() {
     const [currentUser, setCurrentUser] = useState(getUser());
@@ -128,6 +141,7 @@ export function Profile() {
                         />
                     </div>
                     <input type='submit' className='button' value='Update Profile' />
+                    <ReturnButton/>
                 </form>
             </div>
         </div>

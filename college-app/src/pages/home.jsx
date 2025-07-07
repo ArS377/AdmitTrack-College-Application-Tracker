@@ -1,5 +1,6 @@
 import React from 'react';
 import {useNavigate} from 'react-router-dom'
+import ToDo from './HomeComponents/ToDoList.jsx'
 
 
 const signOut = () => {
@@ -47,12 +48,19 @@ export function Home() {
       <div>
         <h2>Welcome to the Home Page!</h2>
         <p>My Content</p>
+
         <div>
           <CollegeButton/>
         </div>
-        <div>
+
         <br></br>
+
+        <div>
+          <ToDo/>
         </div>
+
+        <br></br>
+        
         <div>
           <ProfileButton/>
         </div>

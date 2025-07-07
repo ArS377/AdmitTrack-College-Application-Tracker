@@ -1,7 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {FaSearch} from 'react-icons/fa'
 import './mycolleges.css'
 import {useNavigate} from 'react-router-dom'
+import Dropdown from './MyCollegeComponents/Dropdown'
 
 const ProfileButton = () => {
     const navigate = useNavigate()
@@ -67,6 +68,12 @@ const SearchResult = ({result, onSelect}) => {
 }
 
 export function MyColleges() {
+
+  const [collegeList, setCollegeList] = useState([])
+  const [results, setResults] = useState([])
+  const [selectedCollege, setSelectedCollege] = useState(null)
+
+
   const signOut = () => {
     if (window.gapi && window.gapi.auth2) {
       var auth2 = window.gapi.auth2.getAuthInstance();
@@ -109,10 +116,6 @@ export function MyColleges() {
     setCollegeList((prevList) => prevList.filter((college) => college._id !== collegeId));
     setSelectedCollege(null);
   }
-
-  const [collegeList, setCollegeList] = useState([])
-  const [results, setResults] = useState([])
-  const [selectedCollege, setSelectedCollege] = useState(null)
 
   return (
     <div>
@@ -173,7 +176,11 @@ export function MyColleges() {
               <div key={college._id}>
                 <p>{college.collegeName}</p>
                 <button className='delete-button' onClick={() => deleteCollegeFromList(college._id)}>Delete</button>
-                <button className='select-major'>Choose Intended Major</button>
+                
+                <div className={`dropdown-menu`}>
+                  <Dropdown/>
+                </div>
+
               </div>
 
             ))) : (
