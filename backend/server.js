@@ -20,8 +20,6 @@ async function connectToDatabase() {
   }
 }
 
-
-
 // Route to receive data
 app.post("/api/save-user", async (req, res) => {
   const { name, email } = req.body;
@@ -31,7 +29,9 @@ app.post("/api/save-user", async (req, res) => {
 
     const existingUser = await collection.findOne({ email: email });
     if (existingUser) {
-      return res.status(409).json({ error: "User with this email already exists." });
+      return res
+        .status(409)
+        .json({ error: "User with this email already exists." });
     }
 
     const result = await collection.insertOne({ name, email });
@@ -41,25 +41,22 @@ app.post("/api/save-user", async (req, res) => {
   }
 });
 
-
-
-
 //search component serverside
-app.get('/api/search', async (req, res) => {
+app.get("/api/search", async (req, res) => {
   //get searched query
-  const searched = req.query.q
+  const searched = req.query.q;
   if (!searched) {
     return res.status(400).json({ error: "Search query 'q' is required." });
   }
-  try{
-    const searchPattern = new RegExp(searched, 'i');
+  try {
+    const searchPattern = new RegExp(searched, "i");
     const mongoQuery = {
       $or: [
-        { collegeName: { $regex: searchPattern } },//search in the 'name' field
-        { location: { $regex: searchPattern } }//search in the 'description' field}
-      ]
+        { collegeName: { $regex: searchPattern } }, //search in the 'name' field
+        { location: { $regex: searchPattern } }, //search in the 'description' field}
+      ],
     };
-    const collection = db.collection('collegeinfo');
+    const collection = db.collection("collegeinfo");
     const results = await collection.find(mongoQuery).toArray();
     res.status(200).json(results); //sends to frontend
   } catch (e) {
@@ -68,14 +65,13 @@ app.get('/api/search', async (req, res) => {
   }
 });
 
-
-
-
 //updating after submitting profile data
 app.post("/api/profile", async (req, res) => {
   const { email, firstMajor, secondMajor, satEnglish, satMath, act } = req.body;
   if (!email) {
-    return res.status(400).json({ message: "Email is required to update the profile." });
+    return res
+      .status(400)
+      .json({ message: "Email is required to update the profile." });
   }
   const collection = db.collection("userdata");
   const updateDoc = {
@@ -91,24 +87,28 @@ app.post("/api/profile", async (req, res) => {
     const result = await collection.findOneAndUpdate(
       { email: email }, //filter by email
       updateDoc,
-      { returnDocument: 'after', upsert: true } //add info after email
+      { returnDocument: "after", upsert: true } //add info after email
     );
 
-    res.status(200).json({ //to send message back to client side --> response.ok() == true
+    res.status(200).json({
+      //to send message back to client side --> response.ok() == true
       message: "Profile data updated successfully!",
-      profile: result.value
+      profile: result.value,
     });
-
   } catch (e) {
     console.error("Error updating profile data:", e);
     res.status(500).json({ error: "Could not update profile data." });
   }
 });
 
+async function startServer() {
+  // Connet to database
+  await connectToDatabase();
 
+  //start server
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
 
-//start server
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-  connectToDatabase();
-});
+startServer();
