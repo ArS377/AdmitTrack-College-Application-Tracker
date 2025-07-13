@@ -1,0 +1,22 @@
+GET http://localhost:3000/api/search?q=Stanford
+
+###
+GET http://localhost:3000/api/search?q=San%20Jose%20State
+
+###
+POST http://localhost:3000/api/save-user
+Content-Type: application/json
+
+{
+    "name": "Soma Ellappan",
+    "email": "soma.ellappan@gmail.com"
+}
+
+###
+POST http://localhost:3000/api/save-user
+Content-Type: application/json
+
+{
+    "name": "Pranav Soma",
+    "email": "prasom075@gmail.com"
+}
