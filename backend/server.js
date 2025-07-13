@@ -32,7 +32,7 @@ app.post("/api/save-user", async (req, res) => {
       const result = await collection.insertOne({ name, email });
       res.status(200).json({ message: "User saved", id: result.insertedId });
     } else {
-      res.status(200);
+      res.status(200).end();
     }
   } catch (e) {
     res.status(500).json({ error: "Database insert failed" });
