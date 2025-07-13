@@ -28,14 +28,12 @@ app.post("/api/save-user", async (req, res) => {
     const collection = db.collection("userdata");
 
     const existingUser = await collection.findOne({ email: email });
-    if (existingUser) {
-      return res
-        .status(409)
-        .json({ error: "User with this email already exists." });
+    if (!existingUser) {
+      const result = await collection.insertOne({ name, email });
+      res.status(200).json({ message: "User saved", id: result.insertedId });
+    } else {
+      res.status(200);
     }
-
-    const result = await collection.insertOne({ name, email });
-    res.status(200).json({ message: "User saved", id: result.insertedId });
   } catch (e) {
     res.status(500).json({ error: "Database insert failed" });
   }
