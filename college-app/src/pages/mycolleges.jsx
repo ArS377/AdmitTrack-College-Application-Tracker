@@ -1,64 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
-import { FaSearch } from "react-icons/fa";
+import React, { useState } from "react";
 import "./mycolleges.css";
-import { useNavigate } from "react-router-dom";
-import Dropdown from "./MyCollegeComponents/Dropdown";
-
-const SearchBar = ({ setResults, setSelectedCollege }) => {
-  const [input, setInput] = useState("");
-  const fetchData = async (value) => {
-    setResults([]);
-    if (!value.trim()) {
-      setResults([]);
-      return;
-    }
-    const response = await fetch(
-      `http://localhost:3000/api/search?q=${encodeURIComponent(value)}`
-    );
-    const json = await response.json();
-    setResults(json);
-  };
-
-  const handleChange = (value) => {
-    setInput(value);
-    fetchData(value);
-  };
-
-  return (
-    <div className="input-wrapper">
-      <FaSearch id="search-icon" />
-      <input
-        placeholder="Search for colleges"
-        value={input}
-        onChange={(e) => handleChange(e.target.value)}
-      />
-    </div>
-  );
-};
-
-const SearchResultsList = ({ results, onSelectCollege }) => {
-  return (
-    <div className="results-list">
-      {results.map((result) => {
-        return (
-          <SearchResult
-            result={result}
-            key={result._id}
-            onSelect={onSelectCollege}
-          />
-        );
-      })}
-    </div>
-  );
-};
-
-const SearchResult = ({ result, onSelect }) => {
-  return (
-    <div className="search-result" onClick={() => onSelect(result)}>
-      {result.collegeName}
-    </div>
-  );
-};
+import Dropdown from "../components/Dropdown";
+import SearchBar from "../components/SearchBar";
+import SearchResultsList from "../components/SearchResultsList";
 
 export function MyColleges() {
   const [collegeList, setCollegeList] = useState([]);

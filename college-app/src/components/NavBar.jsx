@@ -1,25 +1,29 @@
 import { useNavigate } from "react-router-dom";
-
-const handleSignOut = () => {
-  if (window.gapi && window.gapi.auth2) {
-    var auth2 = window.gapi.auth2.getAuthInstance();
-    auth2
-      .signOut()
-      .then(function () {
-        console.log("User signed out.");
-      })
-      .catch((error) => {
-        console.error("Error signing out:", error);
-      });
-  } else {
-    console.warn(
-      "Google API client library (gapi) not loaded or initialized. Cannot sign out."
-    );
-  }
-};
+import { googleLogout } from "@react-oauth/google";
 
 function NavBar() {
   const navigate = useNavigate();
+  const handleSignOut = () => {
+    /*
+    if (window.gapi && window.gapi.auth2) {
+      var auth2 = window.gapi.auth2.getAuthInstance();
+      auth2
+        .signOut()
+        .then(function () {
+          console.log("User signed out.");
+        })
+        .catch((error) => {
+          console.error("Error signing out:", error);
+        });
+    } else {
+      console.warn(
+        "Google API client library (gapi) not loaded or initialized. Cannot sign out."
+      );
+    }
+    */
+    googleLogout();
+    navigate("/login");
+  };
   const goToHome = () => {
     navigate("/home");
   };

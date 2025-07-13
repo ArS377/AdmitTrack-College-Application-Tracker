@@ -1,4 +1,4 @@
-import ToDo from "./HomeComponents/ToDoList.jsx";
+import ToDo from "../components/ToDoList.jsx";
 
 export function Home() {
   return (
