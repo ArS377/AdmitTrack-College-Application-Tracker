@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { googleLogout } from "@react-oauth/google";
+import "./NavBar.css";
 
 function NavBar() {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ function NavBar() {
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg bg-body-tertiary">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container-fluid">
           <span className="navbar-brand mb-0 h1">College App</span>
           <div className="" id="navbarNav">
