@@ -10,7 +10,7 @@ const SearchBar = ({ setResults, setSelectedCollege }) => {
       return;
     }
     const response = await fetch(
-      `http://localhost:3000/api/search?q=${encodeURIComponent(value)}`
+      `http://localhost:3000/api/colleges?q=${encodeURIComponent(value)}`
     );
     const json = await response.json();
     setResults(json);

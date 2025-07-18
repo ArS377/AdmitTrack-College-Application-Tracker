@@ -21,7 +21,7 @@ async function connectToDatabase() {
 }
 
 // Route to receive data
-app.post("/api/save-user", async (req, res) => {
+app.post("/api/users", async (req, res) => {
   const { name, email } = req.body;
 
   try {
@@ -40,7 +40,7 @@ app.post("/api/save-user", async (req, res) => {
 });
 
 //search component serverside
-app.get("/api/search", async (req, res) => {
+app.get("/api/colleges", async (req, res) => {
   //get searched query
   const searched = req.query.q;
   if (!searched) {
