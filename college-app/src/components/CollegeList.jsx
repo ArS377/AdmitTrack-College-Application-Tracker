@@ -1,4 +1,5 @@
 import Dropdown from "./Dropdown";
+import { getUser } from "../User";
 
 const CollegeList = ({ collegeList, deleteCollegeFromList }) => {
   return (
@@ -12,7 +13,9 @@ const CollegeList = ({ collegeList, deleteCollegeFromList }) => {
                 {college.collegeName}
                 <button
                   className="btn btn-danger"
-                  onClick={() => deleteCollegeFromList(college._id)}
+                  onClick={() =>
+                    deleteCollegeFromList(college._id, getUser()?.email)
+                  }
                 >
                   X
                 </button>

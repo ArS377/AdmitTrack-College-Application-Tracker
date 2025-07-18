@@ -29,13 +29,51 @@ app.post("/api/users", async (req, res) => {
 
     const existingUser = await collection.findOne({ email: email });
     if (!existingUser) {
-      const result = await collection.insertOne({ name, email });
+      const myColleges = [];
+      const result = await collection.insertOne({ name, email, myColleges });
       res.status(200).json({ message: "User saved", id: result.insertedId });
     } else {
       res.status(200).end();
     }
   } catch (e) {
     res.status(500).json({ error: "Database insert failed" });
+  }
+});
+
+app.post("/api/mycolleges", async (req, res) => {
+  console.log(req.body);
+  const { email, collegeId } = req.body;
+
+  const collection = db.collection("userdata");
+  const existingUser = await collection.findOne({ email: email });
+  console.log(email);
+  if (!existingUser) {
+    res.status(404).json({ message: "User not found" });
+  } else {
+    existingUser.myColleges.push(collegeId);
+
+    const result = await collection.findOneAndUpdate(
+      { email: email }, //filter by email
+      { $set: existingUser }
+    );
+  }
+});
+
+app.post("/api/removemycolleges", async (req, res) => {
+  console.log(req.body);
+  const { email, collegeId } = req.body;
+
+  const collection = db.collection("userdata");
+  const existingUser = await collection.findOne({ email: email });
+  console.log(email);
+  if (!existingUser) {
+    res.status(404).json({ message: "User not found" });
+  } else {
+    console.log(collegeId);
+    const result = await collection.findOneAndUpdate(
+      { email: email }, //filter by email
+      { $pull: { myColleges: collegeId } }
+    );
   }
 });
 

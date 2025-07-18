@@ -16,7 +16,7 @@ export function MyColleges() {
     setResults([]); //clear search results list
   };
 
-  const addCollegeToList = () => {
+  const addCollegeToList = async (email) => {
     if (selectedCollege) {
       const isAlreadyAdded = collegeList.some(
         (college) => college._id === selectedCollege._id
@@ -28,16 +28,28 @@ export function MyColleges() {
       }
       setCollegeList((prevList) => [...prevList, selectedCollege]);
       setSelectedCollege(null); //clears info box
+
+      await fetch("http://localhost:3000/api/mycolleges", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, collegeId: selectedCollege._id }),
+      });
     } else {
       alert("Please select a college from the search results first!");
     }
   };
 
-  const deleteCollegeFromList = (collegeId) => {
+  const deleteCollegeFromList = async (collegeId, email) => {
     setCollegeList((prevList) =>
       prevList.filter((college) => college._id !== collegeId)
     );
     setSelectedCollege(null);
+
+    await fetch("http://localhost:3000/api/removemycolleges", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email, collegeId: collegeId }),
+    });
   };
 
   return (

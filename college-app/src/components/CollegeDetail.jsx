@@ -1,3 +1,5 @@
+import { getUser } from "../User";
+
 const CollegeDetail = ({ selectedCollege, addCollegeToList }) => {
   return (
     selectedCollege && (
@@ -35,7 +37,10 @@ const CollegeDetail = ({ selectedCollege, addCollegeToList }) => {
             </tr>
           </tbody>
         </table>
-        <button className="addButton" onClick={addCollegeToList}>
+        <button
+          className="addButton"
+          onClick={() => addCollegeToList(getUser()?.email)}
+        >
           Add College
         </button>
         <button className="addButton">What are my chances?</button>
