@@ -53,9 +53,9 @@ export function MyColleges() {
   };
 
   return (
-    <div className="container text-center">
+    <div className="container text-center subject">
       <div className="row align-items-start">
-        <div className="col">
+        <div className="col num1">
           <h2>Search for Colleges</h2>
           <div className="searchBarContainer">
             <SearchBar setResults={setResults} />
@@ -70,7 +70,7 @@ export function MyColleges() {
           />
         </div>
 
-        <div className="col">
+        <div className="col num2">
           <CollegeList
             collegeList={collegeList}
             deleteCollegeFromList={deleteCollegeFromList}
