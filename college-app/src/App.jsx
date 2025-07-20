@@ -7,6 +7,7 @@ import { Home } from "./pages/home.jsx";
 import { MyColleges } from "./pages/mycolleges.jsx";
 import { Profile } from "./pages/profile.jsx";
 import NavBar from "./components/NavBar.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 function App() {
   return (
@@ -16,10 +17,12 @@ function App() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/register" element={<RegisterUser />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/mycolleges" element={<MyColleges />} />
+            <Route path="/profile" element={<Profile />} />
+          </Route>
           <Route path="/login" element={<GLogin />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/mycolleges" element={<MyColleges />} />
-          <Route path="/profile" element={<Profile />} />
         </Routes>
       </BrowserRouter>
     </>
