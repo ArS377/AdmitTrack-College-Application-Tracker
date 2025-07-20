@@ -3,7 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { setUser } from "../User";
 
-export function Login() {
+export function GLogin() {
   const navigate = useNavigate();
   return (
     <>

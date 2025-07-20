@@ -1,29 +1,26 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Landing } from "./pages/Landing.jsx";
-import { RegisterUser } from "./pages/RegisterUser.jsx";
-import { GLogin } from "./pages/GLogin.jsx";
+import { HashRouter, Routes, Route } from "react-router-dom";
+import { First } from "./pages/first.jsx";
 import { Home } from "./pages/home.jsx";
 import { MyColleges } from "./pages/mycolleges.jsx";
 import { Profile } from "./pages/profile.jsx";
 import NavBar from "./components/NavBar.jsx";
+import App from "./App.jsx";
 
-function App() {
+function LoggedInApp() {
   return (
     <>
-      <BrowserRouter>
+      <HashRouter>
         <NavBar />
         <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/register" element={<RegisterUser />} />
-          <Route path="/login" element={<GLogin />} />
+          <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
           <Route path="/mycolleges" element={<MyColleges />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </>
   );
 }
 
-export default App;
+export default LoggedInApp;

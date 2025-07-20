@@ -23,7 +23,7 @@ function NavBar() {
     }
     */
     googleLogout();
-    navigate("/login");
+    navigate("/");
   };
   const goToHome = () => {
     navigate("/home");

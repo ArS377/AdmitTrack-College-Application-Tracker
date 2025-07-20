@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const { MongoClient } = require("mongodb");
+const bcrypt = require("bcrypt");
 require("dotenv").config({ path: "./config.env" });
 
 const app = express();
@@ -19,6 +20,97 @@ async function connectToDatabase() {
     console.error("MongoDB connection failed:", e);
   }
 }
+
+app.get("/api/users", async (req, res) => {
+  const { email } = req.query;
+  if (!email) {
+    return res.status(400).json({ error: "Email is required." });
+  }
+  try {
+    const collection = db.collection("userdata");
+    const user = await collection.find({ email: email }).toArray();
+    if (user.length > 0) {
+      res.status(200).json(user[0]); // Return the first user found
+    } else {
+      res.status(404).json({ error: "User not found." });
+    }
+  } catch (e) {
+    console.error("Error fetching user:", e);
+    res.status(500).json({ error: "Failed to fetch user." });
+  }
+});
+
+app.delete("/api/users", async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: "Email is required." });
+  }
+  try {
+    const collection = db.collection("userdata");
+    const result = await collection.deleteOne({ email: email });
+    if (result.deletedCount === 1) {
+      res.status(200).json({ message: "User deleted successfully." });
+    } else {
+      res.status(404).json({ error: "User not found." });
+    }
+  } catch (e) {
+    console.error("Error deleting user:", e);
+    res.status(500).json({ error: "Failed to delete user." });
+  }
+});
+
+app.post("/api/users", async (req, res) => {
+  const { fullName, email, password } = req.body;
+
+  try {
+    const collection = db.collection("userdata");
+    const existingUser = await collection.findOne({ email: email });
+    if (!existingUser) {
+      const myColleges = [];
+      hashedPassword = await bcrypt.hash(password, 10); // Hash the password
+      const result = await collection.insertOne({
+        fullName,
+        email,
+        hashedPassword,
+        myColleges,
+      });
+      console.log("User created:", result.insertedId);
+      res
+        .status(200)
+        .json({ message: "User created successfully.", id: result.insertedId });
+    } else {
+      res.status(409).json({ message: "User already exists" }); // User already exists
+      console.log("User already exists:");
+    }
+  } catch (e) {
+    res.status(500).json({ error: "Database insert failed" });
+  }
+});
+
+app.post("/api/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const collection = db.collection("userdata");
+    const user = await collection.findOne({ email: email });
+    if (user) {
+      const isPasswordValid = await bcrypt.compare(
+        password,
+        user.hashedPassword
+      );
+      if (isPasswordValid) {
+        res.status(200).json({ message: "Login successful", user: user });
+      } else {
+        res.status(401).json({ message: "Invalid password" });
+      }
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (e) {
+    console.error("Error during login:", e);
+    res.status(500).json({ error: "Login failed" });
+  }
+});
 
 // Route to receive data
 app.post("/api/users", async (req, res) => {
