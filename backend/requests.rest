@@ -14,16 +14,26 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3000/api/users?email=soma.ellappan@gmail.com
-
-###
-POST http://localhost:3000/api/login
+POST http://localhost:3000/api/auth/login
 Content-Type: application/json  
 
 {
     "email": "soma.ellappan@gmail.com",
     "password": "password123"
 }
+
+###
+GET http://localhost:3000/api/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNvbWEuZWxsYXBwYW5AZ21haWwuY29tIiwiaWQiOiI2ODdjM2EyOWU1YWU4OTMyMDc3NGZjNGMiLCJpYXQiOjE3NTMwNzg1ODksImV4cCI6MTc1MzA3ODYxOX0.O5tJmMO0fes2kM40xYx8tAQeVjAIC_UtK19y1BYQrKU
+
+###
+GET http://localhost:3000/api/auth/accesstoken
+
+###
+POST http://localhost:3000/api/auth/logout
+
+###
+GET http://localhost:3000/api/users
 
 ###
 DELETE http://localhost:3000/api/users

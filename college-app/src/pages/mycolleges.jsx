@@ -45,8 +45,8 @@ export function MyColleges() {
     );
     setSelectedCollege(null);
 
-    await fetch("http://localhost:3000/api/removemycolleges", {
-      method: "POST",
+    await fetch("http://localhost:3000/api/mycolleges", {
+      method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: email, collegeId: collegeId }),
     });
