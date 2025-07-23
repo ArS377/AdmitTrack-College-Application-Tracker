@@ -1,6 +1,8 @@
 import "./Login.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { setUser } from "../User.jsx";
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -16,12 +18,19 @@ const Login = () => {
     };
 
     try {
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/login",
+        userData,
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      /*
       const response = await fetch("http://localhost:3000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),
       });
-
+      
       if (response.ok) {
         const data = await response.json();
         console.log("Login successful:", data);
@@ -30,6 +39,15 @@ const Login = () => {
         const errorData = await response.json();
         console.error("Login failed:", errorData);
         alert(errorData.message || "Login failed");
+      }
+      */
+      if (response.status === 200) {
+        console.log("Login successful:", response.data);
+        setUser({ email });
+        navigate("/home");
+      } else {
+        console.error("Login failed:", response.data);
+        alert(response.data.message || "Login failed");
       }
     } catch (error) {
       console.error("Error during login:", error);

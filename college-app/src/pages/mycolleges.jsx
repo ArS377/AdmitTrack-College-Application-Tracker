@@ -4,6 +4,8 @@ import SearchBar from "../components/SearchBar";
 import SearchResultsList from "../components/SearchResultsList";
 import CollegeDetail from "../components/CollegeDetail";
 import CollegeList from "../components/CollegeList";
+import axios from "axios";
+import { getUser } from "../User";
 
 export function MyColleges() {
   const [collegeList, setCollegeList] = useState([]);
@@ -16,7 +18,8 @@ export function MyColleges() {
     setResults([]); //clear search results list
   };
 
-  const addCollegeToList = async (email) => {
+  const addCollegeToList = async () => {
+    const email = getUser().email;
     if (selectedCollege) {
       const isAlreadyAdded = collegeList.some(
         (college) => college._id === selectedCollege._id
@@ -29,27 +32,66 @@ export function MyColleges() {
       setCollegeList((prevList) => [...prevList, selectedCollege]);
       setSelectedCollege(null); //clears info box
 
+      /*
       await fetch("http://localhost:3000/api/mycolleges", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email, collegeId: selectedCollege._id }),
       });
+      */
+
+      try {
+        console.log("email: ", email);
+        const response = await axios({
+          method: "post",
+          url: "http://localhost:3000/api/mycolleges",
+          data: {
+            email: email,
+            collegeId: selectedCollege._id,
+          },
+        });
+        /*
+        axios.post("http://localhost:3000/api/mycolleges", {
+          email: email,
+          collegeId: selectedCollege._id,
+        });*/
+        console.log("College added successfully:", response.data);
+      } catch (error) {
+        console.error("Error adding college:", error);
+      }
     } else {
       alert("Please select a college from the search results first!");
     }
   };
 
-  const deleteCollegeFromList = async (collegeId, email) => {
+  const deleteCollegeFromList = async () => {
+    const email = getUser().email;
+
     setCollegeList((prevList) =>
-      prevList.filter((college) => college._id !== collegeId)
+      prevList.filter((college) => college._id !== selectedCollege._id)
     );
     setSelectedCollege(null);
 
+    /*
     await fetch("http://localhost:3000/api/mycolleges", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: email, collegeId: collegeId }),
     });
+    */
+
+    try {
+      const response = await axios.delete(
+        "http://localhost:3000/api/mycolleges",
+        {
+          data: { email: email, collegeId: collegeId },
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      console.log("College deleted successfully:", response.data);
+    } catch (error) {
+      console.error("Error deleting college:", error);
+    }
   };
 
   return (
@@ -66,14 +108,14 @@ export function MyColleges() {
           </div>
           <CollegeDetail
             selectedCollege={selectedCollege}
-            addCollegeToList={addCollegeToList}
+            addCollegeToList={() => addCollegeToList()}
           />
         </div>
 
         <div className="col num2">
           <CollegeList
             collegeList={collegeList}
-            deleteCollegeFromList={deleteCollegeFromList}
+            deleteCollegeFromList={() => deleteCollegeFromList()}
           />
         </div>
       </div>

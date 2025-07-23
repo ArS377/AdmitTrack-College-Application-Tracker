@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
+import axios from "axios";
 
 const SearchBar = ({ setResults, setSelectedCollege }) => {
   const [input, setInput] = useState("");
@@ -9,11 +10,24 @@ const SearchBar = ({ setResults, setSelectedCollege }) => {
       setResults([]);
       return;
     }
+    /*
     const response = await fetch(
       `http://localhost:3000/api/colleges?q=${encodeURIComponent(value)}`
     );
     const json = await response.json();
     setResults(json);
+  };
+  */
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/colleges?q=${encodeURIComponent(value)}`
+      );
+      setResults(response.data);
+      //setSelectedCollege(null);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setResults([]);
+    }
   };
 
   const handleChange = (value) => {

@@ -4,6 +4,17 @@ GET http://localhost:3000/api/search?q=Stanford
 GET http://localhost:3000/api/search?q=San%20Jose%20State
 
 ###
+POST http://localhost:3000/api/mycolleges
+Content-Type: application/json
+
+{
+    "email": "soma.ellappan@gmail.com",
+    "collegeId": "12345"
+}
+
+
+###
+
 POST http://localhost:3000/api/users
 Content-Type: application/json
 

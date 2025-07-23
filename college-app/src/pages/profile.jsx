@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"; // <-- Keep useEffect
 import "./profile.css";
 import { getUser } from "../User.jsx";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const ReturnButton = () => {
   const navigate = useNavigate();
@@ -60,6 +61,36 @@ export function Profile() {
     };
 
     try {
+      const response = await axios.post(
+        "http://localhost:3000/api/profile",
+        profileUpdateData,
+        { headers: { "Content-Type": "application/json" } }
+      );
+      if (response.status === 200) {
+        console.log("Profile data updated successfully:", response.data);
+        alert("Your academic profile has been successfully updated!");
+        setFirstMajor("");
+        setSecondMajor("");
+        setSatEnglish("");
+        setSatMath("");
+        setAct("");
+      } else {
+        console.error("Failed to update profile:", response.data);
+        alert(
+          `Failed to update profile: ${
+            response.data.message || "Please try again."
+          }`
+        );
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert(
+        "An error occurred while submitting. Please check your network connection."
+      );
+    }
+
+    /*
+    try {
       const response = await fetch("http://localhost:3000/api/profile", {
         method: "POST",
         headers: {
@@ -92,6 +123,7 @@ export function Profile() {
         "An error occurred while submitting. Please check your network connection."
       );
     }
+    */
   };
 
   return (

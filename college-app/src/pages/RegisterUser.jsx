@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import axios from "axios";
 
 export function RegisterUser() {
   const [fullName, setFullName] = useState("");
@@ -16,12 +17,28 @@ export function RegisterUser() {
       password: password,
     };
 
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/users",
+        userData,
+        { headers: { "Content-Type": "application/json" } }
+      );
+      if (response.status === 201) {
+        console.log("Registration successful:", response.data);
+      } else {
+        console.error("Registration failed:", response.data);
+        alert(response.data.message || "Registration failed");
+      }
+    } catch (error) {
+      console.error("Error during registration:", error);
+    }
+    /*
     await fetch("http://localhost:3000/api/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(userData),
     });
-
+    */
     navigate("/");
   };
 
