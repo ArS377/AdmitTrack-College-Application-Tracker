@@ -43,7 +43,10 @@ const Login = () => {
       */
       if (response.status === 200) {
         console.log("Login successful:", response.data);
-        setUser({ email });
+        setUser({
+          accessToken: response.data.access_token,
+          email: email,
+        });
         navigate("/home");
       } else {
         console.error("Login failed:", response.data);

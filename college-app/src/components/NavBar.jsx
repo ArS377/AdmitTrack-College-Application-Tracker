@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { googleLogout } from "@react-oauth/google";
+import axios from "axios";
 import "./NavBar.css";
+import { getUser } from "../User.jsx"; // Adjust the import path as necessary
 
 function NavBar() {
   const navigate = useNavigate();
@@ -22,7 +24,14 @@ function NavBar() {
       );
     }
     */
-    googleLogout();
+    //googleLogout();
+    axios.post(
+      "http://localhost:3000/api/auth/logout",
+      {},
+      { headers: { "Content-Type": "application/json" } }
+    );
+    getUser().accessToken = undefined; // Clear the access token
+
     navigate("/");
   };
   const goToHome = () => {
