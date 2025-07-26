@@ -17,48 +17,36 @@ const ReturnButton = () => {
 };
 
 export function Profile() {
-  const [currentUser, setCurrentUser] = useState(getUser());
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      const latestUser = getUser();
-      if (
-        latestUser?.email !== currentUser?.email ||
-        latestUser?.name !== currentUser?.name
-      ) {
-        setCurrentUser(latestUser);
-      }
-    }, 500); // Check every 500ms
+  const getUserData = async (profileData) => {
+    try {
+      const user = await axios.get(`http://localhost:3000/api/users`);
+      profileData.name = user.fullName;
+      profileData.email = user.email;
+      profileData.firstMajor = user.firstMajor || "";
+      profileData.secondMajor = user.secondMajor || "";
+      profileData.satEnglish = user.satEnglish || "";
+      profileData.satMath = user.satMath || "";
+      profileData.act = user.act || "";
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      return null;
+    }
+  };
 
-    return () => clearInterval(intervalId); // Cleanup
-  }, [currentUser]); // Depend on currentUser to trigger re-check when it changes
+  const profileUpdateData = {
+    name: null,
+    email: null,
+    firstMajor: null,
+    secondMajor: null,
+    satEnglish: null,
+    satMath: null,
+    act: null,
+  };
 
-  const [firstMajor, setFirstMajor] = useState("");
-  const [secondMajor, setSecondMajor] = useState("");
-  const [satEnglish, setSatEnglish] = useState("");
-  const [satMath, setSatMath] = useState("");
-  const [act, setAct] = useState("");
+  getUserData(profileUpdateData);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const userToSubmit = getUser();
-    const userEmail = userToSubmit?.email;
-    const userName = userToSubmit?.email;
-
-    if (!userEmail) {
-      alert("User email not found. Please log in again.");
-      console.error("User email is undefined. Cannot submit profile data.");
-      return;
-    }
-
-    const profileUpdateData = {
-      name: userName,
-      email: userEmail,
-      firstMajor,
-      secondMajor,
-      satEnglish,
-      satMath,
-      act,
-    };
+    //e.preventDefault();
 
     try {
       const response = await axios.post(
@@ -69,11 +57,6 @@ export function Profile() {
       if (response.status === 200) {
         console.log("Profile data updated successfully:", response.data);
         alert("Your academic profile has been successfully updated!");
-        setFirstMajor("");
-        setSecondMajor("");
-        setSatEnglish("");
-        setSatMath("");
-        setAct("");
       } else {
         console.error("Failed to update profile:", response.data);
         alert(
@@ -88,42 +71,6 @@ export function Profile() {
         "An error occurred while submitting. Please check your network connection."
       );
     }
-
-    /*
-    try {
-      const response = await fetch("http://localhost:3000/api/profile", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(profileUpdateData),
-      });
-      console.log(response);
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Profile data updated successfully:", data);
-        alert("Your academic profile has been successfully updated!");
-        setFirstMajor("");
-        setSecondMajor("");
-        setSatEnglish("");
-        setSatMath("");
-        setAct("");
-      } else {
-        const errorData = await response.json();
-        console.error("Failed to update profile:", errorData);
-        alert(
-          `Failed to update profile: ${
-            errorData.message || "Please try again."
-          }`
-        );
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      alert(
-        "An error occurred while submitting. Please check your network connection."
-      );
-    }
-    */
   };
 
   return (
@@ -135,8 +82,8 @@ export function Profile() {
           <div className="custom-field one">
             <input
               type="text"
-              value={firstMajor}
-              onChange={(e) => setFirstMajor(e.target.value)}
+              value={profileUpdateData.firstMajor}
+              onChange={(e) => (profileUpdateData.firstMajor = e.target.value)}
               placeholder="e.g., Computer Science"
             />
           </div>
@@ -145,8 +92,8 @@ export function Profile() {
           <div className="custom-field one">
             <input
               type="text"
-              value={secondMajor}
-              onChange={(e) => setSecondMajor(e.target.value)}
+              value={profileUpdateData.secondMajor}
+              onChange={(e) => (profileUpdateData.secondMajor = e.target.value)}
               placeholder="e.g., Math"
             />
           </div>
@@ -157,8 +104,8 @@ export function Profile() {
           <div className="custom-field one">
             <input
               type="text"
-              value={satEnglish}
-              onChange={(e) => setSatEnglish(e.target.value)}
+              value={profileUpdateData.satEnglish}
+              onChange={(e) => (profileUpdateData.satEnglish = e.target.value)}
               placeholder="e.g., 750"
             />
           </div>
@@ -167,8 +114,8 @@ export function Profile() {
           <div className="custom-field one">
             <input
               type="text"
-              value={satMath}
-              onChange={(e) => setSatMath(e.target.value)}
+              value={profileUpdateData.satMath}
+              onChange={(e) => (profileUpdateData.satMath = e.target.value)}
               placeholder="e.g., 800"
             />
           </div>
@@ -179,8 +126,8 @@ export function Profile() {
           <div className="custom-field one">
             <input
               type="text"
-              value={act}
-              onChange={(e) => setAct(e.target.value)}
+              value={profileUpdateData.act}
+              onChange={(e) => (profileUpdateData.act = e.target.value)}
               placeholder="e.g., 36"
             />
           </div>

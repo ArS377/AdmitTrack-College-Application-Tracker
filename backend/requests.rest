@@ -35,7 +35,20 @@ Content-Type: application/json
 
 ###
 GET http://localhost:3000/api/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNvbWEuZWxsYXBwYW5AZ21haWwuY29tIiwiaWQiOiI2ODdjM2EyOWU1YWU4OTMyMDc3NGZjNGMiLCJpYXQiOjE3NTMwNzg1ODksImV4cCI6MTc1MzA3ODYxOX0.O5tJmMO0fes2kM40xYx8tAQeVjAIC_UtK19y1BYQrKU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNvbWEuZWxsYXBwYW5AZ21haWwuY29tIiwiaWQiOiI2ODg0NTc3YWI1OWQzMWM5MzU4N2NmN2MiLCJpYXQiOjE3NTM1MDY2ODYsImV4cCI6MTc1MzUwNjk4Nn0.9Zrt3IFqV2_d-4FYJtdpP_lAeAT9qZg1sYrzPJU5Fo8
+
+###
+POST http://localhost:3000/api/profile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNvbWEuZWxsYXBwYW5AZ21haWwuY29tIiwiaWQiOiI2ODg0NTc3YWI1OWQzMWM5MzU4N2NmN2MiLCJpYXQiOjE3NTM1MDY2ODYsImV4cCI6MTc1MzUwNjk4Nn0.9Zrt3IFqV2_d-4FYJtdpP_lAeAT9qZg1sYrzPJU5Fo8
+
+{
+    "firstMajor": "Computer Science",
+    "secondMajor": "Math",
+    "satEnglish": "750",
+    "satMath": "800",
+    "act": "36"
+}
 
 ###
 GET http://localhost:3000/api/auth/accesstoken

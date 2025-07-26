@@ -29,12 +29,13 @@ router.get("/auth/accesstoken", (req, res) => {
   });
 });
 
+// logs user in
 router.post("/auth/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
     const db = req.db; // Get the database instance from the request
-    const collection = db.collection("userdata");
+    const collection = db.collection("logininfo");
     const user = await collection.findOne({ email: email });
     if (user) {
       const isPasswordValid = await bcrypt.compare(

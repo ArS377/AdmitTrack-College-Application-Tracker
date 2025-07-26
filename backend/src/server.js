@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const { MongoClient } = require("mongodb");
 const cookieParser = require("cookie-parser");
+const authenticateToken = require("./middleware/authenticationToken");
+
 require("dotenv").config({ path: "./config.env" });
 
 const app = express();
@@ -37,7 +39,7 @@ async function connectToDatabase() {
 }
 
 //search component serverside
-app.get("/api/colleges", async (req, res) => {
+app.get("/api/colleges", authenticateToken, async (req, res) => {
   //get searched query
   const searched = req.query.q;
   if (!searched) {
@@ -60,9 +62,22 @@ app.get("/api/colleges", async (req, res) => {
   }
 });
 
+/*
+const getEmailFromAccessToken = (accessToken) => {
+  jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    if (err) {
+      console.error("Access token verification failed:", err.message);
+      return res.sendStatus(403); // Forbidden
+    }
+    return user.email; // Return the email from the token
+  });
+};
+*/
+
 //updating after submitting profile data
-app.post("/api/profile", async (req, res) => {
-  const { email, firstMajor, secondMajor, satEnglish, satMath, act } = req.body;
+app.post("/api/profile", authenticateToken, async (req, res) => {
+  const { email } = req.user; // Get email from authenticated user
+  const { firstMajor, secondMajor, satEnglish, satMath, act } = req.body;
   if (!email) {
     return res
       .status(400)
