@@ -47,6 +47,7 @@ router.get("/users", authenticateToken, async (req, res) => {
     const collection = db.collection("userdata");
     const user = await collection.find({ email: email }).toArray();
     if (user.length > 0) {
+      console.log("User found:", user[0]);
       res.status(200).json(user[0]); // Return the first user found
     } else {
       res.status(404).json({ error: "User not found." });
