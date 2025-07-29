@@ -76,6 +76,7 @@ const getEmailFromAccessToken = (accessToken) => {
 
 //updating after submitting profile data
 app.post("/api/profile", authenticateToken, async (req, res) => {
+  console.log("Updating profile data with body:", req.body);
   const { email } = req.user; // Get email from authenticated user
   const { firstMajor, secondMajor, satEnglish, satMath, act } = req.body;
   if (!email) {

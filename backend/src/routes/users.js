@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const authenticateToken = require("../middleware/authenticationToken");
 
 // registering a new user
-router.post("/users", authenticateToken, async (req, res) => {
+router.post("/users", async (req, res) => {
   const { fullName, email, password } = req.body;
 
   try {

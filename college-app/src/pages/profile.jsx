@@ -2,21 +2,13 @@ import React, { useEffect, useState } from "react";
 import "./profile.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
-const ReturnButton = () => {
-  const navigate = useNavigate();
-  const goToMyHome = () => {
-    navigate("/home");
-  };
-  return (
-    <button className="btn btn-secondary" onClick={goToMyHome}>
-      Cancel
-    </button>
-  );
-};
+import Alert from "../components/Alert.jsx";
 
 export function Profile() {
+  const [alertState, setAlertState] = useState(false);
   const [profileData, setProfileData] = useState({});
+  const [status, setStatus] = useState({ color: "", confirmationMessage: "" });
+
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
@@ -40,7 +32,7 @@ export function Profile() {
   }, []);
 
   const handleSubmit = async (e) => {
-    //e.preventDefault();
+    e.preventDefault();
 
     try {
       const response = await axios.post(
@@ -48,28 +40,42 @@ export function Profile() {
         profileData,
         { headers: { "Content-Type": "application/json" } }
       );
+      setAlertState(true);
       if (response.status === 200) {
         console.log("Profile data updated successfully:", response.data);
-        alert("Your academic profile has been successfully updated!");
+        setStatus((prevStatus) => ({
+          ...prevStatus, // Keep existing properties (like confirmationMessage)
+          color: "success", // Set the color property to the string "success"
+          confirmationMessage: "Profile updated successfully!",
+        }));
       } else {
         console.error("Failed to update profile:", response.data);
-        alert(
-          `Failed to update profile: ${
-            response.data.message || "Please try again."
-          }`
-        );
+        setStatus((prevStatus) => ({
+          ...prevStatus, // Keep existing properties (like confirmationMessage)
+          color: "danger", // Set the color property to the string "success"
+          confirmationMessage: "Failed to update profile",
+        }));
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert(
-        "An error occurred while submitting. Please check your network connection."
-      );
+
+      setStatus((prevStatus) => ({
+        ...prevStatus, // Keep existing properties (like confirmationMessage)
+        color: "danger", // Set the color property to the string "success"
+        confirmationMessage: "Failed to update profile",
+      }));
     }
   };
 
   return (
     <div>
       <h2>Your Profile</h2>
+      {alertState && (
+        <Alert
+          confirmationMessage={status.confirmationMessage}
+          status={status.color}
+        />
+      )}
       <div>
         <form onSubmit={handleSubmit} className="update">
           <h3 className="label">Enter your primary choice of major.</h3>
@@ -140,7 +146,6 @@ export function Profile() {
             className="btn btn-primary"
             value="Update Profile"
           />
-          <ReturnButton />
         </form>
       </div>
     </div>

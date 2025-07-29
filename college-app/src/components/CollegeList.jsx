@@ -22,7 +22,7 @@ const CollegeList = ({ collegeList, deleteCollegeFromList }) => {
                 <button
                   className="btn btn-outline-danger btn-sm ms-auto"
                   onClick={() =>
-                    deleteCollegeFromList(college._id, getUser()?.email)
+                    deleteCollegeFromList(college._id, college.collegeName)
                   }
                 >
                   <FontAwesomeIcon icon={faTrashCan} />

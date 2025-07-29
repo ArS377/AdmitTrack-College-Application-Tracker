@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./mycolleges.css";
 import SearchBar from "../components/SearchBar";
 import SearchResultsList from "../components/SearchResultsList";
@@ -11,6 +11,22 @@ export function MyColleges() {
   const [collegeList, setCollegeList] = useState([]);
   const [results, setResults] = useState([]);
   const [selectedCollege, setSelectedCollege] = useState(null);
+
+  useEffect(() => {
+    const fetchMyColleges = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/api/mycolleges`
+        );
+        const colleges = response ? response.data : [];
+        console.log(colleges);
+        setCollegeList(colleges); // Update state with fetched data
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchMyColleges();
+  }, []);
 
   const onSelectCollege = (college) => {
     console.log("Selected college:", college); //college printed in console
@@ -48,6 +64,7 @@ export function MyColleges() {
           data: {
             email: email,
             collegeId: selectedCollege._id,
+            collegeName: selectedCollege.collegeName,
           },
         });
         /*
@@ -64,27 +81,23 @@ export function MyColleges() {
     }
   };
 
-  const deleteCollegeFromList = async () => {
+  const deleteCollegeFromList = async (collegeId, collegeName) => {
     const email = getUser().email;
 
     setCollegeList((prevList) =>
-      prevList.filter((college) => college._id !== selectedCollege._id)
+      prevList.filter((college) => college._id !== collegeId)
     );
     setSelectedCollege(null);
 
-    /*
-    await fetch("http://localhost:3000/api/mycolleges", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email, collegeId: collegeId }),
-    });
-    */
-
     try {
-      const response = await axios.delete(
-        "http://localhost:3000/api/mycolleges",
+      const response = await axios.post(
+        "http://localhost:3000/api/mycolleges/delete",
         {
-          data: { email: email, collegeId: collegeId },
+          email: email,
+          collegeId: collegeId,
+          collegeName: collegeName,
+        },
+        {
           headers: { "Content-Type": "application/json" },
         }
       );
@@ -115,7 +128,9 @@ export function MyColleges() {
         <div className="col num2">
           <CollegeList
             collegeList={collegeList}
-            deleteCollegeFromList={() => deleteCollegeFromList()}
+            deleteCollegeFromList={() =>
+              deleteCollegeFromList(collegeId, collegeName)
+            }
           />
         </div>
       </div>
