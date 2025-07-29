@@ -11,9 +11,9 @@ const CollegeList = ({ collegeList, deleteCollegeFromList }) => {
         <div className="d-grid gap-3">
           {collegeList.length > 0 ? (
             collegeList.map((college) => (
-              <div
+              <li
                 className="p-2 bg-light border d-flex align-items-center mb-2 flex-container"
-                key={college._id}
+                key={college.collegeId}
               >
                 <span>{college.collegeName}</span>
 
@@ -21,13 +21,17 @@ const CollegeList = ({ collegeList, deleteCollegeFromList }) => {
 
                 <button
                   className="btn btn-outline-danger btn-sm ms-auto"
-                  onClick={() =>
-                    deleteCollegeFromList(college._id, college.collegeName)
-                  }
+                  onClick={() => {
+                    console.log("Deleting college:", college);
+                    deleteCollegeFromList(
+                      college.collegeId,
+                      college.collegeName
+                    );
+                  }}
                 >
                   <FontAwesomeIcon icon={faTrashCan} />
                 </button>
-              </div>
+              </li>
             ))
           ) : (
             <p>Search for colleges to add them to your list.</p>

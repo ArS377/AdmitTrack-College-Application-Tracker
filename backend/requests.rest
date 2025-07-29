@@ -35,7 +35,7 @@ Content-Type: application/json
 
 ###
 GET http://localhost:3000/api/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNvbWEuZWxsYXBwYW5AZ21haWwuY29tIiwiaWQiOiI2ODg0NTc3YWI1OWQzMWM5MzU4N2NmN2MiLCJpYXQiOjE3NTM1MDY2ODYsImV4cCI6MTc1MzUwNjk4Nn0.9Zrt3IFqV2_d-4FYJtdpP_lAeAT9qZg1sYrzPJU5Fo8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNvbWEuZWxsYXBwYW5AZ21haWwuY29tIiwiaWQiOiI2ODg2ZTgwNzZiNTE5NzY3MDU2ZGM0MWQiLCJpYXQiOjE3NTM3Njk1OTQsImV4cCI6MTc1Mzc2OTg5NH0.cNFCbj79vzJDXiAWjDS7q_kEHwYo6n1gYpboVJAk8DU
 
 ###
 POST http://localhost:3000/api/profile
