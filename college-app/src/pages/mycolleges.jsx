@@ -85,17 +85,21 @@ export function MyColleges() {
     const email = getUser().email;
 
     setCollegeList((prevList) =>
-      prevList.filter((college) => college._id !== collegeId)
+      prevList.filter(
+        (college) =>
+          String(college.collegeId || college._id) !== String(collegeId)
+      )
     );
+
     setSelectedCollege(null);
 
     try {
       const response = await axios.post(
         "http://localhost:3000/api/mycolleges/delete",
         {
-          email: email,
-          collegeId: collegeId,
-          collegeName: collegeName,
+          email,
+          collegeId,
+          collegeName,
         },
         {
           headers: { "Content-Type": "application/json" },
