@@ -48,7 +48,7 @@ export function RegisterUser() {
     <>
       <WelcomeMessage />
       <div className="form-container">
-        <div className="register-box">
+        <div className="form-box">
           <h2>Register User</h2>
           {/* Registration form will go here */}
           <p>Please fill in the details to register</p>

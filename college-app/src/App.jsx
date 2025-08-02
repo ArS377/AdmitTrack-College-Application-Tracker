@@ -8,6 +8,8 @@ import { MyColleges } from "./pages/mycolleges.jsx";
 import { Profile } from "./pages/profile.jsx";
 import NavBar from "./components/NavBar.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
+import UpdatePassword from "./pages/UpdatePassword.jsx";
 
 function App() {
   return (
@@ -17,7 +19,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/register" element={<RegisterUser />} />
-          <Route path="/reset-password" element={<RegisterUser />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/update-password" element={<UpdatePassword />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<Home />} />
             <Route path="/mycolleges" element={<MyColleges />} />

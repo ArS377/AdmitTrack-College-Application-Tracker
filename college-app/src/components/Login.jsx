@@ -60,7 +60,7 @@ const Login = () => {
 
   return (
     <div className="form-container">
-      <div className="login-box">
+      <div className="form-box">
         <h2>Login</h2>
         <p>Please enter your credentials to log in</p>
         <br />
@@ -86,7 +86,7 @@ const Login = () => {
         <br />
         <p>
           Don't have an account? <a href="/register">Register here</a>.<br />
-          Forgot your password? <a href="/reset-password">
+          Forgot your password? <a href="/forgot-password">
             Reset it here
           </a>.{" "}
         </p>
