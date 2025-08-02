@@ -1,9 +1,10 @@
 import Login from "../components/Login";
+import WelcomeMessage from "../components/WelcomeMessage";
 
 export function Landing() {
   return (
     <div>
-      <h1>Welcome to the College App</h1>
+      <WelcomeMessage />
       <Login />
     </div>
   );
