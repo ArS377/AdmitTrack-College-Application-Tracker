@@ -5,7 +5,10 @@ const CollegeDetail = ({ selectedCollege, addCollegeToList }) => {
     selectedCollege && (
       <div className="selected-college-details">
         <h3>{selectedCollege.collegeName} Information </h3>
-        <p>Homepage: {selectedCollege.homepage}</p>
+        <p>
+          Homepage:
+          <a href={selectedCollege.homepage}>{selectedCollege.homepage}</a>
+        </p>
         <p>Acceptance Rate: {selectedCollege.acceptanceRate}</p>
         <table className="standardized-testing-table">
           <thead>
