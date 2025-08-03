@@ -1,5 +1,6 @@
 import FullCollegeDetail from "../components/FullCollegeDetail";
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 
 export function CollegeInfo() {
   const [appStatus, setAppStatus] = useState(true);
@@ -9,6 +10,7 @@ export function CollegeInfo() {
   const handleCollegeData = () => {
     setAppStatus(false);
   };
+  const college = useLocation().state?.college || {};
   return (
     <>
       <div>

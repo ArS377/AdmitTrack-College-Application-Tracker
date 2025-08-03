@@ -9,8 +9,8 @@ const ExpandedCollegeList = ({ collegeList, deleteCollegeFromList }) => {
   const goToColleges = () => {
     navigate("/mycolleges");
   };
-  const goToCollegeInfo = () => {
-    navigate("/collegeinfo");
+  const goToCollegeInfo = ({ college }) => {
+    navigate("/collegeinfo", { state: college });
   };
   return (
     <>
@@ -24,14 +24,17 @@ const ExpandedCollegeList = ({ collegeList, deleteCollegeFromList }) => {
               <th scope="col">College Name</th>
               <th scope="col">Due Date</th>
               <th scope="col">Progress</th>
-              <th scope="col">Status</th>
+              <th scope="col">Classification</th>
               <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
             {collegeList.map((college) => (
               <tr key={college._id}>
-                <td onClick={goToCollegeInfo} style={{ cursor: "pointer" }}>
+                <td
+                  onClick={({ college }) => goToCollegeInfo({ college })}
+                  style={{ cursor: "pointer" }}
+                >
                   {college.collegeName}
                 </td>
                 <td>No Due Date</td>
