@@ -9,38 +9,57 @@ const ExpandedCollegeList = ({ collegeList, deleteCollegeFromList }) => {
   const goToColleges = () => {
     navigate("/mycolleges");
   };
+  const goToCollegeInfo = () => {
+    navigate("/collegeinfo");
+  };
   return (
     <>
       <h2>My College List</h2>
-      <button onClick={goToColleges}>Add More Colleges</button>
-      <div className>
-        {collegeList.length > 0 ? (
-          collegeList.map((college) => (
-            <li
-              className="p-2 bg-light border d-flex align-items-center mb-2 flex-container"
-              key={college._id}
-            >
-              <span>{college.collegeName}</span>
-              <span>No Due Date</span>
-              <span>0% Completed</span>
+      <br></br>
 
-              <Dropdown2 />
-
-              <button
-                className="btn btn-outline-danger btn-sm ms-auto"
-                onClick={() => {
-                  console.log("Deleting college:", college);
-                  deleteCollegeFromList(college._id, college.collegeName);
-                }}
-              >
-                <FontAwesomeIcon icon={faTrashCan} />
-              </button>
-            </li>
-          ))
-        ) : (
-          <p>Search for colleges to add them to your list.</p>
-        )}
-      </div>
+      {collegeList.length > 0 ? (
+        <table className="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">College Name</th>
+              <th scope="col">Due Date</th>
+              <th scope="col">Progress</th>
+              <th scope="col">Status</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {collegeList.map((college) => (
+              <tr key={college._id}>
+                <td onClick={goToCollegeInfo} style={{ cursor: "pointer" }}>
+                  {college.collegeName}
+                </td>
+                <td>No Due Date</td>
+                <td>0% Completed</td>
+                <td>
+                  <Dropdown2 />
+                </td>
+                <td>
+                  <button
+                    className="btn btn-outline-danger btn-sm"
+                    onClick={() => {
+                      console.log("Deleting college:", college);
+                      deleteCollegeFromList(college._id, college.collegeName);
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faTrashCan} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p className="mt-3">Search for colleges to add them to your list.</p>
+      )}
+      <button className="btn btn-primary" onClick={goToColleges}>
+        Add More Colleges
+      </button>
     </>
   );
 };

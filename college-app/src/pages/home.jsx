@@ -61,7 +61,6 @@ export function Home() {
               deleteCollegeFromList(collegeId, collegeName)
             }
           />
-          <ToDo />
         </div>
       </div>
     </>
