@@ -2,25 +2,24 @@
 import { useEffect, useLayoutEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import axios from "axios";
-import { getUser } from "../User.jsx"; // Adjust the import path as necessary
+import { setUser, getUser } from "../User.jsx"; // Adjust the import path as necessary
 
 export default function ProtectedRoute() {
-  let accessToken = getUser().accessToken;
-  console.log("Access Token in ProtectedRoute:", accessToken);
   useEffect(() => {
     // This effect can be used to check authentication status or perform any side effects
     // For example, you could check if the user is authenticated and update the auth state accordingly
-    const authInterceptor = axios.interceptors.request.use((config) => {
+    axios.interceptors.request.use((config) => {
+      const accessToken = getUser().accessToken;
       config.headers.Authorization =
-        !config._retry && getUser().accessToken
-          ? `Bearer ${getUser().accessToken}`
+        !config._retry && accessToken
+          ? `Bearer ${accessToken}`
           : config.headers.Authorization;
       return config;
     });
   }, []);
 
   useLayoutEffect(() => {
-    const refreshAccessToken = axios.interceptors.response.use(
+    axios.interceptors.response.use(
       (response) => response,
       async (error) => {
         const originalRequest = error.config;
@@ -36,8 +35,7 @@ export default function ProtectedRoute() {
                 {},
                 { headers: { "Content-Type": "application/json" } }
               );
-              accessToken = response.data.access_token;
-              getUser().accessToken = accessToken; // Update the access token in UserStore
+              setUser({ accessToken: response.data.access_token }); // Update the access token in UserStore
               originalRequest.headers.Authorization = `Bearer ${accessToken}`;
               return axios(originalRequest);
             } catch (refreshError) {

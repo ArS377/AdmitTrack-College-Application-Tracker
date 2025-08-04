@@ -7,6 +7,7 @@ require("dotenv").config({ path: "./config.env" });
 const authenticateToken = require("../middleware/authenticationToken");
 
 router.get("/mycolleges", authenticateToken, async (req, res) => {
+  console.log("Fetching user colleges for email:", req.user.email);
   try {
     const { email } = req.user;
     if (!email) {

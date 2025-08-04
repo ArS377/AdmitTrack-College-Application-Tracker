@@ -1,5 +1,5 @@
 import "./FormContainer.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { setUser } from "../User.jsx";
 import axios from "axios";
@@ -7,11 +7,12 @@ import axios from "axios";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const skipLogin = import.meta.env.VITE_AUTO_FILL_TEST_USER === "true";
 
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+    e && e.preventDefault();
     const userData = {
       email: email,
       password: password,
@@ -24,25 +25,9 @@ const Login = () => {
         { headers: { "Content-Type": "application/json" } }
       );
 
-      /*
-      const response = await fetch("http://localhost:3000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData),
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Login successful:", data);
-        navigate("/home");
-      } else {
-        const errorData = await response.json();
-        console.error("Login failed:", errorData);
-        alert(errorData.message || "Login failed");
-      }
-      */
       if (response.status === 200) {
         console.log("Login successful:", response.data);
+        console.log("email:", email);
         setUser({
           accessToken: response.data.access_token,
           email: email,
@@ -58,6 +43,13 @@ const Login = () => {
     }
   };
 
+  useEffect(() => {
+    if (skipLogin) {
+      setEmail("soma.ellappan@gmail.com");
+      setPassword("password123");
+    }
+  }, []);
+
   return (
     <div className="form-container">
       <div className="form-box">
@@ -67,6 +59,7 @@ const Login = () => {
         <label>Email:</label>
         <input
           type="text"
+          value={email}
           placeholder="Enter your email"
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -74,6 +67,7 @@ const Login = () => {
         <label>Password:</label>
         <input
           type="password"
+          value={password}
           placeholder="Enter your password"
           onChange={(e) => setPassword(e.target.value)}
         />

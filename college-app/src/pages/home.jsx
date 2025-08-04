@@ -21,7 +21,7 @@ export function Home() {
       }
     };
     fetchMyColleges();
-  }, []);
+  }, [getUser()]);
 
   const deleteCollegeFromList = async (collegeId, collegeName) => {
     const email = getUser().email;
