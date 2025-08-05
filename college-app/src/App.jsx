@@ -11,6 +11,7 @@ import NavBar from "./components/NavBar.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import UpdatePassword from "./pages/UpdatePassword.jsx";
+import "./utils/axiosConfig.js"; // Import axios configuration
 
 function App() {
   return (

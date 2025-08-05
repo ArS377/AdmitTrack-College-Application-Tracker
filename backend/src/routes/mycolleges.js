@@ -17,7 +17,7 @@ router.get("/mycolleges", authenticateToken, async (req, res) => {
     const collection = db.collection("userdata");
     const user = await collection.find({ email: email }).toArray();
     if (user.length > 0) {
-      console.log("User found:", user[0]);
+      console.log("User found", user[0]);
       res.status(200).json(user[0].myColleges); // Return the first user found
     } else {
       res.status(404).json({ error: "User not found." });
@@ -30,7 +30,8 @@ router.get("/mycolleges", authenticateToken, async (req, res) => {
 
 router.post("/mycolleges", async (req, res) => {
   console.log(req.body);
-  const { email, collegeId, collegeName } = req.body;
+  const { email } = req.user; // Get email from authenticated user
+  const { collegeId, collegeName } = req.body;
 
   const db = req.db; // Get the database instance from the request
   const collection = db.collection("userdata");
@@ -50,7 +51,8 @@ router.post("/mycolleges", async (req, res) => {
 
 router.post("/mycolleges/delete", async (req, res) => {
   console.log(req.body);
-  const { email, collegeId, collegeName } = req.body;
+  const { email } = req.user; // Get email from authenticated user
+  const { collegeId, collegeName } = req.body;
 
   const db = req.db; // Get the database instance from the request
   const collection = db.collection("userdata");

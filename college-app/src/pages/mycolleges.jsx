@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./mycolleges.css";
 import SearchBar from "../components/SearchBar";
 import SearchResultsList from "../components/SearchResultsList";
 import CollegeDetail from "../components/CollegeDetail";
 import CollegeList from "../components/CollegeList";
+import { fetchMyColleges } from "../utils/collegeUtils"; // Assuming you have a utility function to fetch colleges
 import axios from "axios";
-import { getUser } from "../User";
 
 export function MyColleges() {
   const [collegeList, setCollegeList] = useState([]);
@@ -13,19 +13,11 @@ export function MyColleges() {
   const [selectedCollege, setSelectedCollege] = useState(null);
 
   useEffect(() => {
-    const fetchMyColleges = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3000/api/mycolleges`
-        );
-        const colleges = response ? response.data : [];
-        console.log(colleges);
-        setCollegeList(colleges); // Update state with fetched data
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+    const fmc = async () => {
+      const colleges = await fetchMyColleges();
+      setCollegeList(colleges);
     };
-    fetchMyColleges();
+    fmc();
   }, []);
 
   const onSelectCollege = (college) => {
@@ -35,7 +27,6 @@ export function MyColleges() {
   };
 
   const addCollegeToList = async () => {
-    const email = getUser().email;
     if (selectedCollege) {
       const isAlreadyAdded = collegeList.some(
         (college) => college._id === selectedCollege._id
@@ -57,12 +48,10 @@ export function MyColleges() {
       */
 
       try {
-        console.log("email: ", email);
         const response = await axios({
           method: "post",
           url: "http://localhost:3000/api/mycolleges",
           data: {
-            email: email,
             collegeId: selectedCollege._id,
             collegeName: selectedCollege.collegeName,
           },
@@ -82,8 +71,6 @@ export function MyColleges() {
   };
 
   const deleteCollegeFromList = async (collegeId, collegeName) => {
-    const email = getUser().email;
-
     setCollegeList((prevList) =>
       prevList.filter(
         (college) =>

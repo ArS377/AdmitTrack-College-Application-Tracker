@@ -1,7 +1,7 @@
 import "./FormContainer.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { setUser } from "../User.jsx";
+import { getAccessToken, setAccessToken } from "../User.jsx";
 import axios from "axios";
 
 const Login = () => {
@@ -28,10 +28,7 @@ const Login = () => {
       if (response.status === 200) {
         console.log("Login successful:", response.data);
         console.log("email:", email);
-        setUser({
-          accessToken: response.data.access_token,
-          email: email,
-        });
+        setAccessToken(response.data.access_token); // Update the access token in UserStore
         navigate("/home");
       } else {
         console.error("Login failed:", response.data);

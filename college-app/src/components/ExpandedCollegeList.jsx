@@ -1,11 +1,11 @@
 import Dropdown2 from "./Dropdown2";
-import { getUser } from "../User";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
 const ExpandedCollegeList = ({ collegeList, deleteCollegeFromList }) => {
   const navigate = useNavigate();
+  console.log("ExpandedCollegeList collegeList:", collegeList.length);
   const goToColleges = () => {
     navigate("/mycolleges");
   };

@@ -1,31 +1,19 @@
-import ToDo from "../components/ToDoList.jsx";
-import ExpandedCollegeList from "../components/ExpandedCollegeList.jsx";
-import React, { useState, useEffect } from "react";
-import { getUser } from "../User";
+import ExpandedCollegeList from "../components/ExpandedCollegeList";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import { fetchMyColleges } from "../utils/collegeUtils"; // Assuming you have a utility function to fetch colleges
 
 export function Home() {
   const [collegeList, setCollegeList] = useState([]);
-
   useEffect(() => {
-    const fetchMyColleges = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3000/api/mycolleges`
-        );
-        const colleges = response ? response.data : [];
-        console.log(colleges);
-        setCollegeList(colleges); // Update state with fetched data
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+    const fmc = async () => {
+      const colleges = await fetchMyColleges();
+      setCollegeList(colleges);
     };
-    fetchMyColleges();
-  }, [getUser()]);
+    fmc();
+  }, []);
 
   const deleteCollegeFromList = async (collegeId, collegeName) => {
-    const email = getUser().email;
-
     setCollegeList((prevList) =>
       prevList.filter(
         (college) =>
@@ -37,7 +25,6 @@ export function Home() {
       const response = await axios.post(
         "http://localhost:3000/api/mycolleges/delete",
         {
-          email,
           collegeId,
           collegeName,
         },

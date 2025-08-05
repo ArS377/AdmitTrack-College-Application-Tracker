@@ -2,36 +2,18 @@ import { useNavigate } from "react-router-dom";
 import { googleLogout } from "@react-oauth/google";
 import axios from "axios";
 import "./NavBar.css";
-import { getUser } from "../User.jsx"; // Adjust the import path as necessary
+import { setAccessToken } from "../User.jsx"; // Adjust the import path as necessary
 
 function NavBar() {
   const navigate = useNavigate();
   const handleSignOut = () => {
-    /*
-    if (window.gapi && window.gapi.auth2) {
-      var auth2 = window.gapi.auth2.getAuthInstance();
-      auth2
-        .signOut()
-        .then(function () {
-          console.log("User signed out.");
-        })
-        .catch((error) => {
-          console.error("Error signing out:", error);
-        });
-    } else {
-      console.warn(
-        "Google API client library (gapi) not loaded or initialized. Cannot sign out."
-      );
-    }
-    */
-    //googleLogout();
     axios.post(
       "http://localhost:3000/api/auth/logout",
       {},
       { headers: { "Content-Type": "application/json" } }
     );
-    getUser().accessToken = undefined; // Clear the access token
-
+    setAccessToken(undefined); // Clear the access token
+    console.log("User signed out.");
     navigate("/");
   };
   const goToHome = () => {

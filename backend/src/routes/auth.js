@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 require("dotenv").config({ path: "./config.env" });
 
 // get access token from refresh token
-router.get("/auth/accesstoken", (req, res) => {
+router.post("/auth/accesstoken", (req, res) => {
   const refreshToken = req.cookies && req.cookies.refresh_token;
   if (!refreshToken) {
     console.error("request.cookies: ", req.cookies);
@@ -13,7 +13,7 @@ router.get("/auth/accesstoken", (req, res) => {
   }
 
   //TODO remove console logs in production
-  console.log("Received refresh token:", refreshToken);
+  console.log("Rrefresh token:", refreshToken);
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
     if (err) {
       console.error("Refresh token verification failed:", err.message);
@@ -24,8 +24,23 @@ router.get("/auth/accesstoken", (req, res) => {
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
     );
-    console.log("New access token generated:", access_token);
+    console.log("New Access token generated:", access_token);
     res.json({ access_token });
+  });
+});
+
+// validate access token
+router.post("/auth/validate", (req, res) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1]; // Bearer <token>
+  if (!token) return res.sendStatus(401); // Unauthorized
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    if (err) {
+      console.error("Access token verification failed:", err.message);
+      return res.sendStatus(403); // Forbidden
+    }
+    console.log("Access token is valid for user:", user.email);
+    res.status(200).json({ message: "Access token is valid" });
   });
 });
 
@@ -34,6 +49,7 @@ router.post("/auth/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    console.log("post /auth/login called");
     const db = req.db; // Get the database instance from the request
     const collection = db.collection("logininfo");
     const user = await collection.findOne({ email: email });
@@ -65,6 +81,7 @@ router.post("/auth/login", async (req, res) => {
         // TODO remove console logs in production
         console.log("Access token generated:", access_token);
         console.log("Refresh token generated:", refresh_token);
+        console.log("Login successful. Setting cookies: ", res.cookie);
 
         res
           .status(200)

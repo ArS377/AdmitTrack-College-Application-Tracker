@@ -14,6 +14,10 @@ export function Profile() {
       try {
         let profileData = {};
         const response = await axios.get(`http://localhost:3000/api/users`);
+        if (response.status !== 200) {
+          throw new Error("Failed to fetch profile data");
+        }
+        console.log("Profile data fetched successfully:");
         const user = response.data;
         profileData.name = user.fullName;
         profileData.email = user.email;
