@@ -28,7 +28,7 @@ router.get("/mycolleges", authenticateToken, async (req, res) => {
   }
 });
 
-router.post("/mycolleges", async (req, res) => {
+router.post("/mycolleges", authenticateToken, async (req, res) => {
   console.log(req.body);
   const { email } = req.user; // Get email from authenticated user
   const { collegeId, collegeName } = req.body;
@@ -49,7 +49,7 @@ router.post("/mycolleges", async (req, res) => {
   }
 });
 
-router.post("/mycolleges/delete", async (req, res) => {
+router.post("/mycolleges/delete", authenticateToken, async (req, res) => {
   console.log(req.body);
   const { email } = req.user; // Get email from authenticated user
   const { collegeId, collegeName } = req.body;
@@ -57,11 +57,11 @@ router.post("/mycolleges/delete", async (req, res) => {
   const db = req.db; // Get the database instance from the request
   const collection = db.collection("userdata");
   const existingUser = await collection.findOne({ email: email });
-  console.log(existingUser);
+  console.log("User found. Email:", email);
   if (!existingUser) {
     res.status(404).json({ message: "User not found" });
   } else {
-    console.log(collegeId);
+    console.log("deleting college: ", collegeId);
     await collection.findOneAndUpdate(
       { email: email }, //filter by email
       { $pull: { myColleges: { collegeId, collegeName } } }

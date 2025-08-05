@@ -81,10 +81,10 @@ export function MyColleges() {
     setSelectedCollege(null);
 
     try {
+      console.log("Deleting college:", collegeId, collegeName);
       const response = await axios.post(
         "http://localhost:3000/api/mycolleges/delete",
         {
-          email,
           collegeId,
           collegeName,
         },
