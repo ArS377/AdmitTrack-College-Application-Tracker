@@ -1,5 +1,7 @@
 # Sensitive information
-.env
+*.env
+*.env.*
+*.local
 
 # Node.js specific
 node_modules/
