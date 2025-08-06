@@ -13,20 +13,28 @@ export function Profile() {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        let profileData = {};
+        let profileData = {
+          name: "",
+          email: "",
+          firstMajor: "",
+          secondMajor: "",
+          satEnglish: "",
+          satMath: "",
+          act: "",
+        };
         const response = await axios.get(`${apiUrl}/users`);
         if (response.status !== 200) {
           throw new Error("Failed to fetch profile data");
         }
         console.log("Profile data fetched successfully:");
         const user = response.data;
-        profileData.name = user.fullName;
-        profileData.email = user.email;
-        profileData.firstMajor = user.firstMajor || "";
-        profileData.secondMajor = user.secondMajor || "";
-        profileData.satEnglish = user.satEnglish || "";
-        profileData.satMath = user.satMath || "";
-        profileData.act = user.act || "";
+        profileData.name = user.fullName ?? "";
+        profileData.email = user.email ?? "";
+        profileData.firstMajor = user.firstMajor ?? "";
+        profileData.secondMajor = user.secondMajor ?? "";
+        profileData.satEnglish = user.satEnglish ?? "";
+        profileData.satMath = user.satMath ?? "";
+        profileData.act = user.act ?? "";
         console.log(profileData);
         setProfileData(profileData); // Update state with fetched data
       } catch (error) {
@@ -85,7 +93,7 @@ export function Profile() {
           <div className="custom-field one">
             <input
               type="text"
-              value={profileData.firstMajor}
+              value={profileData.firstMajor ?? ""}
               onChange={(e) =>
                 setProfileData({ ...profileData, firstMajor: e.target.value })
               }
@@ -97,7 +105,7 @@ export function Profile() {
           <div className="custom-field one">
             <input
               type="text"
-              value={profileData.secondMajor}
+              value={profileData.secondMajor ?? ""}
               onChange={(e) =>
                 setProfileData({ ...profileData, secondMajor: e.target.value })
               }
@@ -111,7 +119,7 @@ export function Profile() {
           <div className="custom-field one">
             <input
               type="text"
-              value={profileData.satEnglish}
+              value={profileData.satEnglish ?? ""}
               onChange={(e) =>
                 setProfileData({ ...profileData, satEnglish: e.target.value })
               }
@@ -123,7 +131,7 @@ export function Profile() {
           <div className="custom-field one">
             <input
               type="text"
-              value={profileData.satMath}
+              value={profileData.satMath ?? ""}
               onChange={(e) =>
                 setProfileData({ ...profileData, satMath: e.target.value })
               }
@@ -137,7 +145,7 @@ export function Profile() {
           <div className="custom-field one">
             <input
               type="text"
-              value={profileData.act}
+              value={profileData.act ?? ""}
               onChange={(e) =>
                 setProfileData({ ...profileData, act: e.target.value })
               }

@@ -22,7 +22,7 @@ axios.interceptors.response.use(
           {},
           { headers: { "Content-Type": "application/json" } }
         );
-        if (response.status === 200) {
+        if (response && response.status === 200) {
           console.log("Access token refreshed successfully:", response.data);
           setAccessToken(response.data.access_token); // Update the access token in UserStore
           originalRequest.headers.Authorization = `Bearer ${response.data.access_token}`;
