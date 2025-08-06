@@ -11,6 +11,7 @@ export function MyColleges() {
   const [collegeList, setCollegeList] = useState([]);
   const [results, setResults] = useState([]);
   const [selectedCollege, setSelectedCollege] = useState(null);
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fmc = async () => {
@@ -39,25 +40,17 @@ export function MyColleges() {
       setCollegeList((prevList) => [...prevList, selectedCollege]);
       setSelectedCollege(null); //clears info box
 
-      /*
-      await fetch("http://localhost:3000/api/mycolleges", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, collegeId: selectedCollege._id }),
-      });
-      */
-
       try {
         const response = await axios({
           method: "post",
-          url: "http://localhost:3000/api/mycolleges",
+          url: `${apiUrl}/mycolleges`,
           data: {
             collegeId: selectedCollege.unitId,
             collegeName: selectedCollege.collegeName,
           },
         });
         /*
-        axios.post("http://localhost:3000/api/mycolleges", {
+        axios.post(`${apiUrl}/mycolleges`, {
           email: email,
           collegeId: selectedCollege._id,
         });*/
@@ -83,7 +76,7 @@ export function MyColleges() {
     try {
       console.log("Deleting college:", collegeId, collegeName);
       const response = await axios.post(
-        "http://localhost:3000/api/mycolleges/delete",
+        `${apiUrl}/mycolleges/delete`,
         {
           collegeId,
           collegeName,

@@ -15,4 +15,3 @@ logs/
 
 # Temporary files
 tmp/
-college-app/.env.development

@@ -1,13 +1,14 @@
 import "./FormContainer.css";
-import { useState, useEffect, useLayoutEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAccessToken, setAccessToken } from "../User.jsx";
+import { setAccessToken } from "../User.jsx";
 import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const skipLogin = import.meta.env.VITE_AUTO_FILL_TEST_USER === "true";
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   const navigate = useNavigate();
 
@@ -19,11 +20,9 @@ const Login = () => {
     };
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/auth/login",
-        userData,
-        { headers: { "Content-Type": "application/json" } }
-      );
+      const response = await axios.post(`${apiUrl}/auth/login`, userData, {
+        headers: { "Content-Type": "application/json" },
+      });
 
       if (response.status === 200) {
         console.log("Login successful:", response.data);

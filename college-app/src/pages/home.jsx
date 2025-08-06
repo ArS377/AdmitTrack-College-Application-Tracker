@@ -5,6 +5,8 @@ import { fetchMyColleges } from "../utils/collegeUtils"; // Assuming you have a 
 
 export function Home() {
   const [collegeList, setCollegeList] = useState([]);
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const fmc = async () => {
       const colleges = await fetchMyColleges();
@@ -23,7 +25,7 @@ export function Home() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/mycolleges/delete",
+        `${apiUrl}/mycolleges/delete`,
         {
           collegeId,
           collegeName,

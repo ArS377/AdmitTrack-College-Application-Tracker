@@ -4,23 +4,17 @@ import axios from "axios";
 
 const SearchBar = ({ setResults, setSelectedCollege }) => {
   const [input, setInput] = useState("");
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const fetchData = async (value) => {
     setResults([]);
     if (!value.trim()) {
       setResults([]);
       return;
     }
-    /*
-    const response = await fetch(
-      `http://localhost:3000/api/colleges?q=${encodeURIComponent(value)}`
-    );
-    const json = await response.json();
-    setResults(json);
-  };
-  */
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/colleges?q=${encodeURIComponent(value)}`
+        `${apiUrl}/colleges?q=${encodeURIComponent(value)}`
       );
       setResults(response.data);
       //setSelectedCollege(null);

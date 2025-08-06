@@ -8,12 +8,13 @@ export function Profile() {
   const [alertState, setAlertState] = useState(false);
   const [profileData, setProfileData] = useState({});
   const [status, setStatus] = useState({ color: "", confirmationMessage: "" });
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
         let profileData = {};
-        const response = await axios.get(`http://localhost:3000/api/users`);
+        const response = await axios.get(`${apiUrl}/users`);
         if (response.status !== 200) {
           throw new Error("Failed to fetch profile data");
         }
@@ -39,11 +40,9 @@ export function Profile() {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/profile",
-        profileData,
-        { headers: { "Content-Type": "application/json" } }
-      );
+      const response = await axios.post(`${apiUrl}/profile`, profileData, {
+        headers: { "Content-Type": "application/json" },
+      });
       setAlertState(true);
       if (response.status === 200) {
         console.log("Profile data updated successfully:", response.data);

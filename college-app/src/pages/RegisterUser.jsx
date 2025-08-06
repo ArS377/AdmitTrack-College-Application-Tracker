@@ -8,6 +8,7 @@ export function RegisterUser() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   const navigate = useNavigate();
 
@@ -20,11 +21,9 @@ export function RegisterUser() {
     };
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/users",
-        userData,
-        { headers: { "Content-Type": "application/json" } }
-      );
+      const response = await axios.post(`${apiUrl}/users`, userData, {
+        headers: { "Content-Type": "application/json" },
+      });
       if (response.status === 201) {
         console.log("Registration successful:", response.data);
       } else {
@@ -34,13 +33,6 @@ export function RegisterUser() {
     } catch (error) {
       console.error("Error during registration:", error);
     }
-    /*
-    await fetch("http://localhost:3000/api/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(userData),
-    });
-    */
     navigate("/");
   };
 

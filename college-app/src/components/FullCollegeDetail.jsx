@@ -3,16 +3,14 @@ import React, { useState, useEffect } from "react";
 
 const FullCollegeDetail = ({ selectedCollege }) => {
   const [college, setCollege] = useState(null);
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchCollegeById = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/colleges/id",
-          {
-            params: { id: selectedCollege.collegeId },
-          }
-        );
+        const response = await axios.get(`${apiUrl}/colleges/id`, {
+          params: { id: selectedCollege.collegeId },
+        });
         console.log(response.data);
         setCollege(response.data);
       } catch (error) {

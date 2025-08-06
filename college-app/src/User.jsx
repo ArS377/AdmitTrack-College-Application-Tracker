@@ -14,9 +14,10 @@ export function getUser() {
 }
 
 const isAccessTokenValid = async (token) => {
+  const apiUrl = import.meta.env.VITE_API_URL;
   try {
     const response = await axios.post(
-      "http://localhost:3000/api/auth/validate",
+      `${apiUrl}/auth/validate`,
       {},
       {
         headers: {

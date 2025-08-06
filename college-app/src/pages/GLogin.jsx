@@ -5,6 +5,7 @@ import { setUser } from "../User";
 
 export function GLogin() {
   const navigate = useNavigate();
+  const apiUrl = import.meta.env.VITE_API_URL;
   return (
     <>
       <GoogleLogin
@@ -15,7 +16,7 @@ export function GLogin() {
 
           setUser({ name, email });
 
-          await fetch("http://localhost:3000/api/users", {
+          await fetch(`${apiUrl}/users`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name, email }),
