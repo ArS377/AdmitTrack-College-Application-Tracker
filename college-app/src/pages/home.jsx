@@ -14,10 +14,10 @@ export function Home() {
   }, []);
 
   const deleteCollegeFromList = async (collegeId, collegeName) => {
+    console.log("Deleting college2:", collegeId, collegeName);
     setCollegeList((prevList) =>
       prevList.filter(
-        (college) =>
-          String(college.collegeId || college._id) !== String(collegeId)
+        (college) => String(college.collegeId) !== String(collegeId)
       )
     );
 
@@ -44,9 +44,7 @@ export function Home() {
         <div>
           <ExpandedCollegeList
             collegeList={collegeList}
-            deleteCollegeFromList={(collegeId, collegeName) =>
-              deleteCollegeFromList(collegeId, collegeName)
-            }
+            deleteCollegeFromList={deleteCollegeFromList}
           />
         </div>
       </div>

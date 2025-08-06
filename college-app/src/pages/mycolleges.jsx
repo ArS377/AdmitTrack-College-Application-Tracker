@@ -119,9 +119,7 @@ export function MyColleges() {
         <div className="col num2">
           <CollegeList
             collegeList={collegeList}
-            deleteCollegeFromList={(collegeId, collegeName) =>
-              deleteCollegeFromList(collegeId, collegeName)
-            }
+            deleteCollegeFromList={deleteCollegeFromList}
           />
         </div>
       </div>

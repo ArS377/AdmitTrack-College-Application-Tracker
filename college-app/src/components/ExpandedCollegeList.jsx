@@ -47,7 +47,10 @@ const ExpandedCollegeList = ({ collegeList, deleteCollegeFromList }) => {
                     className="btn btn-outline-danger btn-sm"
                     onClick={() => {
                       console.log("Deleting college:", college);
-                      deleteCollegeFromList(college._id, college.collegeName);
+                      deleteCollegeFromList(
+                        college.collegeId,
+                        college.collegeName
+                      );
                     }}
                   >
                     <FontAwesomeIcon icon={faTrashCan} />
