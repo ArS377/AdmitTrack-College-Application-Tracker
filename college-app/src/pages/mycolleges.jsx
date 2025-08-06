@@ -29,7 +29,7 @@ export function MyColleges() {
   const addCollegeToList = async () => {
     if (selectedCollege) {
       const isAlreadyAdded = collegeList.some(
-        (college) => college._id === selectedCollege._id
+        (college) => college.unitId === selectedCollege.unitId
       );
 
       if (isAlreadyAdded) {
@@ -52,7 +52,7 @@ export function MyColleges() {
           method: "post",
           url: "http://localhost:3000/api/mycolleges",
           data: {
-            collegeId: selectedCollege._id,
+            collegeId: selectedCollege.unitId,
             collegeName: selectedCollege.collegeName,
           },
         });
@@ -72,10 +72,7 @@ export function MyColleges() {
 
   const deleteCollegeFromList = async (collegeId, collegeName) => {
     setCollegeList((prevList) =>
-      prevList.filter(
-        (college) =>
-          String(college.collegeId || college._id) !== String(collegeId)
-      )
+      prevList.filter((college) => String(college.unitId) !== String(collegeId))
     );
 
     setSelectedCollege(null);

@@ -62,6 +62,26 @@ app.get("/api/colleges", authenticateToken, async (req, res) => {
   }
 });
 
+app.get("/api/colleges/id", authenticateToken, async (req, res) => {
+  const collegeId = req.query.id;
+  if (!collegeId) {
+    return res.status(400).json({ error: "College ID is required." });
+  }
+  try {
+    const collection = db.collection("collegeinfo");
+    const result = await collection.findOne({ unitId: collegeId });
+
+    if (result) {
+      res.status(200).json(result);
+    } else {
+      res.status(404).json({ error: "College not found." });
+    }
+  } catch (e) {
+    console.error("Error fetching college by ID:", e);
+    res.status(500).json({ error: "Failed to fetch college by ID." });
+  }
+});
+
 /*
 const getEmailFromAccessToken = (accessToken) => {
   jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, user) => {

@@ -10,7 +10,8 @@ export function CollegeInfo() {
   const handleCollegeData = () => {
     setAppStatus(false);
   };
-  const college = useLocation().state?.college || {};
+  const college = useLocation().state || {};
+  console.log("College:", college);
   return (
     <>
       <div>

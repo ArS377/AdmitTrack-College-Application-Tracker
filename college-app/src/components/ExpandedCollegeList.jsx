@@ -9,7 +9,7 @@ const ExpandedCollegeList = ({ collegeList, deleteCollegeFromList }) => {
   const goToColleges = () => {
     navigate("/mycolleges");
   };
-  const goToCollegeInfo = ({ college }) => {
+  const goToCollegeInfo = (college) => {
     navigate("/collegeinfo", { state: college });
   };
   return (
@@ -32,7 +32,7 @@ const ExpandedCollegeList = ({ collegeList, deleteCollegeFromList }) => {
             {collegeList.map((college) => (
               <tr key={college._id}>
                 <td
-                  onClick={() => goToCollegeInfo({ college })}
+                  onClick={() => goToCollegeInfo(college)}
                   style={{ cursor: "pointer" }}
                 >
                   {college.collegeName}
