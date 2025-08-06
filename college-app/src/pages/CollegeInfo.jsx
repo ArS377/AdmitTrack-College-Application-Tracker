@@ -1,6 +1,7 @@
 import FullCollegeDetail from "../components/FullCollegeDetail";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
+import ApplicationStatus from "../components/ApplicationStatus";
 
 export function CollegeInfo() {
   const [appStatus, setAppStatus] = useState(true);
@@ -38,10 +39,7 @@ export function CollegeInfo() {
       </div>
       <div>
         {appStatus ? (
-          <div>
-            <h3>Application Status</h3>
-            <p>Your application is currently under review.</p>
-          </div>
+          <ApplicationStatus college={college} />
         ) : (
           <FullCollegeDetail selectedCollege={college} />
         )}
