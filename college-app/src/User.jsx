@@ -55,7 +55,7 @@ export const getAccessToken = () => {
       }
     } else {
       console.warn("No accessToken found in session storage.");
-      setAccessToken(undefined); // Clear if no token is found
+      // setAccessToken(undefined); // Clear if no token is found
     }
   }
   return user.accessToken;
