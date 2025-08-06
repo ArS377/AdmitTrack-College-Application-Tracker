@@ -71,8 +71,11 @@ export function MyColleges() {
   };
 
   const deleteCollegeFromList = async (collegeId, collegeName) => {
+    console.log("Deleting college2:", collegeId, collegeName);
     setCollegeList((prevList) =>
-      prevList.filter((college) => String(college.unitId) !== String(collegeId))
+      prevList.filter(
+        (college) => String(college.collegeId) !== String(collegeId)
+      )
     );
 
     setSelectedCollege(null);
