@@ -1,8 +1,10 @@
 import axios from "axios";
 export const fetchMyColleges = async () => {
   let colleges = [];
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   try {
-    const response = await axios.get(`http://localhost:3000/api/mycolleges`);
+    const response = await axios.get(`${apiUrl}/mycolleges`);
     if (response.status === 200) {
       colleges = response.data;
     } else {

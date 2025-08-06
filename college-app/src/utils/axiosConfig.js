@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getAccessToken, setAccessToken } from "../User.jsx"; // Adjust the import path as necessary
+const apiUrl = import.meta.env.VITE_API_URL;
 
 axios.interceptors.request.use((config) => {
   const accessToken = getAccessToken();
@@ -18,7 +19,7 @@ axios.interceptors.response.use(
       originalRequest._retry = true;
       try {
         const response = await axios.post(
-          "http://localhost:3000/api/auth/accesstoken",
+          `${apiUrl}/auth/accesstoken`,
           {},
           { headers: { "Content-Type": "application/json" } }
         );
