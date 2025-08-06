@@ -12,7 +12,7 @@ const CollegeList = ({ collegeList, deleteCollegeFromList }) => {
             collegeList.map((college) => (
               <li
                 className="p-2 bg-light border d-flex align-items-center mb-2 flex-container"
-                key={college._id}
+                key={college.collegeId}
               >
                 <span>{college.collegeName}</span>
 
