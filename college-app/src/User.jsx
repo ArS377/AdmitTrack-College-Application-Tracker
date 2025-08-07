@@ -25,11 +25,12 @@ const isAccessTokenValid = async (token) => {
         },
       }
     );
-    if (response.status !== 200) {
+    if (response && response.status === 200) {
+      return true;
+    } else {
       console.warn("Access token is invalid: ", response.statusText);
       return false;
     }
-    return true;
   } catch (error) {
     console.error("Access token validation failed:", error);
     return false;

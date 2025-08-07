@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-require("dotenv").config({ path: "./config.env" });
+require("dotenv").config();
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
@@ -20,4 +20,24 @@ function authenticateToken(req, res, next) {
   });
 }
 
-module.exports = authenticateToken;
+// Middleware to authenticate EmailToken
+function authenticateEmailToken(req, res, next) {
+  const { token } = req.body;
+  if (!token) {
+    console.error("Email token is required for verification.");
+    return res.status(400).json({ message: "Email token is required." });
+  }
+  jwt.verify(token, process.env.EMAIL_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      console.error("Email token verification failed:", err.message);
+      return res
+        .status(403)
+        .json({ message: "Invalid or expired email token." });
+    }
+    console.log("Email token is valid for email:", decoded.email);
+    req.email = decoded.email; // Attach email to request object
+    next(); // email token is valid, proceed to the next middleware
+  });
+}
+
+module.exports = { authenticateToken, authenticateEmailToken };

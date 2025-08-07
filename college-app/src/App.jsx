@@ -10,7 +10,7 @@ import { CollegeInfo } from "./pages/CollegeInfo.jsx";
 import NavBar from "./components/NavBar.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
-import UpdatePassword from "./pages/UpdatePassword.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
 import "./utils/axiosConfig.js"; // Import axios configuration
 
 function App() {
@@ -22,7 +22,7 @@ function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/register" element={<RegisterUser />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/update-password" element={<UpdatePassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<Home />} />
             <Route path="/mycolleges" element={<MyColleges />} />

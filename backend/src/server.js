@@ -2,9 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const { MongoClient } = require("mongodb");
 const cookieParser = require("cookie-parser");
-const authenticateToken = require("./middleware/authenticationToken");
+const authenticator = require("./middleware/authenticationToken");
 
-require("dotenv").config({ path: "./config.env" });
+require("dotenv").config();
 
 const app = express();
 const PORT = 3000;
@@ -21,9 +21,12 @@ app.use(cookieParser()); // Middleware to parse cookies
 const authRoutes = require("./routes/auth");
 const mycollegeRoutes = require("./routes/mycolleges");
 const userRoutes = require("./routes/users");
+const emailRoutes = require("./routes/email");
+
 app.use("/api", authRoutes);
 app.use("/api", mycollegeRoutes);
 app.use("/api", userRoutes);
+app.use("/api", emailRoutes); // Email routes
 
 const client = new MongoClient(process.env.ATLAS_URI);
 let db;
@@ -39,7 +42,7 @@ async function connectToDatabase() {
 }
 
 //search component serverside
-app.get("/api/colleges", authenticateToken, async (req, res) => {
+app.get("/api/colleges", authenticator.authenticateToken, async (req, res) => {
   //get searched query
   const searched = req.query.q;
   if (!searched) {
@@ -62,25 +65,29 @@ app.get("/api/colleges", authenticateToken, async (req, res) => {
   }
 });
 
-app.get("/api/colleges/id", authenticateToken, async (req, res) => {
-  const collegeId = req.query.id;
-  if (!collegeId) {
-    return res.status(400).json({ error: "College ID is required." });
-  }
-  try {
-    const collection = db.collection("collegeinfo");
-    const result = await collection.findOne({ unitId: collegeId });
-
-    if (result) {
-      res.status(200).json(result);
-    } else {
-      res.status(404).json({ error: "College not found." });
+app.get(
+  "/api/colleges/id",
+  authenticator.authenticateToken,
+  async (req, res) => {
+    const collegeId = req.query.id;
+    if (!collegeId) {
+      return res.status(400).json({ error: "College ID is required." });
     }
-  } catch (e) {
-    console.error("Error fetching college by ID:", e);
-    res.status(500).json({ error: "Failed to fetch college by ID." });
+    try {
+      const collection = db.collection("collegeinfo");
+      const result = await collection.findOne({ unitId: collegeId });
+
+      if (result) {
+        res.status(200).json(result);
+      } else {
+        res.status(404).json({ error: "College not found." });
+      }
+    } catch (e) {
+      console.error("Error fetching college by ID:", e);
+      res.status(500).json({ error: "Failed to fetch college by ID." });
+    }
   }
-});
+);
 
 /*
 const getEmailFromAccessToken = (accessToken) => {
@@ -95,7 +102,7 @@ const getEmailFromAccessToken = (accessToken) => {
 */
 
 //updating after submitting profile data
-app.post("/api/profile", authenticateToken, async (req, res) => {
+app.post("/api/profile", authenticator.authenticateToken, async (req, res) => {
   console.log("Updating profile data with body:", req.body);
   const { email } = req.user; // Get email from authenticated user
   const { firstMajor, secondMajor, satEnglish, satMath, act } = req.body;

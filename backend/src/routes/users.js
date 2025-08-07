@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 
-const authenticateToken = require("../middleware/authenticationToken");
+const authenticator = require("../middleware/authenticationToken");
 
 // registering a new user
 router.post("/users", async (req, res) => {
@@ -35,8 +35,41 @@ router.post("/users", async (req, res) => {
   }
 });
 
+// update password
+router.put(
+  "/users/password",
+  authenticator.authenticateEmailToken,
+  async (req, res) => {
+    const email = req.email; // Get email from authenticated user
+    const { newPassword } = req.body;
+    console.log("Updating password for email:", req.email, email);
+    if (!email) {
+      return res
+        .status(400)
+        .json({ message: "Email is required to update the password." });
+    }
+    try {
+      const db = req.db; // Get the database instance from the request
+      const collection = db.collection("logininfo");
+      const hashedPassword = await bcrypt.hash(newPassword, 10); // Hash the new password
+      const result = await collection.updateOne(
+        { email: email },
+        { $set: { hashedPassword: hashedPassword } }
+      );
+      if (result.modifiedCount === 1) {
+        res.status(200).json({ message: "Password updated successfully." });
+      } else {
+        res.status(404).json({ message: "User not found." });
+      }
+    } catch (e) {
+      console.error("Error updating password:", e);
+      res.status(500).json({ error: "Failed to update password." });
+    }
+  }
+);
+
 // Get logged-in user data
-router.get("/users", authenticateToken, async (req, res) => {
+router.get("/users", authenticator.authenticateToken, async (req, res) => {
   const { email } = req.user;
   if (!email) {
     return res.status(400).json({ error: "Email is required." });

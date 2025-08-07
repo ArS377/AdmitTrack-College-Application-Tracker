@@ -66,3 +66,29 @@ Content-Type: application/json
 {
     "email": "soma.ellappan@gmail.com"
 }
+
+###
+POST http://localhost:3000/api/email/reset-password
+Content-Type: application/json
+
+{
+    "to": "soma.ellappan@gmail.com"
+}
+
+###
+POST http://localhost:3000/api/email/verify-token
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNvbWEuZWxsYXBwYW5AZ21haWwuY29tIiwiaWF0IjoxNzU0NTMwMTQ0LCJleHAiOjE3NTQ1MzA3NDR9.G98YOYarQSqk6hVLrVJ9Pl33dsDHPNkgYi1ADdzM-fs"
+}
+
+###
+
+PUT http://localhost:3000/api/users/password
+Content-Type: application/json  
+
+{
+    "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNvbWEuZWxsYXBwYW5AZ21haWwuY29tIiwiaWF0IjoxNzU0NTM2MjU3LCJleHAiOjE3NTQ1MzY4NTd9.QStTgCW1EBwA9wfG_efpSQzST2EH8r2HBPihtOJMDUw",
+    "newPassword": "newpassword123"
+}

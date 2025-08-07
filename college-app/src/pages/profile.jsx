@@ -23,20 +23,21 @@ export function Profile() {
           act: "",
         };
         const response = await axios.get(`${apiUrl}/users`);
-        if (response.status !== 200) {
-          throw new Error("Failed to fetch profile data");
+        if (response && response.status === 200) {
+          console.log("Profile data fetched successfully:");
+          const user = response.data;
+          profileData.name = user.fullName ?? "";
+          profileData.email = user.email ?? "";
+          profileData.firstMajor = user.firstMajor ?? "";
+          profileData.secondMajor = user.secondMajor ?? "";
+          profileData.satEnglish = user.satEnglish ?? "";
+          profileData.satMath = user.satMath ?? "";
+          profileData.act = user.act ?? "";
+          console.log(profileData);
+          setProfileData(profileData); // Update state with fetched data
+        } else {
+          console.error("Failed to fetch profile data:");
         }
-        console.log("Profile data fetched successfully:");
-        const user = response.data;
-        profileData.name = user.fullName ?? "";
-        profileData.email = user.email ?? "";
-        profileData.firstMajor = user.firstMajor ?? "";
-        profileData.secondMajor = user.secondMajor ?? "";
-        profileData.satEnglish = user.satEnglish ?? "";
-        profileData.satMath = user.satMath ?? "";
-        profileData.act = user.act ?? "";
-        console.log(profileData);
-        setProfileData(profileData); // Update state with fetched data
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -52,7 +53,7 @@ export function Profile() {
         headers: { "Content-Type": "application/json" },
       });
       setAlertState(true);
-      if (response.status === 200) {
+      if (response && response.status === 200) {
         console.log("Profile data updated successfully:", response.data);
         setStatus((prevStatus) => ({
           ...prevStatus, // Keep existing properties (like confirmationMessage)

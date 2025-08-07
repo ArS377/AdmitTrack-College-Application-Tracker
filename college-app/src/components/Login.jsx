@@ -8,6 +8,9 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const skipLogin = import.meta.env.VITE_AUTO_FILL_TEST_USER === "true";
+  const testUser = import.meta.env.VITE_TEST_USER || "soma.ellappan@gmail.com";
+  const testPassword = import.meta.env.VITE_TEST_PASSWORD || "password123";
+
   const apiUrl = import.meta.env.VITE_API_URL;
 
   const navigate = useNavigate();
@@ -24,7 +27,7 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
       });
 
-      if (response.status === 200) {
+      if (response && response.status === 200) {
         console.log("Login successful:", response.data);
         console.log("email:", email);
         setAccessToken(response.data.access_token); // Update the access token in UserStore
@@ -41,8 +44,8 @@ const Login = () => {
 
   useEffect(() => {
     if (skipLogin) {
-      setEmail("soma.ellappan@gmail.com");
-      setPassword("password123");
+      setEmail(testUser);
+      setPassword(testPassword);
     }
   }, []);
 

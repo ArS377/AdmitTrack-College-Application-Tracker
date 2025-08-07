@@ -5,7 +5,7 @@ export const fetchMyColleges = async () => {
 
   try {
     const response = await axios.get(`${apiUrl}/mycolleges`);
-    if (response.status === 200) {
+    if (response && response.status === 200) {
       colleges = response.data;
     } else {
       console.error("Failed to fetch colleges:", response.statusText);

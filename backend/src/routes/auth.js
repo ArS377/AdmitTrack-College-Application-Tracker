@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-require("dotenv").config({ path: "./config.env" });
+require("dotenv").config();
 
 // get access token from refresh token
 router.post("/auth/accesstoken", (req, res) => {
