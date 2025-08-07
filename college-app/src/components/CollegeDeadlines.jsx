@@ -1,9 +1,13 @@
 const CollegeDeadlines = () => {
   return (
-    <div className="college-deadlines">
-      <h2>College Deadlines</h2>
-      <p>Early Decision: </p>
-      <p>Regular Decision: </p>
+    <div className="card" style={{ width: "20rem" }}>
+      <div class="card-header">College Deadlines </div>
+      <div className="card-body">
+        <p className="card-text">
+          Early Decision: <br />
+          Regular Decision:{" "}
+        </p>
+      </div>
     </div>
   );
 };

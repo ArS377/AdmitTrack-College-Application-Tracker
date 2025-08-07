@@ -2,6 +2,7 @@ import Dropdown from "./Dropdown";
 import CollegeDeadlines from "./CollegeDeadlines";
 import DatePicker from "react-datepicker";
 import { useState } from "react";
+import "react-datepicker/dist/react-datepicker.css";
 
 const ApplicationStatus = (college) => {
   const [startDate, setStartDate] = useState(new Date());
@@ -21,12 +22,17 @@ const ApplicationStatus = (college) => {
         option5={"Regular Decision"}
       />
       <br></br>
-      <label>Set Application Due Date</label>
+      <label className="form-label">Set Application Due Date</label>
+      <br></br>
       <DatePicker
         selected={startDate}
         onChange={(date) => setStartDate(date)}
+        dateFormat="MM/dd/yyyy"
+        placeholderText="Select a date"
+        className="form-control"
       />
-      ;<br></br>
+      <br></br>
+      <br></br>
       <label>College Classification</label>
       <Dropdown
         defaultOption={"Category"}
