@@ -1,4 +1,4 @@
-import Dropdown2 from "./Dropdown2";
+import Dropdown from "./Dropdown";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
@@ -40,7 +40,13 @@ const ExpandedCollegeList = ({ collegeList, deleteCollegeFromList }) => {
                 <td>No Due Date</td>
                 <td>0% Completed</td>
                 <td>
-                  <Dropdown2 />
+                  <Dropdown
+                    defaultOption={"Category"}
+                    option1={"Dream"}
+                    option2={"Reach"}
+                    option3={"Target"}
+                    option4={"Safety"}
+                  />
                 </td>
                 <td>
                   <button

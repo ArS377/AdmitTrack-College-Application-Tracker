@@ -1,4 +1,4 @@
-import Dropdown2 from "./Dropdown2";
+import Dropdown from "./Dropdown";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
@@ -16,7 +16,13 @@ const CollegeList = ({ collegeList, deleteCollegeFromList }) => {
               >
                 <span>{college.collegeName}</span>
 
-                <Dropdown2 />
+                <Dropdown
+                  defaultOption={"Category"}
+                  option1={"Dream"}
+                  option2={"Reach"}
+                  option3={"Target"}
+                  option4={"Safety"}
+                />
 
                 <button
                   className="btn btn-outline-danger btn-sm ms-auto"

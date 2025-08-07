@@ -1,4 +1,4 @@
-import Dropdown2 from "./Dropdown2";
+import Dropdown from "./Dropdown";
 import CollegeDeadlines from "./CollegeDeadlines";
 import DatePicker from "react-datepicker";
 import { useState } from "react";
@@ -12,7 +12,14 @@ const ApplicationStatus = (college) => {
       <CollegeDeadlines />
       <br></br>
       <label>Application Type:</label>
-      <Dropdown2 />
+      <Dropdown
+        defaultOption={"Application Type"}
+        option1={"Early Decision"}
+        option2={"Early Decision II"}
+        option3={"Early Action"}
+        option4={"Restrictive Early Action"}
+        option5={"Regular Decision"}
+      />
       <br></br>
       <label>Set Application Due Date</label>
       <DatePicker
@@ -21,27 +28,76 @@ const ApplicationStatus = (college) => {
       />
       ;<br></br>
       <label>College Classification</label>
-      <Dropdown2 />
+      <Dropdown
+        defaultOption={"Category"}
+        option1={"Dream"}
+        option2={"Reach"}
+        option3={"Target"}
+        option4={"Safety"}
+        option5={""}
+      />
       <br></br>
       <div>
         <h3>Progress Update</h3>
         <label>Essays / Supplementals</label>
-        <Dropdown2 />
+        <Dropdown
+          defaultOption={"Not Started"}
+          option1={"In Progress"}
+          option2={"Completed / Submitted"}
+          option3={""}
+          option4={""}
+          option5={""}
+        />
         <br></br>
         <label>Application Submission Status</label>
-        <Dropdown2 />
+        <Dropdown
+          defaultOption={"Not Submitted"}
+          option1={"Submitted"}
+          option2={""}
+          option3={""}
+          option4={""}
+          option5={""}
+        />
         <br></br>
         <label>Standardized Test Score Sent Status</label>
-        <Dropdown2 />
+        <Dropdown
+          defaultOption={"Not Sent"}
+          option1={"Sent"}
+          option2={""}
+          option3={""}
+          option4={""}
+          option5={""}
+        />
         <br></br>
         <label>AP / IB Score Send Status</label>
-        <Dropdown2 />
+        <Dropdown
+          defaultOption={"Not Sent"}
+          option1={"Sent"}
+          option2={""}
+          option3={""}
+          option4={""}
+          option5={""}
+        />
         <br></br>
         <label>Letters of Recommendation</label>
-        <Dropdown2 />
+        <Dropdown
+          defaultOption={"Not Sent"}
+          option1={"Sent"}
+          option2={""}
+          option3={""}
+          option4={""}
+          option5={""}
+        />
         <br></br>
         <label>Transcript Send Status</label>
-        <Dropdown2 />
+        <Dropdown
+          defaultOption={"Not Sent"}
+          option1={"Sent"}
+          option2={""}
+          option3={""}
+          option4={""}
+          option5={""}
+        />
       </div>
     </div>
   );

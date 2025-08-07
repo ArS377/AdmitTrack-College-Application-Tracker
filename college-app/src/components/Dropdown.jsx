@@ -1,75 +1,31 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import "./Dropdown.css";
 
-const Dropdown = () => {
-  const [dropdownToggled, setDropdownToggled] = useState(false);
-  const dropdownRef = useRef(null);
-  const [selectedOption, setSelectedOption] = useState(null);
+const Dropdown = ({
+  defaultOption,
+  option1,
+  option2,
+  option3,
+  option4,
+  option5,
+}) => {
+  const [selectedOption, setSelectedOption] = useState("");
 
-  useEffect(() => {
-    function handler(e) {
-      if (dropdownRef.current) {
-        if (!dropdownRef.current.contains(e.target)) {
-          setDropdownToggled(false);
-        }
-      }
-    }
-    document.addEventListener("click", handler);
-
-    return () => {
-      document.removeEventListener("click", handler);
-    };
-  });
-
-  const dropdownOptions = [
-    {
-      id: 1,
-      label: "Dream",
-    },
-    {
-      id: 2,
-      label: "Reach",
-    },
-    {
-      id: 3,
-      label: "Target",
-    },
-    {
-      id: 4,
-      label: "Safety",
-    },
-  ];
   return (
-    <div className="dropdown" ref={dropdownRef}>
-      <button
-        className="toggle"
-        onClick={() => {
-          setDropdownToggled(!dropdownToggled);
-        }}
+    <div className="my-class">
+      <select
+        className="form-select ms-auto"
+        aria-label="Default select example"
+        value={selectedOption}
+        onChange={(e) => setSelectedOption(e.target.value)}
       >
-        <span>{selectedOption ? selectedOption.label : "Select Category"}</span>
-        <span>{dropdownToggled ? "∧" : "∨"}</span>
-      </button>
-      <div className={`options ${dropdownToggled ? "visible" : ""}`}>
-        {dropdownOptions.map((option, index) => {
-          return (
-            <button
-              key={option.id}
-              className={`${
-                selectedOption && selectedOption.id === option.id
-                  ? "selected"
-                  : ""
-              }`}
-              onClick={() => {
-                setSelectedOption(option);
-                setDropdownToggled(false);
-              }}
-            >
-              {option.label}
-            </button>
-          );
-        })}
-      </div>
+        <option value="">{defaultOption}</option>
+        {option1 && <option value="1">{option1}</option>}
+        {option2 && <option value="2">{option2}</option>}
+        {option3 && <option value="3">{option3}</option>}
+        {option4 && <option value="4">{option4}</option>}
+        {option5 && <option value="5">{option5}</option>}
+      </select>
     </div>
   );
 };
