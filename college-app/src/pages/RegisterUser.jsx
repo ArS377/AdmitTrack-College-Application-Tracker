@@ -8,6 +8,7 @@ export function RegisterUser() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const apiUrl = import.meta.env.VITE_API_URL;
 
   const navigate = useNavigate();
@@ -21,19 +22,26 @@ export function RegisterUser() {
     };
 
     try {
+      if (password !== confirmPassword) {
+        alert("Passwords do not match. Please try again.");
+        return;
+      }
       const response = await axios.post(`${apiUrl}/users`, userData, {
         headers: { "Content-Type": "application/json" },
       });
       if (response && response.status === 201) {
         console.log("Registration successful:", response.data);
       } else {
-        console.error("Registration failed:", response.data);
-        alert(response.data.message || "Registration failed");
+        console.error(
+          "Registration failed: ",
+          response ? response.data : "No response from server"
+        );
+        alert((response && response.data.message) || "Registration failed");
       }
     } catch (error) {
       console.error("Error during registration:", error);
     }
-    navigate("/");
+    return navigate("/");
   };
 
   return (
@@ -49,6 +57,7 @@ export function RegisterUser() {
           <input
             type="fullName"
             placeholder="Enter your Full Name"
+            value={fullName}
             required
             onChange={(e) => setFullName(e.target.value)}
           />
@@ -57,6 +66,7 @@ export function RegisterUser() {
           <input
             type="email"
             placeholder="Enter your email"
+            value={email}
             required
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -65,8 +75,18 @@ export function RegisterUser() {
           <input
             type="password"
             placeholder="Enter your password"
+            value={password}
             required
             onChange={(e) => setPassword(e.target.value)}
+          />
+          <br />
+          <label>Confirm password:</label>
+          <input
+            type="password"
+            placeholder="Confirm your password"
+            value={confirmPassword}
+            required
+            onChange={(e) => setConfirmPassword(e.target.value)}
           />
           <br />
           <br />

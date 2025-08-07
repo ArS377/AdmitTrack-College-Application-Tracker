@@ -44,6 +44,7 @@ export default function ForgotPassword() {
           type="email"
           value={email}
           placeholder="Enter your email"
+          required
           onChange={(e) => {
             setEmail(e.target.value);
           }}

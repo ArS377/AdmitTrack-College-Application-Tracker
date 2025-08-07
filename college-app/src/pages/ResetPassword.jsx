@@ -73,12 +73,14 @@ export default function ResetPassword() {
           type="email"
           value={email}
           placeholder="Enter your email"
+          required
           onChange={(e) => setEmail(e.target.value)}
         />
         <label>New Password:</label>
         <input
           type="password"
           value={newPassword}
+          required
           placeholder="Enter your new password"
           onChange={(e) => setNewPassword(e.target.value)}
         />
@@ -86,6 +88,7 @@ export default function ResetPassword() {
         <input
           type="password"
           value={confirmPassword}
+          required
           placeholder="Confirm your new password"
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
