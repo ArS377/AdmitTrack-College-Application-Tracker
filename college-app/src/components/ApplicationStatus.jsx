@@ -8,8 +8,6 @@ const ApplicationStatus = (college) => {
   const [startDate, setStartDate] = useState(new Date());
   return (
     <div className="application-status">
-      <h2>Application Status</h2>
-      <p>{college.collegeName}</p>
       <CollegeDeadlines />
       <br></br>
       <label>Application Type:</label>

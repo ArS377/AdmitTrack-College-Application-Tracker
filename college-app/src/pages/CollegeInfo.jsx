@@ -1,22 +1,58 @@
 import FullCollegeDetail from "../components/FullCollegeDetail";
-import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import ApplicationStatus from "../components/ApplicationStatus";
+import axios from "axios";
 
 export function CollegeInfo() {
   const [appStatus, setAppStatus] = useState(true);
+  const [college, setCollege] = useState({});
+  const [collegeDetail, setCollegeDetail] = useState({});
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCollegeById = async (collegeId) => {
+      try {
+        const response = await axios.get(`${apiUrl}/colleges/id`, {
+          params: { id: collegeId },
+        });
+        if (response.status === 200) {
+          console.log("College details fetched successfully:", response.data);
+          setCollegeDetail(response.data);
+        } else {
+          console.error("Failed to fetch college details:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching college details:", error);
+      }
+    };
+    setCollege(location.state || {});
+    if (location.state?.collegeId) {
+      fetchCollegeById(location.state.collegeId);
+    }
+  }, [location.state]);
+
   const handleAppStatus = () => {
     setAppStatus(true);
   };
   const handleCollegeData = () => {
     setAppStatus(false);
   };
-  const college = useLocation().state || {};
-  console.log("College:", college);
+
+  const handleBackToCollegeList = () => {
+    navigate("/home");
+  };
+
   return (
     <>
       <div>
-        <h2>College Information</h2>
+        <span>
+          <h2>{college.collegeName}</h2>
+          <a onClick={handleBackToCollegeList}>(back to college list)</a>
+        </span>
+        <br />
         <ul className="nav nav-tabs">
           <li className="nav-item">
             <a
@@ -37,11 +73,12 @@ export function CollegeInfo() {
           </li>
         </ul>
       </div>
+      <br />
       <div>
         {appStatus ? (
           <ApplicationStatus college={college} />
         ) : (
-          <FullCollegeDetail selectedCollege={college} />
+          <FullCollegeDetail college={collegeDetail} />
         )}
       </div>
     </>
