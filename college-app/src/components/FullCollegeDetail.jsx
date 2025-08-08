@@ -5,11 +5,6 @@ const FullCollegeDetail = ({ college }) => {
   return (
     college && (
       <div className="selected-college-details">
-        <h3>{college.collegeName} Information </h3>
-        <p>
-          Homepage:
-          <a href={college.homepage}>{college.homepage}</a>
-        </p>
         <p>Acceptance Rate: {college.acceptanceRate}</p>
         <table className="standardized-testing-table">
           <thead>

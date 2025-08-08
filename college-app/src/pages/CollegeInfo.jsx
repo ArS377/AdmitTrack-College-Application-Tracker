@@ -48,10 +48,21 @@ export function CollegeInfo() {
   return (
     <>
       <div>
-        <span>
-          <h2>{college.collegeName}</h2>
+        <div>
           <a onClick={handleBackToCollegeList}>(back to college list)</a>
-        </span>
+          <h2>{college.collegeName}</h2>
+          <p>
+            {collegeDetail.homepage && (
+              <a
+                href={collegeDetail.homepage}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {collegeDetail.homepage}
+              </a>
+            )}
+          </p>
+        </div>
         <br />
         <ul className="nav nav-tabs">
           <li className="nav-item">
