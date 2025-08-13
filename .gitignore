@@ -17,3 +17,4 @@ logs/
 tmp/
 backend/.env
 .DS_Store
+college_data_processor/data/*.xlsx
