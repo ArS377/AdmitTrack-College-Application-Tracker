@@ -1,10 +1,17 @@
-const express = require("express");
-const cors = require("cors");
-const { MongoClient } = require("mongodb");
-const cookieParser = require("cookie-parser");
-const authenticator = require("./middleware/authenticationToken");
+import express, { json } from "express";
+import cors from "cors";
+import { MongoClient } from "mongodb";
+import cookieParser from "cookie-parser";
+import { authenticateToken } from "./middleware/authenticationToken.js";
 
-require("dotenv").config();
+import authRouter from "./routes/auth.js";
+import mycollegeRouter from "./routes/mycolleges.js";
+import userRouter from "./routes/users.js";
+import emailRouter from "./routes/email.js";
+import collegeDataRouter from "./routes/college-data.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 const PORT = 3000;
@@ -15,20 +22,14 @@ app.use((req, res, next) => {
 });
 
 app.use(cors({ origin: "http://localhost:5173" }));
-app.use(express.json());
+app.use(json());
 app.use(cookieParser()); // Middleware to parse cookies
 
-const authRoutes = require("./routes/auth");
-const mycollegeRoutes = require("./routes/mycolleges");
-const userRoutes = require("./routes/users");
-const emailRoutes = require("./routes/email");
-const collegeDataRoutes = require("./routes/college-data");
-
-app.use("/api", authRoutes);
-app.use("/api", mycollegeRoutes);
-app.use("/api", userRoutes);
-app.use("/api", emailRoutes); // Email routes
-app.use("/api", collegeDataRoutes);
+app.use("/api", authRouter);
+app.use("/api", mycollegeRouter);
+app.use("/api", userRouter);
+app.use("/api", emailRouter); // Email routes
+app.use("/api", collegeDataRouter);
 
 const client = new MongoClient(process.env.ATLAS_URI);
 let db;
@@ -44,7 +45,7 @@ async function connectToDatabase() {
 }
 
 //search component serverside
-app.get("/api/colleges", authenticator.authenticateToken, async (req, res) => {
+app.get("/api/colleges", authenticateToken, async (req, res) => {
   //get searched query
   const searched = req.query.q;
   if (!searched) {
@@ -67,29 +68,25 @@ app.get("/api/colleges", authenticator.authenticateToken, async (req, res) => {
   }
 });
 
-app.get(
-  "/api/colleges/id",
-  authenticator.authenticateToken,
-  async (req, res) => {
-    const collegeId = req.query.id;
-    if (!collegeId) {
-      return res.status(400).json({ error: "College ID is required." });
-    }
-    try {
-      const collection = db.collection("collegeinfo");
-      const result = await collection.findOne({ unitId: collegeId });
-
-      if (result) {
-        res.status(200).json(result);
-      } else {
-        res.status(404).json({ error: "College not found." });
-      }
-    } catch (e) {
-      console.error("Error fetching college by ID:", e);
-      res.status(500).json({ error: "Failed to fetch college by ID." });
-    }
+app.get("/api/colleges/id", authenticateToken, async (req, res) => {
+  const collegeId = req.query.id;
+  if (!collegeId) {
+    return res.status(400).json({ error: "College ID is required." });
   }
-);
+  try {
+    const collection = db.collection("collegeinfo");
+    const result = await collection.findOne({ unitId: collegeId });
+
+    if (result) {
+      res.status(200).json(result);
+    } else {
+      res.status(404).json({ error: "College not found." });
+    }
+  } catch (e) {
+    console.error("Error fetching college by ID:", e);
+    res.status(500).json({ error: "Failed to fetch college by ID." });
+  }
+});
 
 /*
 const getEmailFromAccessToken = (accessToken) => {
@@ -104,7 +101,7 @@ const getEmailFromAccessToken = (accessToken) => {
 */
 
 //updating after submitting profile data
-app.post("/api/profile", authenticator.authenticateToken, async (req, res) => {
+app.post("/api/profile", authenticateToken, async (req, res) => {
   console.log("Updating profile data with body:", req.body);
   const { email } = req.user; // Get email from authenticated user
   const { firstMajor, secondMajor, satEnglish, satMath, act } = req.body;

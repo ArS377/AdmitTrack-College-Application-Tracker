@@ -1,11 +1,15 @@
-const express = require("express");
-const router = express.Router();
-const bcrypt = require("bcrypt");
+import { Router } from "express";
+import { hash } from "bcrypt";
 
-const authenticator = require("../middleware/authenticationToken");
+import {
+  authenticateToken,
+  authenticateEmailToken,
+} from "../middleware/authenticationToken.js";
+
+const userRouter = Router();
 
 // registering a new user
-router.post("/users", async (req, res) => {
+userRouter.post("/users", async (req, res) => {
   const { fullName, email, password } = req.body;
 
   try {
@@ -15,7 +19,7 @@ router.post("/users", async (req, res) => {
     const existingUser = await loginCollection.findOne({ email: email });
     if (!existingUser) {
       const myColleges = [];
-      hashedPassword = await bcrypt.hash(password, 10); // Hash the password
+      hashedPassword = await hash(password, 10); // Hash the password
       const loginResult = await loginCollection.insertOne({
         email,
         hashedPassword,
@@ -36,40 +40,36 @@ router.post("/users", async (req, res) => {
 });
 
 // update password
-router.put(
-  "/users/password",
-  authenticator.authenticateEmailToken,
-  async (req, res) => {
-    const email = req.email; // Get email from authenticated user
-    const { newPassword } = req.body;
-    console.log("Updating password for email:", req.email, email);
-    if (!email) {
-      return res
-        .status(400)
-        .json({ message: "Email is required to update the password." });
-    }
-    try {
-      const db = req.db; // Get the database instance from the request
-      const collection = db.collection("logininfo");
-      const hashedPassword = await bcrypt.hash(newPassword, 10); // Hash the new password
-      const result = await collection.updateOne(
-        { email: email },
-        { $set: { hashedPassword: hashedPassword } }
-      );
-      if (result.modifiedCount === 1) {
-        res.status(200).json({ message: "Password updated successfully." });
-      } else {
-        res.status(404).json({ message: "User not found." });
-      }
-    } catch (e) {
-      console.error("Error updating password:", e);
-      res.status(500).json({ error: "Failed to update password." });
-    }
+userRouter.put("/users/password", authenticateEmailToken, async (req, res) => {
+  const email = req.email; // Get email from authenticated user
+  const { newPassword } = req.body;
+  console.log("Updating password for email:", req.email, email);
+  if (!email) {
+    return res
+      .status(400)
+      .json({ message: "Email is required to update the password." });
   }
-);
+  try {
+    const db = req.db; // Get the database instance from the request
+    const collection = db.collection("logininfo");
+    const hashedPassword = await hash(newPassword, 10); // Hash the new password
+    const result = await collection.updateOne(
+      { email: email },
+      { $set: { hashedPassword: hashedPassword } }
+    );
+    if (result.modifiedCount === 1) {
+      res.status(200).json({ message: "Password updated successfully." });
+    } else {
+      res.status(404).json({ message: "User not found." });
+    }
+  } catch (e) {
+    console.error("Error updating password:", e);
+    res.status(500).json({ error: "Failed to update password." });
+  }
+});
 
 // Get logged-in user data
-router.get("/users", authenticator.authenticateToken, async (req, res) => {
+userRouter.get("/users", authenticateToken, async (req, res) => {
   const { email } = req.user;
   if (!email) {
     return res.status(400).json({ error: "Email is required." });
@@ -92,7 +92,7 @@ router.get("/users", authenticator.authenticateToken, async (req, res) => {
 });
 
 // delete user
-router.delete("/users", async (req, res) => {
+userRouter.delete("/users", authenticateToken, async (req, res) => {
   const { email } = req.body;
   if (!email) {
     return res.status(400).json({ error: "Email is required." });
@@ -114,4 +114,4 @@ router.delete("/users", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default userRouter;

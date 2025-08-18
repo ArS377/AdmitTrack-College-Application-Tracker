@@ -1,20 +1,22 @@
-const express = require("express");
-const router = express.Router();
+import { Router } from "express";
+import { retrieveCollegeData } from "../utils/college-data-query.js";
+import { authenticateToken } from "../middleware/authenticationToken.js";
 
-const data = fs.readFileSync("data/collegedata.json", "utf8");
-
-// Parse JSON string into object
-const collegeData = JSON.parse(data);
-
-console.log("json data length: ", jsonData.length.toLocaleString());
-
-function getTopColleges() {
-  collegesat_scores.math75 > 700;
-}
+const collegeDataRouter = Router();
 
 // Get logged-in user data
-router.get(
-  "/collegedata",
-  authenticator.authenticateToken,
-  async (req, res) => {}
-);
+collegeDataRouter.get("/collegedata", authenticateToken, async (req, res) => {
+  const { email } = req.user;
+  if (!email) {
+    return res.status(400).json({ error: "Email is required." });
+  }
+  const result = await retrieveCollegeData();
+  if (result) {
+    console.log(result);
+    res.status(200).json(result);
+  } else {
+    res.status(404).json({ error: "College data is not available." });
+  }
+});
+
+export default collegeDataRouter;

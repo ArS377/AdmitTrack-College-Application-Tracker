@@ -92,3 +92,6 @@ Content-Type: application/json
     "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNvbWEuZWxsYXBwYW5AZ21haWwuY29tIiwiaWF0IjoxNzU0NTM2MjU3LCJleHAiOjE3NTQ1MzY4NTd9.QStTgCW1EBwA9wfG_efpSQzST2EH8r2HBPihtOJMDUw",
     "newPassword": "newpassword123"
 }
+
+###
+GET http://localhost:3000/api/college-data

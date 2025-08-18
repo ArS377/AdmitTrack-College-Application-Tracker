@@ -1,12 +1,12 @@
-const express = require("express");
-const router = express.Router();
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-require("dotenv").config();
+import { Router } from "express";
+import { authenticateToken } from "../middleware/authenticationToken.js";
+import dotenv from "dotenv";
 
-const authenticator = require("../middleware/authenticationToken");
+dotenv.config();
 
-router.get("/mycolleges", authenticator.authenticateToken, async (req, res) => {
+const mycollegeRouter = Router();
+
+mycollegeRouter.get("/mycolleges", authenticateToken, async (req, res) => {
   console.log("Fetching user colleges for email:", req.user.email);
   try {
     const { email } = req.user;
@@ -28,34 +28,30 @@ router.get("/mycolleges", authenticator.authenticateToken, async (req, res) => {
   }
 });
 
-router.post(
-  "/mycolleges",
-  authenticator.authenticateToken,
-  async (req, res) => {
-    console.log(req.body);
-    const { email } = req.user; // Get email from authenticated user
-    const { collegeId, collegeName } = req.body;
+mycollegeRouter.post("/mycolleges", authenticateToken, async (req, res) => {
+  console.log(req.body);
+  const { email } = req.user; // Get email from authenticated user
+  const { collegeId, collegeName } = req.body;
 
-    const db = req.db; // Get the database instance from the request
-    const collection = db.collection("userdata");
-    const existingUser = await collection.findOne({ email: email });
-    console.log(email);
-    if (!existingUser) {
-      res.status(404).json({ message: "User not found" });
-    } else {
-      existingUser.myColleges.push({ collegeId, collegeName });
+  const db = req.db; // Get the database instance from the request
+  const collection = db.collection("userdata");
+  const existingUser = await collection.findOne({ email: email });
+  console.log(email);
+  if (!existingUser) {
+    res.status(404).json({ message: "User not found" });
+  } else {
+    existingUser.myColleges.push({ collegeId, collegeName });
 
-      await collection.findOneAndUpdate(
-        { email: email }, //filter by email
-        { $set: existingUser }
-      );
-    }
+    await collection.findOneAndUpdate(
+      { email: email }, //filter by email
+      { $set: existingUser }
+    );
   }
-);
+});
 
-router.post(
+mycollegeRouter.post(
   "/mycolleges/delete",
-  authenticator.authenticateToken,
+  authenticateToken,
   async (req, res) => {
     console.log(req.body);
     const { email } = req.user; // Get email from authenticated user
@@ -77,4 +73,4 @@ router.post(
   }
 );
 
-module.exports = router;
+export default mycollegeRouter;

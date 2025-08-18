@@ -1,12 +1,14 @@
-const express = require("express");
-const jwt = require("jsonwebtoken");
-const router = express.Router();
+import { Router } from "express";
+import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
 
-const nodemailer = require("nodemailer");
-require("dotenv").config();
+dotenv.config();
+
+const emailRouter = Router();
 
 // Send the email
-router.post("/email/reset-password", (req, res) => {
+emailRouter.post("/email/reset-password", (req, res) => {
   // Define mail options
   const forgotPassword = {
     subject: "Reset Your Password",
@@ -43,7 +45,7 @@ router.post("/email/reset-password", (req, res) => {
   });
 });
 
-router.post("/email/verify-token", (req, res) => {
+emailRouter.post("/email/verify-token", (req, res) => {
   const { token } = req.body;
   console.log("Verifying token:", token);
   if (!token) {
@@ -59,4 +61,4 @@ router.post("/email/verify-token", (req, res) => {
   });
 });
 
-module.exports = router;
+export default emailRouter;

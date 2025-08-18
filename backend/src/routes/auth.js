@@ -1,11 +1,15 @@
-const express = require("express");
-const router = express.Router();
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-require("dotenv").config();
+import { Router } from "express";
+import pkg from "jsonwebtoken";
+import { compare } from "bcrypt";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const { sign, verify } = pkg;
+const authRouter = Router();
 
 // get access token from refresh token
-router.post("/auth/accesstoken", (req, res) => {
+authRouter.post("/auth/accesstoken", (req, res) => {
   const refreshToken = req.cookies && req.cookies.refresh_token;
   if (!refreshToken) {
     console.error("request.cookies: ", req.cookies);
@@ -14,12 +18,12 @@ router.post("/auth/accesstoken", (req, res) => {
 
   //TODO remove console logs in production
   console.log("Rrefresh token:", refreshToken);
-  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+  verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
     if (err) {
       console.error("Refresh token verification failed:", err.message);
       return res.sendStatus(403); // Forbidden
     }
-    const access_token = jwt.sign(
+    const access_token = sign(
       { email: user.email, id: user.id },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
@@ -30,11 +34,11 @@ router.post("/auth/accesstoken", (req, res) => {
 });
 
 // validate access token
-router.post("/auth/validate", (req, res) => {
+authRouter.post("/auth/validate", (req, res) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1]; // Bearer <token>
   if (!token) return res.sendStatus(401); // Unauthorized
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+  verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) {
       console.error("Access token verification failed:", err.message);
       return res.sendStatus(403); // Forbidden
@@ -45,7 +49,7 @@ router.post("/auth/validate", (req, res) => {
 });
 
 // logs user in
-router.post("/auth/login", async (req, res) => {
+authRouter.post("/auth/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -54,17 +58,14 @@ router.post("/auth/login", async (req, res) => {
     const collection = db.collection("logininfo");
     const user = await collection.findOne({ email: email });
     if (user) {
-      const isPasswordValid = await bcrypt.compare(
-        password,
-        user.hashedPassword
-      );
+      const isPasswordValid = await compare(password, user.hashedPassword);
       if (isPasswordValid) {
-        const access_token = jwt.sign(
+        const access_token = sign(
           { email: user.email, id: user._id },
           process.env.ACCESS_TOKEN_SECRET,
           { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
         );
-        const refresh_token = jwt.sign(
+        const refresh_token = sign(
           { email: user.email, id: user._id },
           process.env.REFRESH_TOKEN_SECRET,
           { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
@@ -98,9 +99,9 @@ router.post("/auth/login", async (req, res) => {
   }
 });
 
-router.post("/auth/logout", (req, res) => {
+authRouter.post("/auth/logout", (req, res) => {
   res.clearCookie("refresh_token"); // Clear the refresh token cookie
   res.status(200).json({ message: "Logged out successfully" });
 });
 
-module.exports = router;
+export default authRouter;

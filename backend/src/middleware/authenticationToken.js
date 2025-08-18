@@ -1,13 +1,16 @@
-const jwt = require("jsonwebtoken");
-require("dotenv").config();
+import pkg from "jsonwebtoken";
+import dotenv from "dotenv";
 
-function authenticateToken(req, res, next) {
+dotenv.config();
+
+export function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1]; // Bearer <token>
   console.log("Received token for verification:", token);
   if (!token) return res.sendStatus(401); // Unauthorized
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+  const { verify } = pkg;
+  verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) {
       console.error(
         `Token verification failed: ${err.message}, for token: ${token}`
@@ -21,13 +24,13 @@ function authenticateToken(req, res, next) {
 }
 
 // Middleware to authenticate EmailToken
-function authenticateEmailToken(req, res, next) {
+export function authenticateEmailToken(req, res, next) {
   const { token } = req.body;
   if (!token) {
     console.error("Email token is required for verification.");
     return res.status(400).json({ message: "Email token is required." });
   }
-  jwt.verify(token, process.env.EMAIL_TOKEN_SECRET, (err, decoded) => {
+  verify(token, process.env.EMAIL_TOKEN_SECRET, (err, decoded) => {
     if (err) {
       console.error("Email token verification failed:", err.message);
       return res
@@ -39,5 +42,3 @@ function authenticateEmailToken(req, res, next) {
     next(); // email token is valid, proceed to the next middleware
   });
 }
-
-module.exports = { authenticateToken, authenticateEmailToken };
