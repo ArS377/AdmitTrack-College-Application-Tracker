@@ -11,6 +11,7 @@ collegeDataRouter.get("/collegedata", authenticateToken, async (req, res) => {
     return res.status(400).json({ error: "Email is required." });
   }
   const result = await retrieveCollegeData();
+  console.log("retrieveCollegeData:", result);
   if (result) {
     console.log(result);
     res.status(200).json(result);
