@@ -40,3 +40,8 @@ Run the following command and store the generated hex code as the secret
 node
 require('crypto').randomBytes(64).toString('hex')
 ```
+
+### offline files for setup
+
+Create/update backend/.env
+Create/update backend/collegedata.json

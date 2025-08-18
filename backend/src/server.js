@@ -22,11 +22,13 @@ const authRoutes = require("./routes/auth");
 const mycollegeRoutes = require("./routes/mycolleges");
 const userRoutes = require("./routes/users");
 const emailRoutes = require("./routes/email");
+const collegeDataRoutes = require("./routes/college-data");
 
 app.use("/api", authRoutes);
 app.use("/api", mycollegeRoutes);
 app.use("/api", userRoutes);
 app.use("/api", emailRoutes); // Email routes
+app.use("/api", collegeDataRoutes);
 
 const client = new MongoClient(process.env.ATLAS_URI);
 let db;

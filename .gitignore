@@ -18,3 +18,6 @@ tmp/
 backend/.env
 .DS_Store
 college_data_processor/data/*.xlsx
+college_data_processor/src/collegedata.json
+README.md
+backend/data/collegedata.json

@@ -1,10 +1,16 @@
-const ExcelJS = require("exceljs");
+import ExcelJS from "exceljs";
+import { createReadStream, writeFile } from "fs";
+import csv from "csv-parser";
 
 function applyFormatter(value, formatter) {
-  return formatter ? formatter(value) : value;
+  return value === "-" || value === null
+    ? undefined
+    : formatter
+    ? formatter(value)
+    : value;
 }
 
-function getYearlyData(row, ds) {
+function getYearlyData(dataFn, ds) {
   // write code to read the year data from year_data_beginning_column to year_data_ending_column
   // and populate the collegeData[collegeId].admission_trend[metric] object
   const data = {};
@@ -13,20 +19,14 @@ function getYearlyData(row, ds) {
   for (let i = yearDataBegin; i <= yearDataEnd; i++) {
     if (data !== undefined && data !== null && data !== "") {
       const year = ds.beginning_year + ds.year_increment * (i - yearDataBegin);
-      data[year] = applyFormatter(row.getCell(i).value, ds.formatter);
+      data[year] = applyFormatter(dataFn(i), ds.formatter);
     }
   }
   return data;
 }
 
-function initLabelNameDict(mappingArray) {
-  let dict = {};
-  mappingArray.map((metric) => (dict[metric.label.trim()] = metric.name));
-  return dict;
-}
-
 function readMetricGroupData(
-  row,
+  dataFn,
   metric_group_ds,
   labelNameDict,
   perCollegeData
@@ -40,9 +40,8 @@ function readMetricGroupData(
   if (metric_group_ds.classification) {
     // apply classification if present
 
-    const classification_label = row
-      .getCell(metric_group_ds.classification.column)
-      .value.trim();
+    let classification_label = dataFn(metric_group_ds.classification.column);
+    classification_label = classification_label && classification_label.trim();
     const classification_name = labelNameDict[classification_label];
     if (classification_name === undefined) return;
 
@@ -51,27 +50,105 @@ function readMetricGroupData(
   }
   metric_group_ds.metrics.forEach((metric) => {
     metric_group_data[metric.name] = applyFormatter(
-      row.getCell(metric.column).value,
+      dataFn(metric.column),
       metric.formatter
     );
   });
 }
-function readAnnualData(row, annual_trend, metricNameDict, perCollegeData) {
+
+function readAnnualData(dataFn, annual_trend, metricNameDict, perCollegeData) {
   const data_label = annual_trend.data_label;
   if (!perCollegeData[data_label]) {
     perCollegeData[data_label] = {};
   }
 
-  const metric_label = row
-    .getCell(annual_trend.classification.column)
-    .value.trim();
+  let metric_label = dataFn(annual_trend.classification.column);
+  metric_label = metric_label && metric_label.trim();
   const metric = metricNameDict[metric_label];
   if (metric === undefined) return;
 
-  perCollegeData[data_label][metric] = getYearlyData(row, annual_trend);
+  perCollegeData[data_label][metric] = getYearlyData(dataFn, annual_trend);
 }
 
-async function parseCollegeData(filePath, dataStructure, collegeData) {
+function parseDataRow(dataFn, dataStructure, labelNameDict, collegeData) {
+  // Skip empty rows
+  const id = dataFn(dataStructure.collegeId);
+  if (id === undefined || id === "" || id === null) {
+    return;
+  }
+  // check if collegeId is a number
+  const collegeId = parseInt(id);
+  //console.log("here 2");
+
+  // Create a college object if it doesn't exist
+  let perCollegeData = undefined;
+  if (collegeData.has(collegeId)) {
+    perCollegeData = collegeData.get(collegeId);
+  } else {
+    perCollegeData = {
+      unitId: collegeId,
+      collegeName: dataFn(dataStructure.collegeName),
+    };
+    collegeData.set(collegeId, perCollegeData);
+  }
+
+  if (dataStructure.metric_group) {
+    dataStructure.metric_group.forEach((metric_group, index) => {
+      readMetricGroupData(dataFn, metric_group, labelNameDict, perCollegeData);
+    });
+  }
+  if (dataStructure.annual_trend) {
+    // row, annual_trend (ds), metric name mapping dictionary
+    readAnnualData(
+      dataFn,
+      dataStructure.annual_trend,
+      labelNameDict,
+      perCollegeData
+    );
+  }
+  //console.log(`Row ${rowNumber}:`, collegeData[collegeId]);
+}
+
+function initializeLabelNameDict(dataStructure) {
+  let labelNameDict = {};
+
+  if (dataStructure.annual_trend && dataStructure.annual_trend.classification) {
+    dataStructure.annual_trend.classification.label_mapping.map(
+      (metric) => (labelNameDict[metric.label.trim()] = metric.name)
+    );
+  }
+  if (dataStructure.metric_group) {
+    dataStructure.metric_group.forEach((metric_group, index) => {
+      if (metric_group.classification) {
+        metric_group.classification.label_mapping.map(
+          (metric) => (labelNameDict[metric.label.trim()] = metric.name)
+        );
+      }
+    });
+  }
+  return labelNameDict;
+}
+
+async function parseCollegeDataCsv(filePath, dataStructure, collegeData) {
+  let labelNameDict = initializeLabelNameDict(dataStructure);
+
+  console.log("here 1");
+  createReadStream(filePath)
+    .pipe(csv({ headers: false, skipLines: 1 }))
+    .on("data", (data) =>
+      parseDataRow(
+        (i) => data[i - 1],
+        dataStructure,
+        labelNameDict,
+        collegeData
+      )
+    )
+    .on("end", () => {
+      console.log(`College count: ${collegeData.size}`);
+    });
+}
+
+async function parseCollegeDataXlsx(filePath, dataStructure, collegeData) {
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.readFile(filePath);
   // find worksheet named 'TableLibrary'
@@ -80,62 +157,20 @@ async function parseCollegeData(filePath, dataStructure, collegeData) {
     console.error(`Worksheet '${dataStructure.worksheet}' not found.`);
     return;
   }
-  let labelNameDict = undefined;
-  if (dataStructure.annual_trend && dataStructure.annual_trend.classification) {
-    labelNameDict = initLabelNameDict(
-      dataStructure.annual_trend.classification.label_mapping
-    );
-  }
-  if (dataStructure.metric_group && dataStructure.metric_group.classification) {
-    labelNameDict = initLabelNameDict(
-      dataStructure.metric_group.classification.label_mapping
-    );
-  }
+  let labelNameDict = initializeLabelNameDict(dataStructure);
 
   worksheet.eachRow((row, rowNumber) => {
     // Skip rows before the data begins
     if (rowNumber < dataStructure.data_beginning_row) {
       return;
     }
-    // Skip empty rows
-    const collegeId = row.getCell(dataStructure.collegeId).value;
-    if (collegeId === undefined || collegeId === "" || collegeId === null) {
-      return;
-    }
-    // check if collegeId is a number
-    if (typeof collegeId !== "number") {
-      return;
-    }
-    // Create a college object if it doesn't exist
-    let perCollegeData = undefined;
-    if (collegeData.has(collegeId)) {
-      perCollegeData = collegeData.get(collegeId);
-    } else {
-      perCollegeData = {
-        unitId: collegeId,
-        collegeName: row.getCell(dataStructure.collegeName).value,
-      };
-      collegeData.set(collegeId, perCollegeData);
-    }
-
-    if (dataStructure.metric_group) {
-      readMetricGroupData(
-        row,
-        dataStructure.metric_group,
-        labelNameDict,
-        perCollegeData
-      );
-    }
-    if (dataStructure.annual_trend) {
-      // row, annual_trend (ds), metric name mapping dictionary
-      readAnnualData(
-        row,
-        dataStructure.annual_trend,
-        labelNameDict,
-        perCollegeData
-      );
-    }
-    //console.log(`Row ${rowNumber}:`, collegeData[collegeId]);
+    // Skip rows before the data begins
+    parseDataRow(
+      (i) => row.getCell(i).value,
+      dataStructure,
+      labelNameDict,
+      collegeData
+    );
   });
 }
 
@@ -144,21 +179,23 @@ const COLLEGE_DS_INFO = {
   data_beginning_row: 6,
   collegeId: 1,
   collegeName: 2,
-  metric_group: {
-    data_label: "info",
-    metrics: [
-      { name: "address", column: 7 },
-      {
-        name: "website",
-        column: 8,
-        formatter: (value) =>
-          // write code to check if value has prefix https:// and if not add the prefix.
-          value
-            .replace(/^http:\/\//i, "https://")
-            .replace(/^(?!https:\/\/)/i, "https://"),
-      },
-    ],
-  },
+  metric_group: [
+    {
+      data_label: "info",
+      metrics: [
+        { name: "address", column: 7 },
+        {
+          name: "website",
+          column: 8,
+          formatter: (value) =>
+            // write code to check if value has prefix https:// and if not add the prefix.
+            value
+              .replace(/^http:\/\//i, "https://")
+              .replace(/^(?!https:\/\/)/i, "https://"),
+        },
+      ],
+    },
+  ],
 };
 
 const COLLEGE_DS_SAT = {
@@ -166,17 +203,167 @@ const COLLEGE_DS_SAT = {
   data_beginning_row: 6,
   collegeId: 1,
   collegeName: 2,
-  metric_group: {
-    data_label: "sat_scores",
-    metrics: [
-      { name: "submitted_cnt", column: 7 },
-      { name: "submitted_pct", column: 8 },
-      { name: "english25", column: 21 },
-      { name: "english75", column: 31 },
-      { name: "math25", column: 41 },
-      { name: "math75", column: 51 },
-    ],
-  },
+  metric_group: [
+    {
+      data_label: "sat_scores",
+      metrics: [
+        { name: "submitted_cnt", column: 7 },
+        { name: "submitted_pct", column: 8 },
+        { name: "english25", column: 21 },
+        { name: "english75", column: 31 },
+        { name: "math25", column: 41 },
+        { name: "math75", column: 51 },
+      ],
+    },
+  ],
+};
+
+const COLLEGE_DS_REQ = {
+  collegeId: 1,
+  collegeName: 2,
+  metric_group: [
+    {
+      data_label: "tuition",
+      metrics: [
+        { name: "in-state", column: 3 },
+        { name: "out-of-state", column: 4 },
+      ],
+    },
+    {
+      data_label: "requirements",
+      metrics: [
+        {
+          name: "gpa",
+          column: 6,
+        },
+        { name: "rank", column: 7 },
+        { name: "record", column: 8 },
+        { name: "college_prep", column: 9 },
+        { name: "reccommendation", column: 10 },
+        { name: "formal_competency", column: 11 },
+        { name: "work_exp", column: 12 },
+        { name: "essay", column: 13 },
+        { name: "legacy", column: 14 },
+        { name: "test_score", column: 15 },
+        { name: "other_test", column: 16 },
+        { name: "eng_proficiency", column: 17 },
+      ],
+    },
+    {
+      data_label: "applicants",
+      metrics: [
+        { name: "total", column: 18 },
+        { name: "men", column: 19 },
+        { name: "women", column: 20 },
+        { name: "other", column: 21 },
+        { name: "unknown", column: 22 },
+      ],
+    },
+    {
+      data_label: "admissions",
+      metrics: [
+        { name: "total", column: 23 },
+        { name: "men", column: 24 },
+        { name: "women", column: 25 },
+        { name: "other", column: 26 },
+        { name: "unknown", column: 27 },
+      ],
+    },
+    {
+      data_label: "enrolled",
+      metrics: [
+        { name: "total", column: 28 },
+        { name: "men", column: 29 },
+        { name: "women", column: 30 },
+        { name: "other", column: 31 },
+        { name: "unknown", column: 32 },
+      ],
+    },
+    {
+      data_label: "ft",
+      metrics: [
+        { name: "total", column: 33 },
+        { name: "men", column: 34 },
+        { name: "women", column: 35 },
+        { name: "other", column: 36 },
+        { name: "unknown", column: 37 },
+      ],
+    },
+    {
+      data_label: "pt",
+      metrics: [
+        { name: "total", column: 38 },
+        { name: "men", column: 39 },
+        { name: "women", column: 40 },
+        { name: "other", column: 41 },
+        { name: "unknown", column: 42 },
+      ],
+    },
+    {
+      data_label: "sat",
+      metrics: [
+        { name: "submitted_cnt", column: 43 },
+        { name: "submitted_pct", column: 44 },
+        { name: "eng25", column: 47 },
+        { name: "eng50", column: 48 },
+        { name: "eng75", column: 49 },
+        { name: "math25", column: 50 },
+        { name: "math50", column: 51 },
+        { name: "math75", column: 52 },
+      ],
+    },
+    {
+      data_label: "act",
+      metrics: [
+        { name: "submitted_cnt", column: 45 },
+        { name: "submitted_pct", column: 46 },
+        { name: "composite25", column: 53 },
+        { name: "composite50", column: 54 },
+        { name: "composite75", column: 55 },
+        { name: "eng25", column: 56 },
+        { name: "eng50", column: 57 },
+        { name: "eng75", column: 58 },
+        { name: "math25", column: 59 },
+        { name: "math50", column: 60 },
+        { name: "math75", column: 61 },
+      ],
+    },
+    {
+      data_label: "race",
+      metrics: [
+        { name: "total", column: 62 },
+        { name: "total_m", column: 63 },
+        { name: "total_w", column: 64 },
+        { name: "native", column: 65 },
+        { name: "native_m", column: 66 },
+        { name: "native_w", column: 67 },
+        { name: "asian", column: 68 },
+        { name: "asian_m", column: 69 },
+        { name: "aisan_w", column: 70 },
+        { name: "black", column: 71 },
+        { name: "black_m", column: 72 },
+        { name: "black_w", column: 73 },
+        { name: "hispanic", column: 74 },
+        { name: "hispanic_m", column: 75 },
+        { name: "hispanic_w", column: 76 },
+        { name: "hawaiian", column: 77 },
+        { name: "hawaiian_m", column: 78 },
+        { name: "hawaiian_w", column: 79 },
+        { name: "white", column: 80 },
+        { name: "white_m", column: 81 },
+        { name: "white_w", column: 82 },
+        { name: "blend", column: 83 },
+        { name: "blend_m", column: 84 },
+        { name: "blend_w", column: 85 },
+        { name: "unknown", column: 86 },
+        { name: "unknown_m", column: 87 },
+        { name: "unknown_w", column: 88 },
+        { name: "nonresident", column: 89 },
+        { name: "nonresident_m", column: 90 },
+        { name: "nonresident_w", column: 91 },
+      ],
+    },
+  ],
 };
 
 const COLLEGE_DS_ACT = {
@@ -184,19 +371,21 @@ const COLLEGE_DS_ACT = {
   data_beginning_row: 6,
   collegeId: 1,
   collegeName: 2,
-  metric_group: {
-    data_label: "act_scores",
-    metrics: [
-      { name: "submitted_cnt", column: 9 },
-      { name: "submitted_pct", column: 10 },
-      { name: "composite25", column: 21 },
-      { name: "composite75", column: 31 },
-      { name: "english25", column: 41 },
-      { name: "english75", column: 51 },
-      { name: "math25", column: 61 },
-      { name: "math75", column: 71 },
-    ],
-  },
+  metric_group: [
+    {
+      data_label: "act_scores",
+      metrics: [
+        { name: "submitted_cnt", column: 9 },
+        { name: "submitted_pct", column: 10 },
+        { name: "composite25", column: 21 },
+        { name: "composite75", column: 31 },
+        { name: "english25", column: 41 },
+        { name: "english75", column: 51 },
+        { name: "math25", column: 61 },
+        { name: "math75", column: 71 },
+      ],
+    },
+  ],
 };
 
 const COLLEGE_DS_ADMISSION_TREND = {
@@ -262,65 +451,91 @@ const COLLEGE_DS_GENDER_DATA = {
   data_beginning_row: 6,
   collegeId: 1,
   collegeName: 2,
-  metric_group: {
-    data_label: "gender_data",
-    classification: {
-      column: 3,
-      label_mapping: [{ label: "Undergraduate Enrollment", name: "ug" }],
+  metric_group: [
+    {
+      data_label: "gender_data",
+      classification: {
+        column: 3,
+        label_mapping: [{ label: "Undergraduate Enrollment", name: "ug" }],
+      },
+      metrics: [
+        { name: "men_ft", column: 6 },
+        { name: "women_ft", column: 7 },
+        { name: "men_pt", column: 9 },
+        { name: "women_pt", column: 10 },
+      ],
     },
-    metrics: [
-      { name: "men_ft", column: 6 },
-      { name: "women_ft", column: 7 },
-      { name: "men_pt", column: 9 },
-      { name: "women_pt", column: 10 },
-    ],
-  },
+  ],
 };
 
 const ReadData = async (collegeData) => {
-  await parseCollegeData(
-    "../data/institution_info.xlsx",
-    COLLEGE_DS_INFO,
-    collegeData
-  );
-
-  await parseCollegeData(
+  /*
+  await parseCollegeDataXlsx(
     "../data/sat_scores.xlsx",
     COLLEGE_DS_SAT,
     collegeData
   );
-
-  await parseCollegeData(
+  await parseCollegeDataXlsx(
     "../data/act_scores.xlsx",
     COLLEGE_DS_ACT,
     collegeData
   );
 
-  await parseCollegeData(
+  await parseCollegeDataXlsx(
     "../data/admission_trends.xlsx",
     COLLEGE_DS_ADMISSION_TREND,
     collegeData
   );
-
-  await parseCollegeData(
+  await parseCollegeDataXlsx(
+    "../data/Enrollment_data_gender.xlsx",
+    COLLEGE_DS_GENDER_DATA,
+    collegeData
+  );
+  await parseCollegeDataXlsx(
     "../data/Enrollment_data_race.xlsx",
     COLLEGE_DS_RACE_DATA,
     collegeData
   );
+  await parseCollegeDataXlsx(
+    "../data/Enrollment_data_race.xlsx",
+    COLLEGE_DS_RACE_DATA,
+    collegeData
+  );
+*/
+  await parseCollegeDataCsv(
+    "../data/ipeds_college_data.csv",
+    COLLEGE_DS_REQ,
+    collegeData
+  );
 
-  await parseCollegeData(
-    "../data/Enrollment_data_gender.xlsx",
-    COLLEGE_DS_GENDER_DATA,
+  //TBD: FIX THE forced sequencing: we need time for the CSV parser to finish.
+  // Hence parsing the Xlsx at the end.
+  await parseCollegeDataXlsx(
+    "../data/institution_info.xlsx",
+    COLLEGE_DS_INFO,
     collegeData
   );
 
   console.log(`College count: ${collegeData.size}`);
   console.log(collegeData.get(243744));
-  const json = JSON.stringify(Array.from(collegeData.entries()));
-  console.log("json data length: ", json.length.toLocaleString());
+  console.log(collegeData.get(105668));
+
+  const jsondata = JSON.stringify(Array.from(collegeData.values()));
+  // write the json data into a file.
+  //console.log(jsondata);
+
+  console.log("json data length: ", jsondata.length.toLocaleString());
+
+  writeFile("collegedata.json", jsondata, (err) => {
+    if (err) {
+      console.error("Error writing file:", err);
+    } else {
+      console.log("College Data is written successfully to collegedata.json!");
+    }
+  });
   //
 };
 
 const collegeData = new Map();
-ReadData(collegeData);
+await ReadData(collegeData);
 //console.log(initMetricDict(COLLEGE_DS_ADMISSION_TREND.metric));
