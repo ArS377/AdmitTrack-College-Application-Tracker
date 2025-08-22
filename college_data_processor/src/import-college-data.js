@@ -132,7 +132,7 @@ function initializeLabelNameDict(dataStructure) {
 async function parseCollegeDataCsv(filePath, dataStructure, collegeData) {
   let labelNameDict = initializeLabelNameDict(dataStructure);
 
-  console.log("here 1");
+  //console.log("here 1");
   createReadStream(filePath)
     .pipe(csv({ headers: false, skipLines: 1 }))
     .on("data", (data) =>

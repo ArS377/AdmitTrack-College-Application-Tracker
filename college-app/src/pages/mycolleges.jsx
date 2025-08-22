@@ -21,9 +21,12 @@ export function MyColleges() {
     fmc();
   }, []);
 
-  const onSelectCollege = (college) => {
+  const onSelectCollege = async (college) => {
     console.log("Selected college:", college); //college printed in console
-    setSelectedCollege(college);
+    const response = await axios.get(`${apiUrl}/collegelist/${college.unitId}`);
+    if (response) {
+      setSelectedCollege(response.data); // set the college data object as the selected college.
+    }
     setResults([]); //clear search results list
   };
 

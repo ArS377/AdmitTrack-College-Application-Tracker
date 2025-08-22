@@ -8,15 +8,20 @@ const SearchBar = ({ setResults, setSelectedCollege }) => {
 
   const fetchData = async (value) => {
     setResults([]);
-    if (!value.trim()) {
+    value = value && value.trim();
+    if (!value || value.length < 3) {
       setResults([]);
       return;
     }
     try {
       const response = await axios.get(
-        `${apiUrl}/colleges?q=${encodeURIComponent(value)}`
+        `${apiUrl}/collegelist?q=${encodeURIComponent(value)}`
       );
-      setResults(response.data);
+      if (response) {
+        setResults(response.data);
+      } else {
+        setResults([]);
+      }
       //setSelectedCollege(null);
     } catch (error) {
       console.error("Error fetching data:", error);

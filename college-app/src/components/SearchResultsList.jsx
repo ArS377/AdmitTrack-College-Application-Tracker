@@ -5,7 +5,7 @@ const SearchResultsList = ({ results, onSelectCollege }) => {
         return (
           <SearchResult
             result={result}
-            key={result._id}
+            key={result.unitId}
             onSelect={onSelectCollege}
           />
         );

@@ -5,36 +5,58 @@ const CollegeDetail = ({ selectedCollege, addCollegeToList }) => {
         <h3>{selectedCollege.collegeName} Information </h3>
         <p>
           Homepage:
-          <a href={selectedCollege.homepage}>{selectedCollege.homepage}</a>
+          <a href={selectedCollege.info.website}>
+            {selectedCollege.info.website}
+          </a>
         </p>
-        <p>Acceptance Rate: {selectedCollege.acceptanceRate}</p>
+        <p>
+          Acceptance Rate:{" "}
+          {Number(
+            (
+              (selectedCollege.admissions.total * 100) /
+              selectedCollege.applicants.total
+            ).toFixed(1)
+          )}
+        </p>
         <table className="standardized-testing-table">
           <thead>
             <tr>
-              <th>Standardized Test</th>
-              <th>25 Percentile</th>
-              <th>50 Percentile</th>
-              <th>75 Percentile</th>
+              <th>Test</th>
+              <th>25th Percentile</th>
+              <th>50th Percentile</th>
+              <th>75th Percentile</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>SAT Math</td>
-              <td>{selectedCollege.satScores.reading25}</td>
-              <td>{selectedCollege.satScores.reading50}</td>
-              <td>{selectedCollege.satScores.reading75}</td>
-            </tr>
-            <tr>
               <td>SAT English</td>
-              <td>{selectedCollege.satScores.math25}</td>
-              <td>{selectedCollege.satScores.math50}</td>
-              <td>{selectedCollege.satScores.math75}</td>
+              <td>{selectedCollege.sat.eng25}</td>
+              <td>{selectedCollege.sat.eng50}</td>
+              <td>{selectedCollege.sat.eng75}</td>
             </tr>
             <tr>
-              <td>ACT</td>
-              <td>{selectedCollege.actScores.composite25}</td>
-              <td>{selectedCollege.actScores.composite50}</td>
-              <td>{selectedCollege.actScores.composite75}</td>
+              <td>SAT Math</td>
+              <td>{selectedCollege.sat.math25}</td>
+              <td>{selectedCollege.sat.math50}</td>
+              <td>{selectedCollege.sat.math75}</td>
+            </tr>
+            <tr>
+              <td>ACT Composite</td>
+              <td>{selectedCollege.act.composite25}</td>
+              <td>{selectedCollege.act.composite50}</td>
+              <td>{selectedCollege.act.composite75}</td>
+            </tr>
+            <tr>
+              <td>ACT English</td>
+              <td>{selectedCollege.act.eng25}</td>
+              <td>{selectedCollege.act.eng50}</td>
+              <td>{selectedCollege.act.eng75}</td>
+            </tr>
+            <tr>
+              <td>ACT Math</td>
+              <td>{selectedCollege.act.math25}</td>
+              <td>{selectedCollege.act.math50}</td>
+              <td>{selectedCollege.act.math75}</td>
             </tr>
           </tbody>
         </table>
