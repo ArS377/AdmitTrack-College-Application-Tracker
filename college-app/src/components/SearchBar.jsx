@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import axios from "axios";
 
-const SearchBar = ({ setResults, setSelectedCollege }) => {
+const SearchBar = ({ setResults, onSearch }) => {
   const [input, setInput] = useState("");
   const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -31,6 +31,7 @@ const SearchBar = ({ setResults, setSelectedCollege }) => {
 
   const handleChange = (value) => {
     setInput(value);
+    onSearch(null);
     fetchData(value);
   };
 

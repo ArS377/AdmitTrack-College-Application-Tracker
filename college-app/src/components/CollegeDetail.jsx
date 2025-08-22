@@ -1,8 +1,8 @@
-const CollegeDetail = ({ selectedCollege, addCollegeToList }) => {
+const CollegeDetail = ({ selectedCollege, alreadyAdded, addCollegeToList }) => {
   return (
     selectedCollege && (
       <div className="selected-college-details">
-        <h3>{selectedCollege.collegeName} Information </h3>
+        <h3>{selectedCollege.collegeName}</h3>
         <p>
           Homepage:
           <a href={selectedCollege.info.website}>
@@ -60,9 +60,11 @@ const CollegeDetail = ({ selectedCollege, addCollegeToList }) => {
             </tr>
           </tbody>
         </table>
-        <button className="addButton" onClick={() => addCollegeToList()}>
-          Add College
-        </button>
+        {!alreadyAdded && (
+          <button className="addButton" onClick={() => addCollegeToList()}>
+            Add College
+          </button>
+        )}
         <button className="addButton">What are my chances?</button>
       </div>
     )

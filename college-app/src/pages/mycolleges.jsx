@@ -11,6 +11,7 @@ export function MyColleges() {
   const [collegeList, setCollegeList] = useState([]);
   const [results, setResults] = useState([]);
   const [selectedCollege, setSelectedCollege] = useState(null);
+  const [alreadyAdded, setAlreadyAdded] = useState(false);
   const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
@@ -22,9 +23,19 @@ export function MyColleges() {
   }, []);
 
   const onSelectCollege = async (college) => {
+    if (!college) {
+      setSelectedCollege(null);
+      return;
+    }
     console.log("Selected college:", college); //college printed in console
     const response = await axios.get(`${apiUrl}/collegelist/${college.unitId}`);
     if (response) {
+      const flag = collegeList.some(
+        (entry) => parseInt(entry.collegeId) === college.unitId
+      );
+      console.log("isAlreadyAdded: ", flag);
+      setAlreadyAdded(flag);
+
       setSelectedCollege(response.data); // set the college data object as the selected college.
     }
     setResults([]); //clear search results list
@@ -33,7 +44,7 @@ export function MyColleges() {
   const addCollegeToList = async () => {
     if (selectedCollege) {
       const isAlreadyAdded = collegeList.some(
-        (college) => college.unitId === selectedCollege.unitId
+        (college) => parseInt(college.collegeId) === selectedCollege.unitId
       );
 
       if (isAlreadyAdded) {
@@ -100,16 +111,19 @@ export function MyColleges() {
         <div className="col num1">
           <h2>Search for Colleges</h2>
           <div className="searchBarContainer">
-            <SearchBar setResults={setResults} />
+            <SearchBar setResults={setResults} onSearch={onSelectCollege} />
             <SearchResultsList
               results={results}
               onSelectCollege={onSelectCollege}
             />
           </div>
-          <CollegeDetail
-            selectedCollege={selectedCollege}
-            addCollegeToList={() => addCollegeToList()}
-          />
+          {selectedCollege && (
+            <CollegeDetail
+              selectedCollege={selectedCollege}
+              addCollegeToList={() => addCollegeToList()}
+              alreadyAdded={alreadyAdded}
+            />
+          )}
         </div>
 
         <div className="col num2">
