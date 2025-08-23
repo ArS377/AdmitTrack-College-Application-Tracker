@@ -73,7 +73,15 @@ function readAnnualData(dataFn, annual_trend, metricNameDict, perCollegeData) {
 function parseDataRow(dataFn, dataStructure, labelNameDict, collegeData) {
   // Skip empty rows
   const id = dataFn(dataStructure.collegeId);
-  if (id === undefined || id === "" || id === null) {
+  const collegeName = dataFn(dataStructure.collegeName);
+  if (
+    id === undefined ||
+    id === "" ||
+    id === null ||
+    collegeName === undefined ||
+    collegeName === null ||
+    collegeName.trim() === ""
+  ) {
     return;
   }
   // check if collegeId is a number
@@ -535,39 +543,39 @@ const COLLEGE_DS_GENDER_DATA = {
 const ReadData = async (collegeData) => {
   /*
   await parseCollegeDataXlsx(
-    "../data/sat_scores.xlsx",
+    "data/sat_scores.xlsx",
     COLLEGE_DS_SAT,
     collegeData
   );
   await parseCollegeDataXlsx(
-    "../data/act_scores.xlsx",
+    "data/act_scores.xlsx",
     COLLEGE_DS_ACT,
     collegeData
   );
 
   await parseCollegeDataXlsx(
-    "../data/admission_trends.xlsx",
+    "data/admission_trends.xlsx",
     COLLEGE_DS_ADMISSION_TREND,
     collegeData
   );
   await parseCollegeDataXlsx(
-    "../data/Enrollment_data_gender.xlsx",
+    "data/Enrollment_data_gender.xlsx",
     COLLEGE_DS_GENDER_DATA,
     collegeData
   );
   await parseCollegeDataXlsx(
-    "../data/Enrollment_data_race.xlsx",
+    "data/Enrollment_data_race.xlsx",
     COLLEGE_DS_RACE_DATA,
     collegeData
   );
   await parseCollegeDataXlsx(
-    "../data/Enrollment_data_race.xlsx",
+    "data/Enrollment_data_race.xlsx",
     COLLEGE_DS_RACE_DATA,
     collegeData
   );
 */
   await parseCollegeDataCsv(
-    "../data/ipeds_college_data.csv",
+    "data/ipeds_college_data.csv",
     COLLEGE_DS_REQ,
     collegeData
   );
@@ -575,7 +583,7 @@ const ReadData = async (collegeData) => {
   //TBD: FIX THE forced sequencing: we need time for the CSV parser to finish.
   // Hence parsing the Xlsx at the end.
   await parseCollegeDataXlsx(
-    "../data/institution_info.xlsx",
+    "data/institution_info.xlsx",
     COLLEGE_DS_INFO,
     collegeData
   );
@@ -584,13 +592,13 @@ const ReadData = async (collegeData) => {
   console.log(collegeData.get(243744));
   console.log(collegeData.get(105668));
 
-  const jsondata = JSON.stringify(Array.from(collegeData.values()));
+  const jsondata = JSON.stringify(Array.from(collegeData.values()), null, 2);
   // write the json data into a file.
   //console.log(jsondata);
 
   console.log("json data length: ", jsondata.length.toLocaleString());
 
-  writeFile("collegedata.json", jsondata, (err) => {
+  writeFile("data/collegedata.json", jsondata, (err) => {
     if (err) {
       console.error("Error writing file:", err);
     } else {
