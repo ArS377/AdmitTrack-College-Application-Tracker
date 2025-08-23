@@ -1,3 +1,5 @@
+import "./SearchResultsList.css";
+
 const SearchResultsList = ({ results, onSelectCollege }) => {
   return (
     <div className="results-list">

@@ -20,12 +20,11 @@ backend/.env
 college_data_processor/data/*.xlsx
 college_data_processor/src/collegedata.json
 README.md
-backend/data/collegedata.json
+backend/data/college*.json
 backend/.DS_Store
-.DS_Store
-college_data_processor/collegedata.json
+college_data_processor/data/college*.json
 college_data_processor/data/IPEDS Data Variables Selected.pdf
 .gitignore
-college_data_processor/data/ipeds_college_data.csv
-college_data_processor/data/ipeds_college_data-backup.csv
+college_data_processor/data/*.csv
+college_data_processor/data/*.xlsx
 college_data_processor/data/Tuition.csv

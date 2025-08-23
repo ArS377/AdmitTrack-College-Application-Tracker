@@ -9,7 +9,7 @@ const SearchBar = ({ setResults, onSearch }) => {
   const fetchData = async (value) => {
     setResults([]);
     value = value && value.trim();
-    if (!value || value.length < 3) {
+    if (!value || value.length < 2) {
       setResults([]);
       return;
     }

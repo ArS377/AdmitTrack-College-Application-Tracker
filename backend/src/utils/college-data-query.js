@@ -2,7 +2,7 @@ import { readFileSync } from "fs";
 import jsonata from "jsonata";
 
 // Parse JSON string into object
-const data = readFileSync("data/collegedata.json", "utf8");
+const data = readFileSync("data/collegedata-merged.json", "utf8");
 const collegeData = JSON.parse(data);
 //console.log(collegeData);
 console.log(`College Data Loaded. College Count: ${collegeData.length}`);
@@ -23,17 +23,52 @@ export async function retrieveCollegeInfo(unitId) {
 }
 
 export async function retrieveCollegeListByNamePrefix(namePrefix) {
+  const searchWords = namePrefix
+    .toLowerCase()
+    .split(/[ -]/)
+    .filter((a) => a != "of" && a != "and" && a != "at")
+    .sort();
+
+  let exactPrefixMatch = [];
+  let keywordMatch = [];
+  collegeData.forEach((college) => {
+    // check exact prefix match
+    if (college.collegeName.startsWith(namePrefix)) {
+      exactPrefixMatch.push({
+        unitId: college.unitId,
+        collegeName: college.collegeName,
+      });
+    } else {
+      // check keyword match
+      const matched = searchWords.every((word) => {
+        return college.searchWords.some((element) => element.startsWith(word));
+      });
+      if (matched) {
+        keywordMatch.push({
+          unitId: college.unitId,
+          collegeName: college.collegeName,
+        });
+      }
+    }
+  });
   /*
-  //const expression = jsonata("$.collegeName"); // -- success
-  //const expression = jsonata("$.act_scores[math75>30]"); //-- success; returns all act scores with math75 > 30
-  //const expression = jsonata("$[act_scores.math75>32].collegeName"); // -- success; returns all colleges with math75 > 32
-  const expression = jsonata(
-    "$[act_scores.math75 and act_scores.math75>33]^(-act_scores.math75,collegeName).collegeName" // filter+sorting
-  ); // -- returns all colleges with math75 > 32, sorted by college name
+  console.log("============================================================");
+  console.log("Exact Prefix Match");
+  console.log(exactPrefixMatch);
+  console.log("============================================================");
+  console.log("Keyword Match");
+  console.log(keywordMatch);
+  console.log("============================================================");
+  console.log("Name prefix use in the search: ", namePrefix);
+  console.log("============================================================");
   */
-  namePrefix = namePrefix.toLowerCase();
+  exactPrefixMatch.push(...keywordMatch);
+  return exactPrefixMatch;
+}
+
+export async function retrieveCollegeList() {
   const expression = jsonata(
-    `$[collegeName and $match($lowercase(collegeName), /\\b${namePrefix}/)].{'unitId':unitId, 'collegeName':collegeName}` // filter+sorting
+    `$[collegeName].{'unitId':unitId, 'collegeName':collegeName}^(collegeName)` // filter+sorting
   ); // -- returns all colleges with math75 > 32, sorted by college name
   return await expression.evaluate(collegeData);
 }
@@ -66,11 +101,21 @@ export async function retrieveCollegeListBasedOnTestScore(sat, act) {
   return await expression.evaluate(collegeData);
 }
 
-let result = await retrieveCollegeInfo(231624);
+let result = undefined;
+result = await retrieveCollegeInfo(231624);
 //console.log("retrieveCollegeData: ", result);
 
-result = await retrieveCollegeListByNamePrefix("Univers");
-console.log("retrieveCollegeData: ", result);
+result = await retrieveCollegeInfo(243744);
+//console.log("retrieveCollegeData: ", result);
+
+result = await retrieveCollegeInfo(236948);
+//console.log("retrieveCollegeData: ", result);
+
+result = await retrieveCollegeListByNamePrefix("University of Washington");
+//console.log("retrieveCollegeData: ", result);
+
+result = await retrieveCollegeList();
+//console.log("retrieveCollegeData: ", result);
 
 const sat = { math: 800, eng: 720 };
 const act = undefined;
