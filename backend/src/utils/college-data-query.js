@@ -79,6 +79,7 @@ function normalizeElement(element) {
 }
 
 function matchesCriteria(college, criteria) {
+  if (!criteria) return true;
   let result = true;
   criteria.forEach((element) => {
     if (result == false) {
@@ -110,7 +111,11 @@ function matchesCriteria(college, criteria) {
   return result;
 }
 
-export function retrieveCollegeListByNamePrefix(namePrefix, criteria, fields) {
+export function retrieveCollegeListByNamePrefix(
+  namePrefix,
+  fields = ["unitId", "collegeName"],
+  criteria
+) {
   const collegeData = getCollegeData();
 
   namePrefix =
@@ -233,16 +238,17 @@ let result = undefined;
 //result = await retrieveCollegeInfo(236948);
 //console.log("retrieveCollegeInfo: ", result);
 
-const criteria = [{ path: "admissions.total_pct", expr: "<70" }];
+const criteria = [{ path: "admissions.total_pct", expr: "<90" }];
 let fields = undefined;
 fields = ["unitId", "collegeName", "admissions.total_pct"];
 //fields = ["unitId", "collegeName", "admissions.total_pct", "act", "sat"];
 
 result = retrieveCollegeListByNamePrefix(
   "University of Wisconsin",
-  criteria,
-  fields
+  fields,
+  criteria
 );
+result = retrieveCollegeListByNamePrefix("San Jose");
 console.log("retrieveCollegeListByNamePrefix: ", result);
 
 const sat = { math: 800, eng: 720 };

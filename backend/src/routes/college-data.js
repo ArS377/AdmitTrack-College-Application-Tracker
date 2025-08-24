@@ -30,7 +30,7 @@ collegeDataRouter.get("/collegelist", authenticateToken, async (req, res) => {
     console.log("retrieveCollegeListBasedOnTestScore:", result);
   } else {
     console.log("searching college by name prefix");
-    result = await retrieveCollegeListByNamePrefix(q);
+    result = retrieveCollegeListByNamePrefix(q);
   }
   if (result) {
     if (!result.length) {
