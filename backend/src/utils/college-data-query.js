@@ -1,13 +1,10 @@
 import { readFileSync } from "fs";
 import jsonata from "jsonata";
+import _ from "lodash";
+import getCollegeData from "./college-data.js";
+import { pickFields } from "./data-selector.js";
 
-// Parse JSON string into object
-const data = readFileSync("data/collegedata-merged.json", "utf8");
-const collegeData = JSON.parse(data);
-//console.log(collegeData);
-console.log(`College Data Loaded. College Count: ${collegeData.length}`);
-
-export async function retrieveCollegeInfo(unitId) {
+export function retrieveCollegeInfo(unitId) {
   /*
   //const expression = jsonata("$.collegeName"); // -- success
   //const expression = jsonata("$.act_scores[math75>30]"); //-- success; returns all act scores with math75 > 30
@@ -16,41 +13,149 @@ export async function retrieveCollegeInfo(unitId) {
     "$[act_scores.math75 and act_scores.math75>33]^(-act_scores.math75,collegeName).collegeName" // filter+sorting
   ); // -- returns all colleges with math75 > 32, sorted by college name
   */
+  const collegeData = getCollegeData();
+
   const expression = jsonata(
     `$[unitId=${unitId}]` // filter+sorting
   ); // -- returns all colleges with math75 > 32, sorted by college name
-  return await expression.evaluate(collegeData);
+  return expression.evaluate(collegeData);
 }
 
-export async function retrieveCollegeListByNamePrefix(namePrefix) {
+/**
+ *
+ * @param {*} value
+ * @param {*} expr
+ * @returns false if expr with value results in false
+ */
+function evaluateExpression(value, expr) {
+  if (!expr) return true; // expr not defined. return true.
+
+  // Trim spaces
+  expr = expr.trim();
+  //console.log(`value = ${value}, expr=${expr}`);
+  // Numeric comparisons (<, <=, >, >=, =)
+  const numberMatch = expr.match(/^(<=|>=|<|>|=)?\s*(-?\d+(\.\d+)?)$/);
+  if (numberMatch) {
+    const operator = numberMatch[1] || "=";
+    const num = parseFloat(numberMatch[2]);
+    const val = parseFloat(value);
+
+    switch (operator) {
+      case "<":
+        return val < num;
+      case "<=":
+        return val <= num;
+      case ">":
+        return val > num;
+      case ">=":
+        return val >= num;
+      case "=":
+        return val === num;
+      default:
+        return false;
+    }
+  }
+
+  // String equality (=CA or just CA)
+  const stringMatch = expr.match(/^=?(.+)$/);
+  if (stringMatch) {
+    const expected = stringMatch[1].trim();
+    return String(value) === expected;
+  }
+
+  //console.error("invalid expression: ", expr);
+  return true;
+}
+
+function normalizeElement(element) {
+  if (typeof element === "string") {
+    return { path: element, expr: null };
+  } else if (typeof element === "object" && element !== null) {
+    const { path, expr = null } = element;
+    //console.log(`normalize: ${JSON.stringify(element)}: ${path}${expr}`);
+    return { path, expr };
+  }
+  return { path: null, expr: null };
+}
+
+function matchesCriteria(college, criteria) {
+  let result = true;
+  criteria.forEach((element) => {
+    if (result == false) {
+      // already failed the previous criteria.
+      // no need to evaluate the remaining criteria.
+      //console.log("skipping criteria: ", criteria);
+      return;
+    }
+    const { path, expr } = normalizeElement(element);
+    /*
+    console.log(
+      `matchescriteria check: ${college.collegeName}: ${JSON.stringify(
+        element
+      )} ${path} ${expr}`
+    );
+    */
+    const value = _.get(college, path);
+    if (value !== undefined && value != null) {
+      if (evaluateExpression(value, expr) === false) {
+        // this object doesn't meet the criteria.
+        // ignore this object.
+        //console.log("did not match: ", { path, value });
+        result = false;
+      }
+    } else {
+      result = false;
+    }
+  });
+  return result;
+}
+
+export function retrieveCollegeListByNamePrefix(namePrefix, criteria, fields) {
+  const collegeData = getCollegeData();
+
+  namePrefix =
+    namePrefix == null || namePrefix.trim() === "" ? null : namePrefix.trim();
   const searchWords = namePrefix
-    .toLowerCase()
-    .split(/[ -]/)
-    .filter((a) => a != "of" && a != "and" && a != "at")
-    .sort();
+    ? namePrefix
+        .toLowerCase()
+        .split(/[ -]/)
+        .filter((a) => a != "of" && a != "and" && a != "at")
+        .sort()
+    : null;
 
   let exactPrefixMatch = [];
   let keywordMatch = [];
   collegeData.forEach((college) => {
     // check exact prefix match
-    if (college.collegeName.startsWith(namePrefix)) {
-      exactPrefixMatch.push({
-        unitId: college.unitId,
-        collegeName: college.collegeName,
-      });
+
+    // if namePrefix is not null, it must match
+    if (
+      (namePrefix == null || college.collegeName.startsWith(namePrefix)) &&
+      matchesCriteria(college, criteria)
+    ) {
+      // pick the fields for selected colleges.
+      exactPrefixMatch.push(pickFields(college, fields));
     } else {
       // check keyword match
-      const matched = searchWords.every((word) => {
-        return college.searchWords.some((element) => element.startsWith(word));
-      });
-      if (matched) {
-        keywordMatch.push({
-          unitId: college.unitId,
-          collegeName: college.collegeName,
+      const matchedKeywords =
+        searchWords &&
+        searchWords.every((word) => {
+          return college.searchWords.some((element) =>
+            element.startsWith(word)
+          );
         });
+
+      // search words is not null, it has to match keywords
+      if (
+        (searchWords == null || matchedKeywords) &&
+        matchesCriteria(college, criteria)
+      ) {
+        // pick fields for selected colleges.
+        keywordMatch.push(pickFields(college, fields));
       }
     }
   });
+
   /*
   console.log("============================================================");
   console.log("Exact Prefix Match");
@@ -62,18 +167,34 @@ export async function retrieveCollegeListByNamePrefix(namePrefix) {
   console.log("Name prefix use in the search: ", namePrefix);
   console.log("============================================================");
   */
+
   exactPrefixMatch.push(...keywordMatch);
   return exactPrefixMatch;
 }
 
-export async function retrieveCollegeList() {
+export function retrieveCollegeListByAcceptanceRate(acceptanceRate) {
+  const collegeDetail =
+    "{'unitId':unitId, 'collegeName':collegeName, 'info':info, 'sat':sat, 'act':act, \
+    'admissions':{'total_pct':admissions.total_pct}}^(collegeName)";
+  const collegeData = getCollegeData();
   const expression = jsonata(
-    `$[collegeName].{'unitId':unitId, 'collegeName':collegeName}^(collegeName)` // filter+sorting
-  ); // -- returns all colleges with math75 > 32, sorted by college name
-  return await expression.evaluate(collegeData);
+    `$[admissions.total_pct and admissions.total_pct < ${acceptanceRate}].${collegeDetail}` // filter+sorting
+  );
+  return expression.evaluate(collegeData);
 }
 
-export async function retrieveCollegeListBasedOnTestScore(sat, act) {
+export function retrieveCollegeListByState(state) {
+  const collegeDetail =
+    "{'unitId':unitId, 'collegeName':collegeName, 'info':info, 'sat':sat, 'act':act, \
+    'admissions':{'total_pct':admissions.total_pct}}^(collegeName)";
+  const collegeData = getCollegeData();
+  const expression = jsonata(
+    `$[info.address and info.state = '${state}'].${collegeDetail}` // filter+sorting
+  );
+  return expression.evaluate(collegeData);
+}
+
+export function retrieveCollegeListBasedOnTestScore(sat, act) {
   let expression;
   /*
   const college_detail =
@@ -85,6 +206,7 @@ export async function retrieveCollegeListBasedOnTestScore(sat, act) {
       'act_eng25':act.eng25,'act_eng50':act.eng50,'act_eng75':act.eng75,\
       'act_math25':act.math25,'act_math50':act.math50,'act_math75':act.math75}";
       */
+  const collegeData = getCollegeData();
   if (sat) {
     expression = jsonata(
       `$[sat.math25 and sat.math25<${sat.math} and sat.math75 > ${
@@ -98,26 +220,38 @@ export async function retrieveCollegeListBasedOnTestScore(sat, act) {
       }]` // filter+sorting
     ); // -- returns all colleges with math75 > 32, sorted by college name
   }
-  return await expression.evaluate(collegeData);
+  return expression.evaluate(collegeData);
 }
 
 let result = undefined;
-result = await retrieveCollegeInfo(231624);
-//console.log("retrieveCollegeData: ", result);
+//result = await retrieveCollegeInfo(231624);
+//console.log("retrieveCollegeInfo: ", result);
 
-result = await retrieveCollegeInfo(243744);
-//console.log("retrieveCollegeData: ", result);
+//result = await retrieveCollegeInfo(243744);
+//console.log("retrieveCollegeInfo: ", result);
 
-result = await retrieveCollegeInfo(236948);
-//console.log("retrieveCollegeData: ", result);
+//result = await retrieveCollegeInfo(236948);
+//console.log("retrieveCollegeInfo: ", result);
 
-result = await retrieveCollegeListByNamePrefix("University of Washington");
-//console.log("retrieveCollegeData: ", result);
+const criteria = [{ path: "admissions.total_pct", expr: "<70" }];
+let fields = undefined;
+fields = ["unitId", "collegeName", "admissions.total_pct"];
+//fields = ["unitId", "collegeName", "admissions.total_pct", "act", "sat"];
 
-result = await retrieveCollegeList();
-//console.log("retrieveCollegeData: ", result);
+result = retrieveCollegeListByNamePrefix(
+  "University of Wisconsin",
+  criteria,
+  fields
+);
+console.log("retrieveCollegeListByNamePrefix: ", result);
 
 const sat = { math: 800, eng: 720 };
 const act = undefined;
-result = await retrieveCollegeListBasedOnTestScore(sat, act);
-//console.log("retrieveCollegeData: ", result);
+//result = await retrieveCollegeListBasedOnTestScore(sat, act);
+//console.log("retrieveCollegeListBasedOnTestScore: ", result);
+
+//result = retrieveCollegeListByAcceptanceRate(10);
+//console.log("retrieveCollegeListByAcceptanceRate: ", result);
+
+//result = await retrieveCollegeListByState("CA");
+//console.log("retrieveCollegeListByState: ", result);
