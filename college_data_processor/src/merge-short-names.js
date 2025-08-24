@@ -1,13 +1,34 @@
 import { readFileSync, writeFileSync } from "fs";
 import jsonata from "jsonata";
 
-export async function mergeShortNames() {
+function extractAddressParts(address) {
+  if (!address) return null;
+
+  // Match: city (any chars), state (2 uppercase letters), ZIP (5-digit with optional -4)
+  const regex = /,\s*([^,]+?)\s*,?\s*([A-Z]{2})\s+(\d{5}(?:-\d{4})?)$/;
+  const match = address.match(regex);
+
+  if (!match) return null;
+
+  let [, city, state, zip] = match;
+  city = city.trim();
+  return [city, state, zip];
+}
+
+export function mergeShortNames() {
   let data = readFileSync("data/collegedata.json", "utf8");
   const collegeData = JSON.parse(data);
   data = readFileSync("data/collegenames.json", "utf8");
   const collegeDataWithShortNames = JSON.parse(data);
 
   collegeData.map((itemA) => {
+    if (itemA.info.address) {
+      const [city, state, zip] = extractAddressParts(itemA.info.address);
+      itemA.info.city = city;
+      itemA.info.state = state;
+      itemA.info.zip = zip;
+    }
+
     itemA.searchWords = itemA.collegeName
       .toLowerCase()
       .split(/[ -]/)

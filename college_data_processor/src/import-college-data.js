@@ -2,6 +2,18 @@ import ExcelJS from "exceljs";
 import { createReadStream, writeFile } from "fs";
 import csv from "csv-parser";
 
+function parseIntOrNull(str, radix = 10) {
+  //str = str.trim();
+  if (str === "") return null; // handle empty string explicitly
+  const n = parseInt(str, radix);
+  return isNaN(n) ? null : n;
+}
+
+function parseEmptyAsNull(str) {
+  str = str.trim();
+  return str === "" ? null : str;
+}
+
 function applyFormatter(value, formatter) {
   return value === "-" || value === null
     ? undefined
@@ -72,21 +84,17 @@ function readAnnualData(dataFn, annual_trend, metricNameDict, perCollegeData) {
 
 function parseDataRow(dataFn, dataStructure, labelNameDict, collegeData) {
   // Skip empty rows
-  const id = dataFn(dataStructure.collegeId);
-  const collegeName = dataFn(dataStructure.collegeName);
-  if (
-    id === undefined ||
-    id === "" ||
-    id === null ||
-    collegeName === undefined ||
-    collegeName === null ||
-    collegeName.trim() === ""
-  ) {
+  const collegeId = applyFormatter(
+    dataFn(dataStructure.collegeId),
+    parseIntOrNull
+  );
+  const collegeName = applyFormatter(
+    dataFn(dataStructure.collegeName),
+    parseEmptyAsNull
+  );
+  if (collegeId === null || collegeName === null) {
     return;
   }
-  // check if collegeId is a number
-  const collegeId = parseInt(id);
-  //console.log("here 2");
 
   // Create a college object if it doesn't exist
   let perCollegeData = undefined;
@@ -95,7 +103,7 @@ function parseDataRow(dataFn, dataStructure, labelNameDict, collegeData) {
   } else {
     perCollegeData = {
       unitId: collegeId,
-      collegeName: dataFn(dataStructure.collegeName),
+      collegeName: collegeName,
     };
     collegeData.set(collegeId, perCollegeData);
   }
@@ -145,7 +153,14 @@ async function parseCollegeDataCsv(filePath, dataStructure, collegeData) {
     .pipe(csv({ headers: false, skipLines: 1 }))
     .on("data", (data) =>
       parseDataRow(
-        (i) => data[i - 1],
+        (i) => {
+          if (Array.isArray(i) == false) {
+            return data[i - 1];
+          } else {
+            // we will assume the individual entries are ints
+            return i.map((a) => parseIntOrNull(data[a - 1]));
+          }
+        },
         dataStructure,
         labelNameDict,
         collegeData
@@ -174,7 +189,13 @@ async function parseCollegeDataXlsx(filePath, dataStructure, collegeData) {
     }
     // Skip rows before the data begins
     parseDataRow(
-      (i) => row.getCell(i).value,
+      (i) => {
+        if (Array.isArray(i) == false) {
+          return row.getCell(i).value;
+        } else {
+          return i.map((a) => parseIntOrNull(row.getCell(a).value));
+        }
+      },
       dataStructure,
       labelNameDict,
       collegeData
@@ -191,7 +212,10 @@ const COLLEGE_DS_INFO = {
     {
       data_label: "info",
       metrics: [
-        { name: "address", column: 7 },
+        {
+          name: "address",
+          column: 7,
+        },
         {
           name: "website",
           column: 8,
@@ -233,8 +257,16 @@ const COLLEGE_DS_REQ = {
     {
       data_label: "tuition",
       metrics: [
-        { name: "in-state", column: 3 },
-        { name: "out-of-state", column: 4 },
+        {
+          name: "in-state",
+          column: 3,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "out-of-state",
+          column: 4,
+          formatter: (value) => parseIntOrNull(value),
+        },
       ],
     },
     {
@@ -243,68 +275,278 @@ const COLLEGE_DS_REQ = {
         {
           name: "gpa",
           column: 6,
+          formatter: (value) => parseIntOrNull(value),
         },
-        { name: "rank", column: 7 },
-        { name: "record", column: 8 },
-        { name: "college_prep", column: 9 },
-        { name: "reccommendation", column: 10 },
-        { name: "formal_competency", column: 11 },
-        { name: "work_exp", column: 12 },
-        { name: "essay", column: 13 },
-        { name: "legacy", column: 14 },
-        { name: "test_score", column: 15 },
-        { name: "other_test", column: 16 },
-        { name: "eng_proficiency", column: 17 },
+        {
+          name: "rank",
+          column: 7,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "record",
+          column: 8,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "college_prep",
+          column: 9,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "reccommendation",
+          column: 10,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "formal_competency",
+          column: 11,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "work_exp",
+          column: 12,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "essay",
+          column: 13,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "legacy",
+          column: 14,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "test_score",
+          column: 15,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "other_test",
+          column: 16,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "eng_proficiency",
+          column: 17,
+          formatter: (value) => parseIntOrNull(value),
+        },
       ],
     },
     {
       data_label: "applicants",
       metrics: [
-        { name: "total", column: 18, formatter: (value) => parseInt(value) },
-        { name: "men", column: 19, formatter: (value) => parseInt(value) },
-        { name: "women", column: 20, formatter: (value) => parseInt(value) },
-        { name: "other", column: 21, formatter: (value) => parseInt(value) },
-        { name: "unknown", column: 22, formatter: (value) => parseInt(value) },
+        {
+          name: "total",
+          column: 18,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "men",
+          column: 19,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "women",
+          column: 20,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "other",
+          column: 21,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "unknown",
+          column: 22,
+          formatter: (value) => parseIntOrNull(value),
+        },
       ],
     },
     {
       data_label: "admissions",
       metrics: [
-        { name: "total", column: 23, formatter: (value) => parseInt(value) },
-        { name: "men", column: 24, formatter: (value) => parseInt(value) },
-        { name: "women", column: 25, formatter: (value) => parseInt(value) },
-        { name: "other", column: 26, formatter: (value) => parseInt(value) },
-        { name: "unknown", column: 27, formatter: (value) => parseInt(value) },
+        {
+          name: "total",
+          column: 23,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "men",
+          column: 24,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "women",
+          column: 25,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "other",
+          column: 26,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "unknown",
+          column: 27,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "total_pct",
+          column: [23, 18],
+          formatter: (value) => {
+            if (value[0] == null || value[1] == null) {
+              return null;
+            }
+            const result =
+              Math.round((parseInt(value[0]) * 1000) / parseInt(value[1])) / 10;
+            console.log(`${value[0]}*100/${value[1]} = ${result}`);
+            return result;
+          },
+        },
+        {
+          name: "men_pct",
+          column: [24, 19],
+          formatter: (value) => {
+            if (value[0] == null || value[1] == null) {
+              return null;
+            }
+            const result =
+              Math.round((parseInt(value[0]) * 1000) / parseInt(value[1])) / 10;
+            console.log(`${value[0]}*100/${value[1]} = ${result}`);
+            return result;
+          },
+        },
+        {
+          name: "women_pct",
+          column: [25, 20],
+          formatter: (value) => {
+            if (value[0] == null || value[1] == null) {
+              return null;
+            }
+            const result =
+              Math.round((parseInt(value[0]) * 1000) / parseInt(value[1])) / 10;
+            console.log(`${value[0]}*100/${value[1]} = ${result}`);
+            return result;
+          },
+        },
+        {
+          name: "other_pct",
+          column: [26, 21],
+          formatter: (value) => {
+            if (value[0] == null || value[1] == null) {
+              return null;
+            }
+            const result =
+              Math.round((parseInt(value[0]) * 1000) / parseInt(value[1])) / 10;
+            console.log(`${value[0]}*100/${value[1]} = ${result}`);
+            return result;
+          },
+        },
+        {
+          name: "unknown_pct",
+          column: [27, 22],
+          formatter: (value) => {
+            if (value[0] == null || value[1] == null) {
+              return null;
+            }
+            const result =
+              Math.round((parseInt(value[0]) * 1000) / parseInt(value[1])) / 10;
+            console.log(`${value[0]}*100/${value[1]} = ${result}`);
+            return result;
+          },
+        },
       ],
     },
     {
       data_label: "enrolled",
       metrics: [
-        { name: "total", column: 28, formatter: (value) => parseInt(value) },
-        { name: "men", column: 29, formatter: (value) => parseInt(value) },
-        { name: "women", column: 30, formatter: (value) => parseInt(value) },
-        { name: "other", column: 31, formatter: (value) => parseInt(value) },
-        { name: "unknown", column: 32, formatter: (value) => parseInt(value) },
+        {
+          name: "total",
+          column: 28,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "men",
+          column: 29,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "women",
+          column: 30,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "other",
+          column: 31,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "unknown",
+          column: 32,
+          formatter: (value) => parseIntOrNull(value),
+        },
       ],
     },
     {
       data_label: "ft",
       metrics: [
-        { name: "total", column: 33, formatter: (value) => parseInt(value) },
-        { name: "men", column: 34, formatter: (value) => parseInt(value) },
-        { name: "women", column: 35, formatter: (value) => parseInt(value) },
-        { name: "other", column: 36, formatter: (value) => parseInt(value) },
-        { name: "unknown", column: 37, formatter: (value) => parseInt(value) },
+        {
+          name: "total",
+          column: 33,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "men",
+          column: 34,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "women",
+          column: 35,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "other",
+          column: 36,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "unknown",
+          column: 37,
+          formatter: (value) => parseIntOrNull(value),
+        },
       ],
     },
     {
       data_label: "pt",
       metrics: [
-        { name: "total", column: 38, formatter: (value) => parseInt(value) },
-        { name: "men", column: 39, formatter: (value) => parseInt(value) },
-        { name: "women", column: 40, formatter: (value) => parseInt(value) },
-        { name: "other", column: 41, formatter: (value) => parseInt(value) },
-        { name: "unknown", column: 42, formatter: (value) => parseInt(value) },
+        {
+          name: "total",
+          column: 38,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "men",
+          column: 39,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "women",
+          column: 40,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "other",
+          column: 41,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "unknown",
+          column: 42,
+          formatter: (value) => parseIntOrNull(value),
+        },
       ],
     },
     {
@@ -313,19 +555,43 @@ const COLLEGE_DS_REQ = {
         {
           name: "submitted_cnt",
           column: 43,
-          formatter: (value) => parseInt(value),
+          formatter: (value) => parseIntOrNull(value),
         },
         {
           name: "submitted_pct",
           column: 44,
-          formatter: (value) => parseInt(value),
+          formatter: (value) => parseIntOrNull(value),
         },
-        { name: "eng25", column: 47, formatter: (value) => parseInt(value) },
-        { name: "eng50", column: 48, formatter: (value) => parseInt(value) },
-        { name: "eng75", column: 49, formatter: (value) => parseInt(value) },
-        { name: "math25", column: 50, formatter: (value) => parseInt(value) },
-        { name: "math50", column: 51, formatter: (value) => parseInt(value) },
-        { name: "math75", column: 52, formatter: (value) => parseInt(value) },
+        {
+          name: "eng25",
+          column: 47,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "eng50",
+          column: 48,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "eng75",
+          column: 49,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "math25",
+          column: 50,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "math50",
+          column: 51,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "math75",
+          column: 52,
+          formatter: (value) => parseIntOrNull(value),
+        },
       ],
     },
     {
@@ -334,104 +600,212 @@ const COLLEGE_DS_REQ = {
         {
           name: "submitted_cnt",
           column: 45,
-          formatter: (value) => parseInt(value),
+          formatter: (value) => parseIntOrNull(value),
         },
         {
           name: "submitted_pct",
           column: 46,
-          formatter: (value) => parseInt(value),
+          formatter: (value) => parseIntOrNull(value),
         },
         {
           name: "composite25",
           column: 53,
-          formatter: (value) => parseInt(value),
+          formatter: (value) => parseIntOrNull(value),
         },
         {
           name: "composite50",
           column: 54,
-          formatter: (value) => parseInt(value),
+          formatter: (value) => parseIntOrNull(value),
         },
         {
           name: "composite75",
           column: 55,
-          formatter: (value) => parseInt(value),
+          formatter: (value) => parseIntOrNull(value),
         },
-        { name: "eng25", column: 56, formatter: (value) => parseInt(value) },
-        { name: "eng50", column: 57, formatter: (value) => parseInt(value) },
-        { name: "eng75", column: 58, formatter: (value) => parseInt(value) },
-        { name: "math25", column: 59, formatter: (value) => parseInt(value) },
-        { name: "math50", column: 60, formatter: (value) => parseInt(value) },
-        { name: "math75", column: 61, formatter: (value) => parseInt(value) },
+        {
+          name: "eng25",
+          column: 56,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "eng50",
+          column: 57,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "eng75",
+          column: 58,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "math25",
+          column: 59,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "math50",
+          column: 60,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "math75",
+          column: 61,
+          formatter: (value) => parseIntOrNull(value),
+        },
       ],
     },
     {
       data_label: "race",
       metrics: [
-        { name: "total", column: 62, formatter: (value) => parseInt(value) },
-        { name: "total_m", column: 63, formatter: (value) => parseInt(value) },
-        { name: "total_w", column: 64, formatter: (value) => parseInt(value) },
-        { name: "native", column: 65, formatter: (value) => parseInt(value) },
-        { name: "native_m", column: 66, formatter: (value) => parseInt(value) },
-        { name: "native_w", column: 67, formatter: (value) => parseInt(value) },
-        { name: "asian", column: 68, formatter: (value) => parseInt(value) },
-        { name: "asian_m", column: 69, formatter: (value) => parseInt(value) },
-        { name: "aisan_w", column: 70, formatter: (value) => parseInt(value) },
-        { name: "black", column: 71, formatter: (value) => parseInt(value) },
-        { name: "black_m", column: 72, formatter: (value) => parseInt(value) },
-        { name: "black_w", column: 73, formatter: (value) => parseInt(value) },
-        { name: "hispanic", column: 74, formatter: (value) => parseInt(value) },
+        {
+          name: "total",
+          column: 62,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "total_m",
+          column: 63,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "total_w",
+          column: 64,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "native",
+          column: 65,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "native_m",
+          column: 66,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "native_w",
+          column: 67,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "asian",
+          column: 68,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "asian_m",
+          column: 69,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "aisan_w",
+          column: 70,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "black",
+          column: 71,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "black_m",
+          column: 72,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "black_w",
+          column: 73,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "hispanic",
+          column: 74,
+          formatter: (value) => parseIntOrNull(value),
+        },
         {
           name: "hispanic_m",
           column: 75,
-          formatter: (value) => parseInt(value),
+          formatter: (value) => parseIntOrNull(value),
         },
         {
           name: "hispanic_w",
           column: 76,
-          formatter: (value) => parseInt(value),
+          formatter: (value) => parseIntOrNull(value),
         },
-        { name: "hawaiian", column: 77, formatter: (value) => parseInt(value) },
+        {
+          name: "hawaiian",
+          column: 77,
+          formatter: (value) => parseIntOrNull(value),
+        },
         {
           name: "hawaiian_m",
           column: 78,
-          formatter: (value) => parseInt(value),
+          formatter: (value) => parseIntOrNull(value),
         },
         {
           name: "hawaiian_w",
           column: 79,
-          formatter: (value) => parseInt(value),
+          formatter: (value) => parseIntOrNull(value),
         },
-        { name: "white", column: 80, formatter: (value) => parseInt(value) },
-        { name: "white_m", column: 81, formatter: (value) => parseInt(value) },
-        { name: "white_w", column: 82, formatter: (value) => parseInt(value) },
-        { name: "blend", column: 83, formatter: (value) => parseInt(value) },
-        { name: "blend_m", column: 84, formatter: (value) => parseInt(value) },
-        { name: "blend_w", column: 85, formatter: (value) => parseInt(value) },
-        { name: "unknown", column: 86, formatter: (value) => parseInt(value) },
+        {
+          name: "white",
+          column: 80,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "white_m",
+          column: 81,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "white_w",
+          column: 82,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "blend",
+          column: 83,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "blend_m",
+          column: 84,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "blend_w",
+          column: 85,
+          formatter: (value) => parseIntOrNull(value),
+        },
+        {
+          name: "unknown",
+          column: 86,
+          formatter: (value) => parseIntOrNull(value),
+        },
         {
           name: "unknown_m",
           column: 87,
-          formatter: (value) => parseInt(value),
+          formatter: (value) => parseIntOrNull(value),
         },
         {
           name: "unknown_w",
           column: 88,
-          formatter: (value) => parseInt(value),
+          formatter: (value) => parseIntOrNull(value),
         },
         {
           name: "nonresident",
           column: 89,
-          formatter: (value) => parseInt(value),
+          formatter: (value) => parseIntOrNull(value),
         },
         {
           name: "nonresident_m",
           column: 90,
-          formatter: (value) => parseInt(value),
+          formatter: (value) => parseIntOrNull(value),
         },
         {
           name: "nonresident_w",
           column: 91,
-          formatter: (value) => parseInt(value),
+          formatter: (value) => parseIntOrNull(value),
         },
       ],
     },
