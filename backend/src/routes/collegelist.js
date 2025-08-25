@@ -42,6 +42,9 @@ collegeListRouter.get("/collegelist", authenticateToken, async (req, res) => {
     "admissions.total_pct",
     "act",
     "sat",
+    "info.city",
+    "info.state",
+    "tuition",
   ];
   let criteria = [
     { path: "applicants.total", expr: ">0" },

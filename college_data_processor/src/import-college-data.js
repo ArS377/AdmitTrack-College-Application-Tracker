@@ -258,12 +258,12 @@ const COLLEGE_DS_REQ = {
       data_label: "tuition",
       metrics: [
         {
-          name: "in-state",
+          name: "in_state",
           column: 3,
           formatter: (value) => parseIntOrNull(value),
         },
         {
-          name: "out-of-state",
+          name: "out_of_state",
           column: 4,
           formatter: (value) => parseIntOrNull(value),
         },

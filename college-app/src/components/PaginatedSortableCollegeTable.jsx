@@ -1,17 +1,39 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { addToMyColleges, fetchMyColleges } from "../utils/collegeUtils"; // Assuming you have a utility function to fetch colleges
+
 function PaginatedSortableCollegeTable({ collegeList }) {
+  const navigate = useNavigate();
+  const CURRENCY_USD = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  });
   console.log("College List Length: ", collegeList.length);
   const [data, setData] = useState(collegeList);
+  const [myColleges, setMyColleges] = useState([]);
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "ascending",
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 25; // Can be a state variable for user-controlled options
+  const itemsPerPage = 10; // Can be a state variable for user-controlled options
 
+  const fmc = async () => {
+    const colleges = await fetchMyColleges();
+    console.log(`colleges length = ${colleges.length}`);
+    setMyColleges(colleges);
+    return colleges;
+  };
   useEffect(() => {
     setData(collegeList);
+    fmc();
   }, [collegeList]);
+
+  async function handleAddCollege(college) {
+    const result = await addToMyColleges(college);
+    result && (await fmc());
+  }
 
   const getValue = (obj, key) =>
     key.split(".").reduce((acc, part) => acc && acc[part], obj);
@@ -34,6 +56,10 @@ function PaginatedSortableCollegeTable({ collegeList }) {
     setSortConfig({ key, direction });
   };
 
+  const goToCollegeInfo = (college) => {
+    navigate("/collegeinfo", { state: college });
+  };
+
   // pagination logic
   // console.log("calculating pagination for data size: ", data.length);
   const totalPages = Math.ceil(data.length / itemsPerPage);
@@ -47,8 +73,8 @@ function PaginatedSortableCollegeTable({ collegeList }) {
   );
 
   return (
-    <div className="table table-striped college-list-table">
-      <table>
+    <div className="college-list-table">
+      <table className="table table-hover">
         <thead>
           <tr>
             <th onClick={() => sortTable("collegeName")}>Name</th>
@@ -56,15 +82,69 @@ function PaginatedSortableCollegeTable({ collegeList }) {
             <th onClick={() => sortTable("admissions.total_pct")}>
               Acceptance Rate
             </th>
+            <th>SAT Score Range</th>
+            <th>ACT Score Range</th>
+            <th>
+              Tuition
+              <br />
+              In-State / Out-of-State
+            </th>
+            <th>Location</th>
+            <th>Add to List</th>
           </tr>
         </thead>
         <tbody>
           {currentData &&
             currentData.map((item) => (
               <tr key={item.unitId}>
-                <td>{item.collegeName}</td>
+                <td
+                  onClick={() => goToCollegeInfo(item)}
+                  style={{ cursor: "pointer" }}
+                >
+                  {item.collegeName}
+                </td>
                 <td>{item.applicants.total}</td>
                 <td>{item.admissions.total_pct}</td>
+                <td>
+                  English:[{item.sat.eng25}...{item.sat.eng50}...
+                  {item.sat.eng75}]
+                  <br />
+                  Math:[{item.sat.math25}...{item.sat.math50}...
+                  {item.sat.math75}]
+                </td>
+                <td>
+                  Composite:[{item.act.composite25}...{item.act.composite50}...
+                  {item.act.composite75}]
+                  <br />
+                  English:[{item.act.eng25}...{item.act.eng50}...
+                  {item.act.eng75}]
+                  <br />
+                  Math:[{item.act.math25}...{item.act.math50}...
+                  {item.act.math75}]
+                </td>
+                <td>
+                  {CURRENCY_USD.format(item.tuition.in_state)} /{" "}
+                  {CURRENCY_USD.format(item.tuition.out_of_state)}
+                </td>
+                <td>
+                  {item.info.city}, {item.info.state}
+                </td>
+                <td>
+                  {myColleges.some(
+                    (college) => parseInt(college.collegeId) === item.unitId
+                  ) ? (
+                    <button className="btn btn-primary" disabled>
+                      Added
+                    </button>
+                  ) : (
+                    <button
+                      className="btn btn-sm btn-outline-primary"
+                      onClick={() => handleAddCollege(item)}
+                    >
+                      Add
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
         </tbody>
@@ -73,6 +153,7 @@ function PaginatedSortableCollegeTable({ collegeList }) {
       {/* Pagination Controls */}
       <div>
         <button
+          className="btn btn-sm btn-outline-primary"
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
         >
@@ -83,6 +164,7 @@ function PaginatedSortableCollegeTable({ collegeList }) {
           Page {currentPage} of {totalPages}{" "}
         </span>
         <button
+          className="btn btn-sm btn-outline-primary"
           onClick={() =>
             setCurrentPage((prev) => Math.min(prev + 1, totalPages))
           }

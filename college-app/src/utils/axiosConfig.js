@@ -30,7 +30,11 @@ axios.interceptors.response.use(
           console.log("Retrying original request with new access token");
           return axios(originalRequest);
         } else {
-          console.error("Failed to refresh access token:", response.statusText);
+          response &&
+            console.error(
+              "Failed to refresh access token:",
+              response.statusText
+            );
           setAccessToken(undefined);
         }
 

@@ -49,7 +49,9 @@ export function CollegeInfo() {
     <>
       <div>
         <div>
-          <a onClick={handleBackToCollegeList}>(back to college list)</a>
+          <a onClick={handleBackToCollegeList} className="btn btn-link">
+            Back to College List
+          </a>
           <h2>{college.collegeName}</h2>
           <p>
             {collegeDetail.homepage && (

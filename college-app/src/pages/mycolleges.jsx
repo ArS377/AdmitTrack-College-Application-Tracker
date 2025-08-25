@@ -4,7 +4,7 @@ import SearchBar from "../components/SearchBar";
 import SearchResultsList from "../components/SearchResultsList";
 import CollegeDetail from "../components/CollegeDetail";
 import CollegeList from "../components/CollegeList";
-import { fetchMyColleges } from "../utils/collegeUtils"; // Assuming you have a utility function to fetch colleges
+import { fetchMyColleges, addToMyColleges } from "../utils/collegeUtils"; // Assuming you have a utility function to fetch colleges
 import axios from "axios";
 
 export function MyColleges() {
@@ -53,27 +53,9 @@ export function MyColleges() {
         alert(`${selectedCollege.collegeName} is already in your list.`);
         return;
       }
+      addToMyColleges(selectedCollege);
       setCollegeList((prevList) => [...prevList, selectedCollege]);
       setSelectedCollege(null); //clears info box
-
-      try {
-        const response = await axios({
-          method: "post",
-          url: `${apiUrl}/mycolleges`,
-          data: {
-            collegeId: selectedCollege.unitId,
-            collegeName: selectedCollege.collegeName,
-          },
-        });
-        /*
-        axios.post(`${apiUrl}/mycolleges`, {
-          email: email,
-          collegeId: selectedCollege._id,
-        });*/
-        console.log("College added successfully:", response.data);
-      } catch (error) {
-        console.error("Error adding college:", error);
-      }
     } else {
       alert("Please select a college from the search results first!");
     }
