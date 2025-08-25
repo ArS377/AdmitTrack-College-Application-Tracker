@@ -10,7 +10,7 @@ import { getUserData } from "../utils/user-data.js";
 const collegeDataRouter = Router();
 
 // Get college list
-collegeDataRouter.get("/collegelist", authenticateToken, async (req, res) => {
+collegeDataRouter.get("/collegesearch", authenticateToken, async (req, res) => {
   const { email } = req.user;
   const db = req.db;
 
@@ -20,6 +20,7 @@ collegeDataRouter.get("/collegelist", authenticateToken, async (req, res) => {
   const { q } = req.query;
   let result = undefined;
   if (!q) {
+    // TODO ignore this.
     const user = getUserData(email, db);
     // TODO retrieve user profile
 
@@ -47,7 +48,7 @@ collegeDataRouter.get("/collegelist", authenticateToken, async (req, res) => {
 
 // Get logged-in user data
 collegeDataRouter.get(
-  "/collegelist/:id",
+  "/collegesearch/:id",
   authenticateToken,
   async (req, res) => {
     const { id } = req.params;

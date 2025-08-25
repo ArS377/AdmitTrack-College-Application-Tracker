@@ -401,7 +401,7 @@ const COLLEGE_DS_REQ = {
             }
             const result =
               Math.round((parseInt(value[0]) * 1000) / parseInt(value[1])) / 10;
-            console.log(`${value[0]}*100/${value[1]} = ${result}`);
+            //console.log(`${value[0]}*100/${value[1]} = ${result}`);
             return result;
           },
         },
@@ -414,7 +414,7 @@ const COLLEGE_DS_REQ = {
             }
             const result =
               Math.round((parseInt(value[0]) * 1000) / parseInt(value[1])) / 10;
-            console.log(`${value[0]}*100/${value[1]} = ${result}`);
+            //console.log(`${value[0]}*100/${value[1]} = ${result}`);
             return result;
           },
         },
@@ -427,7 +427,7 @@ const COLLEGE_DS_REQ = {
             }
             const result =
               Math.round((parseInt(value[0]) * 1000) / parseInt(value[1])) / 10;
-            console.log(`${value[0]}*100/${value[1]} = ${result}`);
+            //console.log(`${value[0]}*100/${value[1]} = ${result}`);
             return result;
           },
         },
@@ -440,7 +440,7 @@ const COLLEGE_DS_REQ = {
             }
             const result =
               Math.round((parseInt(value[0]) * 1000) / parseInt(value[1])) / 10;
-            console.log(`${value[0]}*100/${value[1]} = ${result}`);
+            //console.log(`${value[0]}*100/${value[1]} = ${result}`);
             return result;
           },
         },
@@ -453,7 +453,7 @@ const COLLEGE_DS_REQ = {
             }
             const result =
               Math.round((parseInt(value[0]) * 1000) / parseInt(value[1])) / 10;
-            console.log(`${value[0]}*100/${value[1]} = ${result}`);
+            //console.log(`${value[0]}*100/${value[1]} = ${result}`);
             return result;
           },
         },

@@ -8,8 +8,9 @@ import authRouter from "./routes/auth.js";
 import mycollegeRouter from "./routes/mycolleges.js";
 import userRouter from "./routes/users.js";
 import emailRouter from "./routes/email.js";
-import collegeDataRouter from "./routes/college-data.js";
+import collegeSearchRouter from "./routes/collegesearch.js";
 import dotenv from "dotenv";
+import collegeListRouter from "./routes/collegelist.js";
 
 dotenv.config();
 
@@ -29,7 +30,8 @@ app.use("/api", authRouter);
 app.use("/api", mycollegeRouter);
 app.use("/api", userRouter);
 app.use("/api", emailRouter); // Email routes
-app.use("/api", collegeDataRouter);
+app.use("/api", collegeSearchRouter);
+app.use("/api", collegeListRouter);
 
 const client = new MongoClient(process.env.ATLAS_URI);
 let db;

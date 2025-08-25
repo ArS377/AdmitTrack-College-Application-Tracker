@@ -15,7 +15,7 @@ const SearchBar = ({ setResults, onSearch }) => {
     }
     try {
       const response = await axios.get(
-        `${apiUrl}/collegelist?q=${encodeURIComponent(value)}`
+        `${apiUrl}/collegesearch?q=${encodeURIComponent(value)}`
       );
       if (response) {
         setResults(response.data);

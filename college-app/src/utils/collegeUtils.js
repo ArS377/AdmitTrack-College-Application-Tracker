@@ -8,7 +8,8 @@ export const fetchMyColleges = async () => {
     if (response && response.status === 200) {
       colleges = response.data;
     } else {
-      console.error("Failed to fetch colleges:", response.statusText);
+      response &&
+        console.error("Failed to fetch colleges:", response.statusText);
     }
   } catch (error) {
     console.error("Error fetching data:", error);

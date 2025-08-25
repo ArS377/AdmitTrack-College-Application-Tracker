@@ -249,7 +249,7 @@ result = retrieveCollegeListByNamePrefix(
   criteria
 );
 result = retrieveCollegeListByNamePrefix("San Jose");
-console.log("retrieveCollegeListByNamePrefix: ", result);
+//console.log("retrieveCollegeListByNamePrefix: ", result);
 
 const sat = { math: 800, eng: 720 };
 const act = undefined;

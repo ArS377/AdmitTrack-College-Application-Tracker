@@ -11,6 +11,7 @@ import NavBar from "./components/NavBar.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
+import Research from "./pages/Research.jsx";
 import "./utils/axiosConfig.js"; // Import axios configuration
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<Home />} />
             <Route path="/mycolleges" element={<MyColleges />} />
+            <Route path="/research" element={<Research />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/collegeinfo" element={<CollegeInfo />} />
           </Route>

@@ -28,7 +28,9 @@ export function MyColleges() {
       return;
     }
     console.log("Selected college:", college); //college printed in console
-    const response = await axios.get(`${apiUrl}/collegelist/${college.unitId}`);
+    const response = await axios.get(
+      `${apiUrl}/collegesearch/${college.unitId}`
+    );
     if (response) {
       const flag = collegeList.some(
         (entry) => parseInt(entry.collegeId) === college.unitId

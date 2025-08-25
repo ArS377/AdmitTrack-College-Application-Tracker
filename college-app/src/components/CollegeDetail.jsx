@@ -9,15 +9,7 @@ const CollegeDetail = ({ selectedCollege, alreadyAdded, addCollegeToList }) => {
             {selectedCollege.info.website}
           </a>
         </p>
-        <p>
-          Acceptance Rate:{" "}
-          {Number(
-            (
-              (selectedCollege.admissions.total * 100) /
-              selectedCollege.applicants.total
-            ).toFixed(1)
-          )}
-        </p>
+        <p>Acceptance Rate: {selectedCollege.admissions.total_pct}</p>
         <table className="standardized-testing-table">
           <thead>
             <tr>

@@ -25,6 +25,10 @@ function NavBar() {
     navigate("/mycolleges");
   };
 
+  const goToResearch = () => {
+    navigate("/research");
+  };
+
   const goToMyProfile = () => {
     navigate("/profile");
   };
@@ -41,6 +45,9 @@ function NavBar() {
               </li>
               <li className="nav-item nav-link" onClick={goToAddCollege}>
                 Add College
+              </li>
+              <li className="nav-item nav-link" onClick={goToResearch}>
+                Research
               </li>
               <li className="nav-item nav-link" onClick={goToMyProfile}>
                 Profile
