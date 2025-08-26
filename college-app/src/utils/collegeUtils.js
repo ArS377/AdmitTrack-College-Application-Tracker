@@ -38,3 +38,29 @@ export async function addToMyColleges(college) {
   }
   return false;
 }
+
+export async function updateCollegeCategory(college, category) {
+  // TODO update college category
+}
+
+export async function updateCollegeAppType(college, appType) {
+  // TODO update college appType
+}
+export async function updateEssayProgress(college, essayProgress) {
+  // TODO update college essayProgress
+}
+export async function updateAppSubmissionStatus(college, appSubmissionStatus) {
+  // TODO update college appSubmissionStatus
+}
+export async function updateTestScoreStatus(college, testScoreStatus) {
+  // TODO update college testScoreStatus
+}
+export async function updateApibScoreStatus(college, apibScoreStatus) {
+  // TODO update college apibScoreStatus
+}
+export async function updateLorStatus(college, lorStatus) {
+  // TODO update college lorStatus
+}
+export async function updateTranscriptStatus(college, lorStatus) {
+  // TODO update college lorStatus
+}

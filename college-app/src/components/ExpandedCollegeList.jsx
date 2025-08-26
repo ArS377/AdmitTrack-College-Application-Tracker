@@ -1,16 +1,20 @@
-import Dropdown from "./Dropdown";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import CollegeCategory from "./CollegeCategory";
 import { useNavigate } from "react-router-dom";
 
 const ExpandedCollegeList = ({ collegeList, deleteCollegeFromList }) => {
-  const navigate = useNavigate();
   console.log("ExpandedCollegeList collegeList:", collegeList.length);
-  const goToColleges = () => {
-    navigate("/mycolleges");
-  };
+  const navigate = useNavigate();
   const goToCollegeInfo = (college) => {
     navigate("/collegeinfo", { state: college });
+  };
+  const goToAddCollege = (college) => {
+    navigate("/mycolleges");
+  };
+  const changeCollegeCategory = async (college, newCategory) => {
+    // TODO change college category in the database.
+    console.log(`change ${college.collegeName} to ${newCategory}`);
   };
   return (
     <>
@@ -37,16 +41,15 @@ const ExpandedCollegeList = ({ collegeList, deleteCollegeFromList }) => {
                 >
                   {college.collegeName}
                 </td>
-                <td>No Due Date</td>
-                <td>0% Completed</td>
+                <td>{!college.appDueDate && <>No Due Date</>}</td>
+                <td>{!college.appProgress && <>0</>}% Completed</td>
                 <td>
-                  <Dropdown
-                    defaultOption={"Category"}
-                    option1={"Dream"}
-                    option2={"Reach"}
-                    option3={"Target"}
-                    option4={"Safety"}
-                  />
+                  {
+                    <CollegeCategory
+                      college={college}
+                      onChange={changeCollegeCategory}
+                    />
+                  }
                 </td>
                 <td>
                   <button
@@ -69,7 +72,7 @@ const ExpandedCollegeList = ({ collegeList, deleteCollegeFromList }) => {
       ) : (
         <p className="mt-3">Search for colleges to add them to your list.</p>
       )}
-      <button className="btn btn-primary" onClick={goToColleges}>
+      <button className="btn btn-primary" onClick={goToAddCollege}>
         Add More Colleges
       </button>
     </>

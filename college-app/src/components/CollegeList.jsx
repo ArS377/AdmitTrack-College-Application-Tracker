@@ -1,8 +1,14 @@
 import Dropdown from "./Dropdown";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { updateCollegeCategory } from "../utils/collegeUtils";
+import { useNavigate } from "react-router-dom";
 
 const CollegeList = ({ collegeList, deleteCollegeFromList }) => {
+  const navigate = useNavigate();
+  const goToCollegeInfo = (college) => {
+    navigate("/collegeinfo", { state: college });
+  };
   return (
     <>
       <h2>My College List</h2>
@@ -13,15 +19,16 @@ const CollegeList = ({ collegeList, deleteCollegeFromList }) => {
               <li
                 className="p-2 bg-light border d-flex align-items-center mb-2 flex-container"
                 key={college.collegeId}
+                onClick={() => goToCollegeInfo(college)}
+                style={{ cursor: "pointer" }}
               >
                 <span>{college.collegeName}</span>
 
                 <Dropdown
-                  defaultOption={"Category"}
-                  option1={"Dream"}
-                  option2={"Reach"}
-                  option3={"Target"}
-                  option4={"Safety"}
+                  name="category"
+                  selected={college.category}
+                  options={["Dream", "Reach", "Target", "Safety"]}
+                  onChange={updateCollegeCategory}
                 />
 
                 <button

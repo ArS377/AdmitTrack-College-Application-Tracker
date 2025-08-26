@@ -1,5 +1,5 @@
-.my-class {
-  width: 150px;
-  align-self: flex-end;
+.dropdown {
+  width: 180px;
+  align-self: flex;
   margin-right: 5px;
 }

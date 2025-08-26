@@ -3,8 +3,19 @@ import CollegeDeadlines from "./CollegeDeadlines";
 import DatePicker from "react-datepicker";
 import { useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
+import {
+  updateCollegeCategory,
+  updateCollegeAppType,
+  updateEssayProgress,
+  updateAppSubmissionStatus,
+  updateTestScoreStatus,
+  updateApibScoreStatus,
+  updateLorStatus,
+  updateTranscriptStatus,
+} from "../utils/collegeUtils";
 
 const ApplicationStatus = (college) => {
+  const updateAppType = async () => {};
   const [startDate, setStartDate] = useState(new Date());
   return (
     <div className="application-status">
@@ -12,12 +23,16 @@ const ApplicationStatus = (college) => {
       <br></br>
       <label>Application Type:</label>
       <Dropdown
-        defaultOption={"Application Type"}
-        option1={"Early Decision"}
-        option2={"Early Decision II"}
-        option3={"Early Action"}
-        option4={"Restrictive Early Action"}
-        option5={"Regular Decision"}
+        name="appType"
+        selected={college.appType}
+        options={[
+          "Early Decision",
+          "Early Decision II",
+          "Early Action",
+          "Restrictive Early Action",
+          "Regular Decision",
+        ]}
+        onChange={updateCollegeAppType}
       />
       <br></br>
       <label className="form-label">Set Application Due Date</label>
@@ -33,74 +48,60 @@ const ApplicationStatus = (college) => {
       <br></br>
       <label>College Classification</label>
       <Dropdown
-        defaultOption={"Category"}
-        option1={"Dream"}
-        option2={"Reach"}
-        option3={"Target"}
-        option4={"Safety"}
-        option5={""}
+        name="category"
+        selected={college.category}
+        options={["Dream", "Reach", "Target", "Safety"]}
+        onChange={updateCollegeCategory}
       />
       <br></br>
       <div>
         <h3>Progress Update</h3>
         <label>Essays / Supplementals</label>
         <Dropdown
-          defaultOption={"Not Started"}
-          option1={"In Progress"}
-          option2={"Completed / Submitted"}
-          option3={""}
-          option4={""}
-          option5={""}
+          name="essayProgress"
+          selected={college.essayProgress}
+          options={["Not Started", "In Progress", "Completed / Submitted"]}
+          onChange={updateEssayProgress}
         />
         <br></br>
         <label>Application Submission Status</label>
         <Dropdown
-          defaultOption={"Not Submitted"}
-          option1={"Submitted"}
-          option2={""}
-          option3={""}
-          option4={""}
-          option5={""}
+          name="appSubmissionStatus"
+          selected={college.appSubmissionStatus}
+          options={["Not Submitted", "Submitted"]}
+          onChange={updateAppSubmissionStatus}
         />
         <br></br>
         <label>Standardized Test Score Sent Status</label>
         <Dropdown
-          defaultOption={"Not Sent"}
-          option1={"Sent"}
-          option2={""}
-          option3={""}
-          option4={""}
-          option5={""}
+          name="testScoreStatus"
+          selected={college.testScoreStatus}
+          options={["Not Sent", "Sent"]}
+          onChange={updateTestScoreStatus}
         />
         <br></br>
         <label>AP / IB Score Send Status</label>
         <Dropdown
-          defaultOption={"Not Sent"}
-          option1={"Sent"}
-          option2={""}
-          option3={""}
-          option4={""}
-          option5={""}
+          name="apibScoreStatus"
+          selected={college.apibScoreStatus}
+          options={["Not Sent", "Sent"]}
+          onChange={updateApibScoreStatus}
         />
         <br></br>
         <label>Letters of Recommendation</label>
         <Dropdown
-          defaultOption={"Not Sent"}
-          option1={"Sent"}
-          option2={""}
-          option3={""}
-          option4={""}
-          option5={""}
+          name="lorStatus"
+          selected={college.lorStatus}
+          options={["Not Sent", "Sent"]}
+          onChange={updateLorStatus}
         />
         <br></br>
         <label>Transcript Send Status</label>
         <Dropdown
-          defaultOption={"Not Sent"}
-          option1={"Sent"}
-          option2={""}
-          option3={""}
-          option4={""}
-          option5={""}
+          name="transcriptStatus"
+          selected={college.transcriptStatus}
+          options={["Not Sent", "Sent"]}
+          onChange={updateTranscriptStatus}
         />
       </div>
     </div>
