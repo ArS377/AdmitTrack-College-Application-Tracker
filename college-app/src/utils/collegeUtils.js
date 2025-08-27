@@ -39,28 +39,62 @@ export async function addToMyColleges(college) {
   return false;
 }
 
+function getMyCollegeStatusString(college) {
+  return JSON.stringify(college);
+}
+export async function updateMyCollegeDetail(college) {
+  try {
+    console.log(
+      `updating college detail: ${getMyCollegeStatusString(college)} `
+    );
+    const response = await axios({
+      method: "put",
+      url: `${apiUrl}/mycolleges/${college.collegeId}`,
+      data: {
+        ...college,
+      },
+    });
+    if (response && response.status === 200) {
+      console.log("College updated successfully:", response.data);
+      return true;
+    }
+  } catch (error) {
+    console.error("Error adding college:", error);
+  }
+  return false;
+}
+
 export async function updateCollegeCategory(college, category) {
   // TODO update college category
+  college = { ...college, category };
+  updateMyCollegeDetail(college);
 }
 
 export async function updateCollegeAppType(college, appType) {
-  // TODO update college appType
+  college = { ...college, appType };
+  updateMyCollegeDetail(college);
 }
 export async function updateEssayProgress(college, essayProgress) {
-  // TODO update college essayProgress
+  college = { ...college, essayProgress };
+  updateMyCollegeDetail(college);
 }
 export async function updateAppSubmissionStatus(college, appSubmissionStatus) {
-  // TODO update college appSubmissionStatus
+  college = { ...college, appSubmissionStatus };
+  updateMyCollegeDetail(college);
 }
 export async function updateTestScoreStatus(college, testScoreStatus) {
-  // TODO update college testScoreStatus
+  college = { ...college, testScoreStatus };
+  updateMyCollegeDetail(college);
 }
 export async function updateApibScoreStatus(college, apibScoreStatus) {
-  // TODO update college apibScoreStatus
+  college = { ...college, apibScoreStatus };
+  updateMyCollegeDetail(college);
 }
 export async function updateLorStatus(college, lorStatus) {
-  // TODO update college lorStatus
+  college = { ...college, lorStatus };
+  updateMyCollegeDetail(college);
 }
-export async function updateTranscriptStatus(college, lorStatus) {
-  // TODO update college lorStatus
+export async function updateTranscriptStatus(college, transcriptStatus) {
+  college = { ...college, transcriptStatus };
+  updateMyCollegeDetail(college);
 }

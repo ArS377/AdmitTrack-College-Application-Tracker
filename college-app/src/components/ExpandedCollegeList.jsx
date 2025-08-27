@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import CollegeCategory from "./CollegeCategory";
 import { useNavigate } from "react-router-dom";
+import { updateCollegeCategory } from "../utils/collegeUtils";
 
 const ExpandedCollegeList = ({ collegeList, deleteCollegeFromList }) => {
   console.log("ExpandedCollegeList collegeList:", collegeList.length);
@@ -43,14 +44,7 @@ const ExpandedCollegeList = ({ collegeList, deleteCollegeFromList }) => {
                 </td>
                 <td>{!college.appDueDate && <>No Due Date</>}</td>
                 <td>{!college.appProgress && <>0</>}% Completed</td>
-                <td>
-                  {
-                    <CollegeCategory
-                      college={college}
-                      onChange={changeCollegeCategory}
-                    />
-                  }
-                </td>
+                <td>{<CollegeCategory college={college} />}</td>
                 <td>
                   <button
                     className="btn btn-outline-danger btn-sm"

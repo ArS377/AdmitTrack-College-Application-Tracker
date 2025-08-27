@@ -1,20 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./Dropdown.css";
 
-const Dropdown = ({ name, selected, options, onChange }) => {
-  const [selectedOption, setSelectedOption] = useState(selected);
+const Dropdown = ({ name, selected, options, handleChange }) => {
+  const [selectedOption, setSelectedOption] = useState();
+  useEffect(() => {
+    setSelectedOption(selected);
+  }, [selected]);
 
   console.log(`name=${name}, selected=${selected}, options=${options.length}`);
 
   return (
-    <div className="dropdown">
+    <span className="dropdown">
       <select
         name={name}
-        className="form-select ms-auto"
+        className=""
         aria-label="Default select example"
         onChange={(e) => {
           setSelectedOption(e.target.value);
-          onChange(e.target.value);
+          handleChange(e.target.value);
         }}
         value={selectedOption ? selectedOption : ""}
       >
@@ -29,7 +32,7 @@ const Dropdown = ({ name, selected, options, onChange }) => {
           </option>
         ))}
       </select>
-    </div>
+    </span>
   );
 };
 

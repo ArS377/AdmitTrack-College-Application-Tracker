@@ -6,14 +6,14 @@ import axios from "axios";
 
 export function CollegeInfo() {
   const [appStatus, setAppStatus] = useState(true);
-  const [college, setCollege] = useState({});
-  const [collegeDetail, setCollegeDetail] = useState({});
+  const [myCollegeStatus, setMyCollegeStatus] = useState();
+  const [collegeDetail, setCollegeDetail] = useState();
   const apiUrl = import.meta.env.VITE_API_URL;
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchCollegeById = async (collegeId) => {
+    const fetchCollegeDetailById = async (collegeId) => {
       try {
         const response = await axios.get(`${apiUrl}/colleges/id`, {
           params: { id: collegeId },
@@ -28,9 +28,27 @@ export function CollegeInfo() {
         console.error("Error fetching college details:", error);
       }
     };
-    setCollege(location.state || {});
+    const fetchMyCollegeStatusById = async (collegeId) => {
+      try {
+        const response = await axios.get(`${apiUrl}/mycolleges/${collegeId}`, {
+          params: { id: collegeId },
+        });
+        if (response.status === 200) {
+          console.log(
+            "College status fetched successfully:",
+            JSON.stringify(response.data)
+          );
+          setMyCollegeStatus(response.data);
+        } else {
+          console.error("Failed to fetch college details:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching college details:", error);
+      }
+    };
     if (location.state?.collegeId) {
-      fetchCollegeById(location.state.collegeId);
+      fetchCollegeDetailById(location.state.collegeId);
+      fetchMyCollegeStatusById(location.state.collegeId);
     }
   }, [location.state]);
 
@@ -52,9 +70,9 @@ export function CollegeInfo() {
           <a onClick={handleBackToCollegeList} className="btn btn-link">
             Back to College List
           </a>
-          <h2>{college.collegeName}</h2>
+          <h2>{collegeDetail?.collegeName}</h2>
           <p>
-            {collegeDetail.homepage && (
+            {collegeDetail?.homepage && (
               <a
                 href={collegeDetail.homepage}
                 target="_blank"
@@ -89,7 +107,7 @@ export function CollegeInfo() {
       <br />
       <div>
         {appStatus ? (
-          <ApplicationStatus college={college} />
+          <ApplicationStatus college={myCollegeStatus} />
         ) : (
           <FullCollegeDetail college={collegeDetail} />
         )}
