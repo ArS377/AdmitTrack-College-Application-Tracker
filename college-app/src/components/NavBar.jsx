@@ -1,22 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { logout } from "../utils/axiosConfig";
 import "./NavBar.css";
-import { setAccessToken } from "../User.jsx"; // Adjust the import path as necessary
 
 function NavBar() {
   const navigate = useNavigate();
-  const apiUrl = import.meta.env.VITE_API_URL;
 
-  const handleSignOut = () => {
-    axios.post(
-      `${apiUrl}/auth/logout`,
-      {},
-      { headers: { "Content-Type": "application/json" } }
-    );
-    setAccessToken(undefined); // Clear the access token
-    console.log("User signed out.");
-    navigate("/");
-  };
   const goToHome = () => {
     navigate("/home");
   };
@@ -31,6 +19,11 @@ function NavBar() {
 
   const goToMyProfile = () => {
     navigate("/profile");
+  };
+
+  const handleSignOut = () => {
+    logout();
+    navigate("/");
   };
 
   return (

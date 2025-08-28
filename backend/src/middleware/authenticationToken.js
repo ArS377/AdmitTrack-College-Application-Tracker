@@ -15,7 +15,7 @@ export function authenticateToken(req, res, next) {
       console.error(
         `Token verification failed: ${err.message}, for token: ${token}`
       );
-      return res.sendStatus(403); // Forbidden
+      return res.sendStatus(401); // Forbidden
     }
     req.user = user; // Attach user info to request object
     console.log("Token verified successfully:", user);
@@ -28,13 +28,15 @@ export function authenticateEmailToken(req, res, next) {
   const { token } = req.body;
   if (!token) {
     console.error("Email token is required for verification.");
+    // Respond indicating that it is a Bad Request
     return res.status(400).json({ message: "Email token is required." });
   }
   verify(token, process.env.EMAIL_TOKEN_SECRET, (err, decoded) => {
     if (err) {
       console.error("Email token verification failed:", err.message);
+      // expired token = unauthorized
       return res
-        .status(403)
+        .status(401)
         .json({ message: "Invalid or expired email token." });
     }
     console.log("Email token is valid for email:", decoded.email);

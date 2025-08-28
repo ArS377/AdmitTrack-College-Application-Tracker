@@ -1,7 +1,7 @@
 import "./FormContainer.css";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { setAccessToken } from "../User.jsx";
+import { setAccessToken } from "../utils/axiosConfig";
 import axios from "axios";
 
 const Login = () => {

@@ -12,11 +12,12 @@ export const fetchMyColleges = async () => {
       response &&
         console.error("Failed to fetch colleges:", response.statusText);
     }
+    console.log(`My Colleges Count = ${colleges.length}`);
+    return colleges;
   } catch (error) {
     console.error("Error fetching data:", error);
+    throw error;
   }
-  console.log(`My Colleges Count = ${colleges.length}`);
-  return colleges;
 };
 
 export async function addToMyColleges(college) {
@@ -33,10 +34,11 @@ export async function addToMyColleges(college) {
       console.log("College added successfully:", response.data);
       return true;
     }
+    return false;
   } catch (error) {
     console.error("Error adding college:", error);
+    throw error;
   }
-  return false;
 }
 
 function getMyCollegeStatusString(college) {
@@ -58,10 +60,11 @@ export async function updateMyCollegeDetail(college) {
       console.log("College updated successfully:", response.data);
       return true;
     }
+    return false;
   } catch (error) {
     console.error("Error adding college:", error);
+    throw error;
   }
-  return false;
 }
 
 export async function updateCollegeCategory(college, category) {
