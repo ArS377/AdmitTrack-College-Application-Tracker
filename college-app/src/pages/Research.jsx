@@ -1,6 +1,6 @@
 import { useLayoutEffect, useState } from "react";
 import axios from "axios";
-import PaginatedSortableCollegeTable from "../components/PaginatedSortableCollegeTable";
+import CollegeResearchTable from "../components/CollegeResearchTable";
 
 export default function Research() {
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -24,7 +24,7 @@ export default function Research() {
 
   return (
     <>
-      <PaginatedSortableCollegeTable collegeList={data} />
+      <CollegeResearchTable collegeList={data} />
     </>
   );
 }

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { addToMyColleges, fetchMyColleges } from "../utils/collegeUtils"; // Assuming you have a utility function to fetch colleges
 
-function PaginatedSortableCollegeTable({ collegeList }) {
+function CollegeResearchTable({ collegeList }) {
   const navigate = useNavigate();
   const CURRENCY_USD = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -13,7 +13,7 @@ function PaginatedSortableCollegeTable({ collegeList }) {
   const [data, setData] = useState(collegeList);
   const [myColleges, setMyColleges] = useState([]);
   const [sortConfig, setSortConfig] = useState({
-    key: null,
+    key: "collegeName",
     direction: "ascending",
   });
   const [currentPage, setCurrentPage] = useState(1);
@@ -60,6 +60,30 @@ function PaginatedSortableCollegeTable({ collegeList }) {
     navigate("/collegeinfo", { state: college });
   };
 
+  const sortedColumnHeader = (key, columnName) => {
+    const ASCENDING_INDICATOR = "▲";
+    const DESCENDING_INDICATOR = "▼";
+    if (key === sortConfig.key) {
+      if (sortConfig.direction === "ascending") {
+        return columnName + " " + ASCENDING_INDICATOR;
+      } else {
+        return columnName + " " + DESCENDING_INDICATOR;
+      }
+    }
+    return columnName;
+  };
+
+  const sortedColumnStyle = (key, columnName) => {
+    if (key === sortConfig.key) {
+      if (sortConfig.direction === "ascending") {
+        return { backgroundColor: "#bae6fd" };
+      } else {
+        return { backgroundColor: "#38bdf8" };
+      }
+    }
+    return { backgroundColor: "#ffffff" };
+  };
+
   // pagination logic
   // console.log("calculating pagination for data size: ", data.length);
   const totalPages = Math.ceil(data.length / itemsPerPage);
@@ -77,10 +101,14 @@ function PaginatedSortableCollegeTable({ collegeList }) {
       <table className="table table-hover">
         <thead>
           <tr>
-            <th onClick={() => sortTable("collegeName")}>Name</th>
-            <th onClick={() => sortTable("applicants.total")}>Applicants</th>
+            <th onClick={() => sortTable("collegeName")}>
+              {sortedColumnHeader("collegeName", "Name")}
+            </th>
+            <th onClick={() => sortTable("applicants.total")}>
+              {sortedColumnHeader("applicants.total", "Applicants")}
+            </th>
             <th onClick={() => sortTable("admissions.total_pct")}>
-              Acceptance Rate
+              {sortedColumnHeader("admissions.total_pct", "Acceptance Rate")}
             </th>
             <th>SAT Score Range</th>
             <th>ACT Score Range</th>
@@ -177,4 +205,4 @@ function PaginatedSortableCollegeTable({ collegeList }) {
   );
 }
 
-export default PaginatedSortableCollegeTable;
+export default CollegeResearchTable;
