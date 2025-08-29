@@ -1,17 +1,6 @@
 import axios from "axios";
 
 const apiUrl = import.meta.env.VITE_API_URL;
-function logoutFromServer() {
-  try {
-    axios.post(
-      `${apiUrl}/auth/logout`,
-      {},
-      { headers: { "Content-Type": "application/json" } }
-    );
-  } catch (error) {
-    console.error("Error encountered in logout: ", error);
-  }
-}
 /**
  *
  * @returns accessToken
@@ -46,10 +35,24 @@ export function setAccessToken(token) {
     sessionStorage.setItem("accessToken", JSON.stringify(token));
   }
 }
+
+function logoutFromServer() {
+  try {
+    axios.post(
+      `${apiUrl}/auth/logout`,
+      {},
+      { headers: { "Content-Type": "application/json" } }
+    );
+  } catch (error) {
+    console.error("Error encountered in logout: ", error);
+  }
+}
+
 export function logout(bSkipLogoutFromServer = false) {
   if (!bSkipLogoutFromServer) logoutFromServer();
   setAccessToken(undefined); // Clear the access token
   console.log("User logged out.");
+  window.location.href = "/";
 }
 
 export async function validateAccessToken() {
@@ -71,9 +74,29 @@ export async function validateAccessToken() {
   } catch (error) {
     console.error("Access token validation failed:", error);
   }
-  handleSignOut();
+  return false;
 }
 
+async function getNewAccessToken() {
+  const refreshAxios = axios.create();
+  let response = undefined;
+  try {
+    response = await refreshAxios.post(
+      `${apiUrl}/auth/accesstoken`,
+      {},
+      { withCredentials: true }
+    );
+    if (response?.status === 200) {
+      console.log("Access token refreshed successfully:", response.data);
+      setAccessToken(response.data?.accessToken); // Update the access token in UserStore
+      return response.data?.accessToken;
+    }
+  } catch (error) {
+    console.error("Error in refreshing access token:", error);
+  }
+  console.error("Error in refreshing access token:", response?.statusText);
+  return undefined;
+}
 axios.interceptors.request.use((config) => {
   const accessToken = getAccessToken();
   console.log("Setting Authorization header with accessToken:", accessToken);
@@ -88,36 +111,26 @@ axios.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    if (originalRequest.url.includes("/auth/accesstoken")) {
+      return Promise.reject(error);
+    }
     if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      try {
-        // ask to refresh the accesstoken
-        const response = await axios.post(
-          `${apiUrl}/auth/accesstoken`,
-          {},
-          { headers: { "Content-Type": "application/json" } }
-        );
-        if (response?.status === 200) {
-          console.log("Access token refreshed successfully:", response.data);
-          setAccessToken(response.data?.access_token); // Update the access token in UserStore
-          originalRequest.headers.Authorization = `Bearer ${response.data.access_token}`;
-          console.log("Retrying original request with new access token");
-          return axios(originalRequest);
-        }
-        // refresh access token is denied
-        console.error("Failed to refresh access token:", response?.statusText);
-
-        //TODO need to validate if this is correct way to handle retry
-      } catch (refreshError) {
-        console.error("Refreshing access_token failed:", refreshError);
+      const newAccessToken = await getNewAccessToken();
+      if (newAccessToken) {
+        console.log("Successfully refreshed accesstoken!");
+        originalRequest._retry = true;
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return axios(originalRequest);
       }
       // unauthorized and refresh token didn't succeed. so, let us signout.
-      handleSignOut(true);
+      logout(true);
     }
     if (error.response?.status === 403) {
       // access prohibited
       // no need to signout. the user still can access the functionality that they have
       // been authorized to.
+      console.warn("Forbidden - not signing out");
     }
+    return Promise.reject(error);
   }
 );

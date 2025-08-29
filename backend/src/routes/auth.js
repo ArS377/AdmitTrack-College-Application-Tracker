@@ -10,26 +10,28 @@ const authRouter = Router();
 
 // get access token from refresh token
 authRouter.post("/auth/accesstoken", (req, res) => {
-  const refreshToken = req.cookies && req.cookies.refresh_token;
+  console.log("request received to refresh token.");
+  const refreshToken = req.cookies?.refreshToken;
   if (!refreshToken) {
     console.error("request.cookies: ", req.cookies);
+    console.error("Refresh token is falsey: ", refreshToken);
     return res.sendStatus(401); // Unauthorized
   }
 
   //TODO remove console logs in production
-  console.log("Rrefresh token:", refreshToken);
+  console.log("Refresh token:", refreshToken);
   verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
     if (err) {
       console.error("Refresh token verification failed:", err.message);
       return res.sendStatus(403); // Forbidden
     }
-    const access_token = sign(
+    const accessToken = sign(
       { email: user.email, id: user.id },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
     );
-    console.log("New Access token generated:", access_token);
-    res.json({ access_token });
+    console.log("New Access token generated:", accessToken);
+    res.json({ accessToken });
   });
 });
 
@@ -60,33 +62,37 @@ authRouter.post("/auth/login", async (req, res) => {
     if (user) {
       const isPasswordValid = await compare(password, user.hashedPassword);
       if (isPasswordValid) {
-        const access_token = sign(
+        const accessToken = sign(
           { email: user.email, id: user._id },
           process.env.ACCESS_TOKEN_SECRET,
           { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
         );
-        const refresh_token = sign(
+        const refreshToken = sign(
           { email: user.email, id: user._id },
           process.env.REFRESH_TOKEN_SECRET,
           { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
         );
 
-        res.cookie("refresh_token", refresh_token, {
-          httpOnly: true,
-          maxAge: parseInt(process.env.REFRESH_TOKEN_EXPIRY),
-          // TODO
-          // secure: process.env.NODE_ENV === "production", // Use secure cookies in production
-          // sameSite: "Strict",
-        });
-
         // TODO remove console logs in production
-        console.log("Access token generated:", access_token);
-        console.log("Refresh token generated:", refresh_token);
+        console.log("Access token generated:", typeof accessToken, accessToken);
+        console.log(
+          "Refresh token generated:",
+          typeof refreshToken,
+          refreshToken
+        );
+
+        // Send refresh token in HttpOnly cookie
+        res.cookie("refreshToken", refreshToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production", // true in production (HTTPS)
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // prevent CSRF
+          maxAge: parseInt(process.env.REFRESH_TOKEN_EXPIRY),
+        });
         console.log("Login successful. Setting cookies: ", res.cookie);
 
         res
           .status(200)
-          .json({ message: "Login successful", access_token: access_token });
+          .json({ message: "Login successful", accessToken: accessToken });
       } else {
         res.status(401).json({ message: "Invalid password" });
       }
@@ -100,6 +106,7 @@ authRouter.post("/auth/login", async (req, res) => {
 });
 
 authRouter.post("/auth/logout", (req, res) => {
+  console.log("received logout.");
   res.clearCookie("refresh_token"); // Clear the refresh token cookie
   res.status(200).json({ message: "Logged out successfully" });
 });

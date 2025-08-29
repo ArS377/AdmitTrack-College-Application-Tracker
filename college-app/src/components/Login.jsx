@@ -23,6 +23,7 @@ const Login = () => {
     };
 
     try {
+      alert(apiUrl);
       const response = await axios.post(`${apiUrl}/auth/login`, userData, {
         headers: { "Content-Type": "application/json" },
       });
@@ -30,7 +31,7 @@ const Login = () => {
       if (response && response.status === 200) {
         console.log("Login successful:", response.data);
         console.log("email:", email);
-        setAccessToken(response.data.access_token); // Update the access token in UserStore
+        setAccessToken(response.data.accessToken); // Update the access token in UserStore
         navigate("/home");
       } else {
         console.error("Login failed:", response.data);

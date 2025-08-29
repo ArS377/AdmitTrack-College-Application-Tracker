@@ -17,7 +17,9 @@ mycollegeRouter.get("/mycolleges", authenticateToken, async (req, res) => {
     const collection = db.collection("userdata");
     const user = await collection.find({ email: email }).toArray();
     if (user.length > 0) {
-      console.log("User found", user[0]);
+      console.log(
+        `MyColleges list for ${user[0].email}: ${user[0].myColleges?.length}`
+      );
       res.status(200).json(user[0].myColleges); // Return the first user found
     } else {
       res.status(404).json({ error: "User not found." });

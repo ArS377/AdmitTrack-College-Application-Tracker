@@ -22,7 +22,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(json());
 app.use(cookieParser()); // Middleware to parse cookies
 
