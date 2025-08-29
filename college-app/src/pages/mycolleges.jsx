@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "./mycolleges.css";
 import SearchBar from "../components/SearchBar";
 import SearchResultsList from "../components/SearchResultsList";
-import CollegeDetail from "../components/CollegeDetail";
+import CollegeInfoShort from "../components/CollegeInfoShort";
 import CollegeList from "../components/CollegeList";
 import { fetchMyColleges, addToMyColleges } from "../utils/collegeUtils"; // Assuming you have a utility function to fetch colleges
 import axios from "axios";
@@ -92,7 +92,7 @@ export function MyColleges() {
   return (
     <div className="container text-center subject">
       <div className="row align-items-start">
-        <div className="col num1">
+        <div className="col num1 col-auto mb-5">
           <h2>Search for Colleges</h2>
           <div className="searchBarContainer">
             <SearchBar setResults={setResults} onSearch={onSelectCollege} />
@@ -102,7 +102,7 @@ export function MyColleges() {
             />
           </div>
           {selectedCollege && (
-            <CollegeDetail
+            <CollegeInfoShort
               selectedCollege={selectedCollege}
               addCollegeToList={() => addCollegeToList()}
               alreadyAdded={alreadyAdded}
@@ -110,7 +110,7 @@ export function MyColleges() {
           )}
         </div>
 
-        <div className="col num2">
+        <div className="col num2 col-auto">
           <CollegeList
             collegeList={collegeList}
             deleteCollegeFromList={deleteCollegeFromList}

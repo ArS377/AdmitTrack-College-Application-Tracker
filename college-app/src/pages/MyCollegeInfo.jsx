@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ApplicationStatus from "../components/ApplicationStatus";
 import axios from "axios";
 
-export function CollegeInfo() {
+export function MyCollegeInfo() {
   const [appStatus, setAppStatus] = useState(true);
   const [myCollegeStatus, setMyCollegeStatus] = useState();
   const [collegeDetail, setCollegeDetail] = useState();
@@ -15,9 +15,9 @@ export function CollegeInfo() {
   useEffect(() => {
     const fetchCollegeDetailById = async (collegeId) => {
       try {
-        const response = await axios.get(`${apiUrl}/colleges/id`, {
-          params: { id: collegeId },
-        });
+        const response = await axios.get(
+          `${apiUrl}/collegesearch/${collegeId}`
+        );
         if (response.status === 200) {
           console.log("College details fetched successfully:", response.data);
           setCollegeDetail(response.data);
@@ -72,13 +72,13 @@ export function CollegeInfo() {
           </a>
           <h2>{collegeDetail?.collegeName}</h2>
           <p>
-            {collegeDetail?.homepage && (
+            {collegeDetail?.info.website && (
               <a
-                href={collegeDetail.homepage}
+                href={collegeDetail?.info.website}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {collegeDetail.homepage}
+                {collegeDetail?.info.website}
               </a>
             )}
           </p>
