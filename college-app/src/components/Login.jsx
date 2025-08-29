@@ -23,7 +23,6 @@ const Login = () => {
     };
 
     try {
-      alert(apiUrl);
       const response = await axios.post(`${apiUrl}/auth/login`, userData, {
         headers: { "Content-Type": "application/json" },
       });
