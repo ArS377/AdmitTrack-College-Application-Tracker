@@ -26,7 +26,7 @@ export async function addToMyColleges(college) {
       method: "post",
       url: `${apiUrl}/mycolleges`,
       data: {
-        collegeId: college.unitId,
+        unitId: college.unitId,
         collegeName: college.collegeName,
       },
     });
@@ -51,7 +51,7 @@ export async function updateMyCollegeDetail(college) {
     );
     const response = await axios({
       method: "put",
-      url: `${apiUrl}/mycolleges/${college.collegeId}`,
+      url: `${apiUrl}/mycolleges/${college.unitId}`,
       data: {
         ...college,
       },

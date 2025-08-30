@@ -1,23 +1,23 @@
 import FullCollegeDetail from "../components/FullCollegeDetail";
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ApplicationStatus from "../components/ApplicationStatus";
 import axios from "axios";
 
 export function MyCollegeInfo() {
-  const [appStatus, setAppStatus] = useState(true);
-  const [myCollegeStatus, setMyCollegeStatus] = useState();
-  const [collegeDetail, setCollegeDetail] = useState();
-  const apiUrl = import.meta.env.VITE_API_URL;
   const location = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchCollegeDetailById = async (collegeId) => {
+  const [renderSwitch, setRenderSwitch] = useState(false);
+  const [showAppStatus, setShowAppStatus] = useState(true);
+  const [myCollegeStatus, setMyCollegeStatus] = useState();
+  const [collegeDetail, setCollegeDetail] = useState();
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+  useLayoutEffect(() => {
+    const fetchCollegeDetailById = async (unitId) => {
       try {
-        const response = await axios.get(
-          `${apiUrl}/collegesearch/${collegeId}`
-        );
+        const response = await axios.get(`${apiUrl}/collegesearch/${unitId}`);
         if (response.status === 200) {
           console.log("College details fetched successfully:", response.data);
           setCollegeDetail(response.data);
@@ -28,10 +28,10 @@ export function MyCollegeInfo() {
         console.error("Error fetching college details:", error);
       }
     };
-    const fetchMyCollegeStatusById = async (collegeId) => {
+    const fetchMyCollegeStatusById = async (unitId) => {
       try {
-        const response = await axios.get(`${apiUrl}/mycolleges/${collegeId}`, {
-          params: { id: collegeId },
+        const response = await axios.get(`${apiUrl}/mycolleges/${unitId}`, {
+          params: { id: unitId },
         });
         if (response.status === 200) {
           console.log(
@@ -40,27 +40,42 @@ export function MyCollegeInfo() {
           );
           setMyCollegeStatus(response.data);
         } else {
-          console.error("Failed to fetch college details:", response.data);
+          console.error(
+            "Failed to fetch college from MyCollegeList:",
+            response.data
+          );
         }
       } catch (error) {
-        console.error("Error fetching college details:", error);
+        console.error(
+          "Failed to fetch college from MyCollegeList. May not be in the list."
+        );
       }
     };
-    if (location.state?.collegeId) {
-      fetchCollegeDetailById(location.state.collegeId);
-      fetchMyCollegeStatusById(location.state.collegeId);
+    if (location.state) {
+      let { unitId, appStatus } = location.state || {};
+      setShowAppStatus(appStatus);
+      console.log("***MyCollegeInfo.location.state: ", location.state);
+      fetchCollegeDetailById(unitId);
+      fetchMyCollegeStatusById(unitId);
+    } else {
+      navigate("/home");
     }
-  }, [location.state]);
+  }, [location.state, renderSwitch]);
+
+  const toggleRenderSwitch = () => {
+    console.log("toggleRenderSwitch invoked");
+    setRenderSwitch((prev) => !prev);
+  };
 
   const handleAppStatus = () => {
-    setAppStatus(true);
+    setShowAppStatus(true);
   };
   const handleCollegeData = () => {
-    setAppStatus(false);
+    setShowAppStatus(false);
   };
 
   const handleBackToCollegeList = () => {
-    navigate("/home");
+    navigate(-1, { replace: true });
   };
 
   return (
@@ -87,7 +102,7 @@ export function MyCollegeInfo() {
         <ul className="nav nav-tabs">
           <li className="nav-item">
             <a
-              className={`nav-link ${appStatus ? "active" : ""}`}
+              className={`nav-link ${showAppStatus ? "active" : ""}`}
               aria-current="page"
               onClick={handleAppStatus}
             >
@@ -96,7 +111,7 @@ export function MyCollegeInfo() {
           </li>
           <li className="nav-item">
             <a
-              className={`nav-link ${!appStatus ? "active" : ""}`}
+              className={`nav-link ${!showAppStatus ? "active" : ""}`}
               onClick={handleCollegeData}
             >
               College Data
@@ -106,10 +121,18 @@ export function MyCollegeInfo() {
       </div>
       <br />
       <div>
-        {appStatus ? (
-          <ApplicationStatus college={myCollegeStatus} />
+        {showAppStatus ? (
+          <ApplicationStatus
+            collegeStatus={myCollegeStatus}
+            collegeDetail={collegeDetail}
+            toggleRenderSwitch={toggleRenderSwitch}
+          />
         ) : (
-          <FullCollegeDetail college={collegeDetail} />
+          <FullCollegeDetail
+            collegeStatus={myCollegeStatus}
+            collegeDetail={collegeDetail}
+            toggleRenderSwitch={toggleRenderSwitch}
+          />
         )}
       </div>
     </>

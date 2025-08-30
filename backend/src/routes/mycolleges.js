@@ -36,7 +36,7 @@ mycollegeRouter.get("/mycolleges", authenticateToken, async (req, res) => {
 mycollegeRouter.get("/mycolleges/:id", authenticateToken, async (req, res) => {
   const { email } = req.user; // Get email from authenticated user
   const { id } = req.params;
-  const collegeId = id ? parseInt(id) : null;
+  const unitId = id ? parseInt(id) : null;
 
   const db = req.db; // Get the database instance from the request
   const collection = db.collection("userdata");
@@ -47,13 +47,17 @@ mycollegeRouter.get("/mycolleges/:id", authenticateToken, async (req, res) => {
   } else {
     console.log("MyColleges: ", existingUser.myColleges.length);
     console.log(
-      `Attempting to retrieve college status for <${id} -> ${collegeId}>`
+      `Attempting to retrieve college status for <${id} -> ${unitId}>`
     );
     const college = existingUser.myColleges.find(
-      (college) => college.collegeId === collegeId
+      (college) => college.unitId === unitId
     );
-    console.log(`sending college status: ${JSON.stringify(college)}`);
-    res.status(200).json(college);
+    if (college) {
+      console.log(`sending college status: ${JSON.stringify(college)}`);
+      res.status(200).json(college);
+    } else {
+      res.status(404).send();
+    }
   }
 });
 
@@ -63,7 +67,7 @@ mycollegeRouter.get("/mycolleges/:id", authenticateToken, async (req, res) => {
 mycollegeRouter.post("/mycolleges", authenticateToken, async (req, res) => {
   console.log(req.body);
   const { email } = req.user; // Get email from authenticated user
-  const { collegeId, collegeName } = req.body;
+  const { unitId, collegeName } = req.body;
 
   const db = req.db; // Get the database instance from the request
   const collection = db.collection("userdata");
@@ -72,7 +76,7 @@ mycollegeRouter.post("/mycolleges", authenticateToken, async (req, res) => {
   if (!existingUser) {
     res.status(404).json({ message: "User not found" });
   } else {
-    existingUser.myColleges.push({ collegeId, collegeName });
+    existingUser.myColleges.push({ unitId, collegeName });
 
     await collection.findOneAndUpdate(
       { email: email }, //filter by email
@@ -89,7 +93,7 @@ mycollegeRouter.put("/mycolleges/:id", authenticateToken, async (req, res) => {
   console.log(req.body);
   const { email } = req.user; // Get email from authenticated user
   const { id } = req.params;
-  const collegeId = id ? parseInt(id) : null;
+  const unitId = id ? parseInt(id) : null;
   const {
     category,
     appType,
@@ -102,7 +106,7 @@ mycollegeRouter.put("/mycolleges/:id", authenticateToken, async (req, res) => {
     transcriptStatus,
   } = req.body;
 
-  console.log(`college id=${id}, ${typeof id} collegeId=${collegeId}, category=${category}, \
+  console.log(`college id=${id}, ${typeof id} unitId=${unitId}, category=${category}, \
       DueDate = ${dueDate}, Essay=${essayProgress}, App=${appSubmissionStatus}, TestScore=${testScoreStatus} \
       AP/IB=${apibScoreStatus}, LOR=${lorStatus}, Transcript=${transcriptStatus}`);
 
@@ -115,7 +119,7 @@ mycollegeRouter.put("/mycolleges/:id", authenticateToken, async (req, res) => {
   } else {
     console.log("MyColleges: ", existingUser.myColleges.length);
     const college = existingUser.myColleges.find(
-      (college) => college.collegeId === collegeId
+      (college) => college.unitId === unitId
     );
     console.log("college find result: ", college);
     if (college) {
@@ -131,7 +135,7 @@ mycollegeRouter.put("/mycolleges/:id", authenticateToken, async (req, res) => {
     }
 
     console.log(
-      `college[${collegeId}] in my list: ${getMyCollegeStatusString(college)}`
+      `college[${unitId}] in my list: ${getMyCollegeStatusString(college)}`
     );
 
     await collection.findOneAndUpdate(
@@ -147,7 +151,7 @@ mycollegeRouter.post(
   async (req, res) => {
     console.log(req.body);
     const { email } = req.user; // Get email from authenticated user
-    const { collegeId, collegeName } = req.body;
+    const { unitId, collegeName } = req.body;
 
     const db = req.db; // Get the database instance from the request
     const collection = db.collection("userdata");
@@ -156,10 +160,10 @@ mycollegeRouter.post(
     if (!existingUser) {
       res.status(404).json({ message: "User not found" });
     } else {
-      console.log("deleting college: ", collegeId);
+      console.log("deleting college: ", unitId);
       await collection.findOneAndUpdate(
         { email: email }, //filter by email
-        { $pull: { myColleges: { collegeId, collegeName } } }
+        { $pull: { myColleges: { unitId, collegeName } } }
       );
     }
   }

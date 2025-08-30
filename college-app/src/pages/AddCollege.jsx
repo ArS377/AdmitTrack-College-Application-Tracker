@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "./mycolleges.css";
+import "./AddCollege.css";
 import SearchBar from "../components/SearchBar";
 import SearchResultsList from "../components/SearchResultsList";
 import CollegeInfoShort from "../components/CollegeInfoShort";
@@ -7,7 +7,7 @@ import CollegeList from "../components/CollegeList";
 import { fetchMyColleges, addToMyColleges } from "../utils/collegeUtils"; // Assuming you have a utility function to fetch colleges
 import axios from "axios";
 
-export function MyColleges() {
+export function AddCollege() {
   const [collegeList, setCollegeList] = useState([]);
   const [results, setResults] = useState([]);
   const [selectedCollege, setSelectedCollege] = useState(null);
@@ -33,7 +33,7 @@ export function MyColleges() {
     );
     if (response) {
       const flag = collegeList.some(
-        (entry) => parseInt(entry.collegeId) === college.unitId
+        (entry) => parseInt(entry.unitId) === college.unitId
       );
       console.log("isAlreadyAdded: ", flag);
       setAlreadyAdded(flag);
@@ -46,7 +46,7 @@ export function MyColleges() {
   const addCollegeToList = async () => {
     if (selectedCollege) {
       const isAlreadyAdded = collegeList.some(
-        (college) => parseInt(college.collegeId) === selectedCollege.unitId
+        (college) => parseInt(college.unitId) === selectedCollege.unitId
       );
 
       if (isAlreadyAdded) {
@@ -61,22 +61,20 @@ export function MyColleges() {
     }
   };
 
-  const deleteCollegeFromList = async (collegeId, collegeName) => {
-    console.log("Deleting college2:", collegeId, collegeName);
+  const deleteCollegeFromList = async (unitId, collegeName) => {
+    console.log("Deleting college2:", unitId, collegeName);
     setCollegeList((prevList) =>
-      prevList.filter(
-        (college) => String(college.collegeId) !== String(collegeId)
-      )
+      prevList.filter((college) => String(college.unitId) !== String(unitId))
     );
 
     setSelectedCollege(null);
 
     try {
-      console.log("Deleting college:", collegeId, collegeName);
+      console.log("Deleting college:", unitId, collegeName);
       const response = await axios.post(
         `${apiUrl}/mycolleges/delete`,
         {
-          collegeId,
+          unitId,
           collegeName,
         },
         {

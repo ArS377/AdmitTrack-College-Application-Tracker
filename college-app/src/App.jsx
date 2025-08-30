@@ -4,7 +4,7 @@ import { Landing } from "./pages/Landing.jsx";
 import { RegisterUser } from "./pages/RegisterUser.jsx";
 import { GLogin } from "./pages/GLogin.jsx";
 import { Home } from "./pages/home.jsx";
-import { MyColleges } from "./pages/mycolleges.jsx";
+import { AddCollege } from "./pages/AddCollege.jsx";
 import { Profile } from "./pages/profile.jsx";
 import { MyCollegeInfo } from "./pages/MyCollegeInfo.jsx";
 import NavBar from "./components/NavBar.jsx";
@@ -26,7 +26,7 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<Home />} />
-            <Route path="/mycolleges" element={<MyColleges />} />
+            <Route path="/addcollege" element={<AddCollege />} />
             <Route path="/research" element={<Research />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/collegeinfo" element={<MyCollegeInfo />} />

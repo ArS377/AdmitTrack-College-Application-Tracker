@@ -7,11 +7,11 @@ import { updateCollegeCategory } from "../utils/collegeUtils";
 const ExpandedCollegeList = ({ collegeList, deleteCollegeFromList }) => {
   console.log("ExpandedCollegeList collegeList:", collegeList.length);
   const navigate = useNavigate();
-  const goToCollegeInfo = (college) => {
-    navigate("/collegeinfo", { state: college });
+  const goToCollegeInfo = (unitId) => {
+    navigate("/collegeinfo", { state: { unitId: unitId, appStatus: true } });
   };
   const goToAddCollege = (college) => {
-    navigate("/mycolleges");
+    navigate("/addcollege");
   };
   const changeCollegeCategory = async (college, newCategory) => {
     // TODO change college category in the database.
@@ -26,6 +26,7 @@ const ExpandedCollegeList = ({ collegeList, deleteCollegeFromList }) => {
         <table className="table table-hover">
           <thead>
             <tr>
+              <th scope="col">UnitId</th>
               <th scope="col">College Name</th>
               <th scope="col">Due Date</th>
               <th scope="col">Progress</th>
@@ -35,9 +36,10 @@ const ExpandedCollegeList = ({ collegeList, deleteCollegeFromList }) => {
           </thead>
           <tbody>
             {collegeList.map((college) => (
-              <tr key={college.collegeId}>
+              <tr key={college.unitId}>
+                <td>{college.unitId}</td>
                 <td
-                  onClick={() => goToCollegeInfo(college)}
+                  onClick={() => goToCollegeInfo(college.unitId)}
                   style={{ cursor: "pointer" }}
                 >
                   {college.collegeName}
@@ -51,7 +53,7 @@ const ExpandedCollegeList = ({ collegeList, deleteCollegeFromList }) => {
                     onClick={() => {
                       console.log("Deleting college:", college);
                       deleteCollegeFromList(
-                        college.collegeId,
+                        college.unitId,
                         college.collegeName
                       );
                     }}

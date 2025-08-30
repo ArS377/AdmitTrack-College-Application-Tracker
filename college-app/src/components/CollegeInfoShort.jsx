@@ -16,7 +16,10 @@ export default function CollegeInfoShort({
       </p>
       <CollegeKeyStats selectedCollege={selectedCollege} />
       {!alreadyAdded && (
-        <button className="addButton" onClick={() => addCollegeToList()}>
+        <button
+          className="addButton"
+          onClick={() => addCollegeToList(selectedCollege)}
+        >
           Add College
         </button>
       )}

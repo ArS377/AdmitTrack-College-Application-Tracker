@@ -18,7 +18,7 @@ const CollegeList = ({ collegeList, deleteCollegeFromList }) => {
             collegeList.map((college) => (
               <li
                 className="p-2 bg-light border d-flex align-items-center mb-2 flex-container"
-                key={college.collegeId}
+                key={college.unitId}
                 onClick={() => goToCollegeInfo(college)}
                 style={{ cursor: "pointer" }}
               >
@@ -35,10 +35,7 @@ const CollegeList = ({ collegeList, deleteCollegeFromList }) => {
                   className="btn btn-outline-danger btn-sm ms-auto"
                   onClick={() => {
                     console.log("Deleting college:", college);
-                    deleteCollegeFromList(
-                      college.collegeId,
-                      college.collegeName
-                    );
+                    deleteCollegeFromList(college.unitId, college.collegeName);
                   }}
                 >
                   <FontAwesomeIcon icon={faTrashCan} />

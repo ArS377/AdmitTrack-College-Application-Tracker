@@ -12,11 +12,7 @@ function CollegeResearchTable({ collegeList }) {
   console.log("College List Length: ", collegeList.length);
   const [data, setData] = useState(collegeList);
   const [myColleges, setMyColleges] = useState([]);
-  const [sortConfig, setSortConfig] = useState({
-    key: "collegeName",
-    direction: "ascending",
-  });
-  const [currentPage, setCurrentPage] = useState(1);
+  const [paginationState, setPaginationState] = useState();
   const itemsPerPage = 10; // Can be a state variable for user-controlled options
 
   const fmc = async () => {
@@ -40,7 +36,10 @@ function CollegeResearchTable({ collegeList }) {
 
   const sortTable = (key) => {
     let direction = "ascending";
-    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+    if (
+      paginationState.key === key &&
+      paginationState.direction === "ascending"
+    ) {
       direction = "descending";
     }
 
@@ -53,18 +52,22 @@ function CollegeResearchTable({ collegeList }) {
     });
 
     setData(sortedData);
-    setSortConfig({ key, direction });
+    setPaginationState({ key, direction, currentPage: 1 });
   };
 
   const goToCollegeInfo = (college) => {
-    navigate("/collegeinfo", { state: college });
+    saveLastPaginationState();
+    console.log("navigating to CollegeInfo for college: ", college.unitId);
+    navigate("/collegeinfo", {
+      state: { unitId: college.unitId, appStatus: false },
+    });
   };
 
   const sortedColumnHeader = (key, columnName) => {
     const ASCENDING_INDICATOR = "▲";
     const DESCENDING_INDICATOR = "▼";
-    if (key === sortConfig.key) {
-      if (sortConfig.direction === "ascending") {
+    if (key === paginationState?.key) {
+      if (paginationState?.direction === "ascending") {
         return columnName + " " + ASCENDING_INDICATOR;
       } else {
         return columnName + " " + DESCENDING_INDICATOR;
@@ -74,8 +77,8 @@ function CollegeResearchTable({ collegeList }) {
   };
 
   const sortedColumnStyle = (key, columnName) => {
-    if (key === sortConfig.key) {
-      if (sortConfig.direction === "ascending") {
+    if (key === paginationState?.key) {
+      if (paginationState?.direction === "ascending") {
         return { backgroundColor: "#bae6fd" };
       } else {
         return { backgroundColor: "#38bdf8" };
@@ -86,8 +89,47 @@ function CollegeResearchTable({ collegeList }) {
 
   // pagination logic
   // console.log("calculating pagination for data size: ", data.length);
+  // store the current values in session.
+  const PAGINATION_STATE = "PaginationState";
+  const savePaginationState = (state) => {
+    // set pagination state and store the state in session.
+    setPaginationState(state);
+    sessionStorage.setItem(PAGINATION_STATE, JSON.stringify(state));
+  };
+
+  const saveLastPaginationState = () => {
+    // set pagination state and store the state in session.
+    console.log("****Last pagination state: ", JSON.stringify(paginationState));
+    sessionStorage.setItem(PAGINATION_STATE, JSON.stringify(paginationState));
+  };
+
+  if (!paginationState) {
+    // read pagination state from session if available
+    const stateFromSession = sessionStorage.getItem(PAGINATION_STATE);
+    if (stateFromSession) {
+      console.log(
+        `****pagination state from session:
+        ${stateFromSession}`
+      );
+      setPaginationState(JSON.parse(stateFromSession));
+    } else {
+      // pagination state is not initialized and is not available in the session.
+      // initialize pagination state.
+      console.log(
+        "****initial state of pagination: ",
+        JSON.stringify(paginationState)
+      );
+      savePaginationState({
+        key: "collegeName",
+        direction: "ascending",
+        currentPage: 1,
+      });
+    }
+  }
   const totalPages = Math.ceil(data.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
+  const startIndex = paginationState
+    ? (paginationState.currentPage - 1) * itemsPerPage
+    : 0;
   const endIndex = startIndex + itemsPerPage;
   const currentData = data.slice(startIndex, endIndex);
   console.log(
@@ -97,7 +139,41 @@ function CollegeResearchTable({ collegeList }) {
   );
 
   return (
-    <div className="college-list-table">
+    <div className="college-list-table container-fluid">
+      {/* Pagination Controls */}
+      <div className="row mt-3">
+        <div className="col-9"></div>
+        <div className="col-3">
+          <button
+            className="btn btn-sm btn-outline-primary"
+            onClick={() =>
+              setPaginationState((prev) => ({
+                ...prev,
+                currentPage: Math.max(prev.currentPage - 1, 1),
+              }))
+            }
+            disabled={paginationState?.currentPage === 1}
+          >
+            Previous
+          </button>
+          <span>
+            {" "}
+            Page {paginationState?.currentPage} of {totalPages}{" "}
+          </span>
+          <button
+            className="btn btn-sm btn-outline-primary"
+            onClick={() =>
+              setPaginationState((prev) => ({
+                ...prev,
+                currentPage: Math.min(prev.currentPage + 1, totalPages),
+              }))
+            }
+            disabled={paginationState?.currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      </div>
       <table className="table table-hover">
         <thead>
           <tr>
@@ -159,7 +235,7 @@ function CollegeResearchTable({ collegeList }) {
                 </td>
                 <td>
                   {myColleges.some(
-                    (college) => parseInt(college.collegeId) === item.unitId
+                    (college) => parseInt(college.unitId) === item.unitId
                   ) ? (
                     <button className="btn btn-primary" disabled>
                       Added
@@ -177,30 +253,6 @@ function CollegeResearchTable({ collegeList }) {
             ))}
         </tbody>
       </table>
-
-      {/* Pagination Controls */}
-      <div>
-        <button
-          className="btn btn-sm btn-outline-primary"
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </button>
-        <span>
-          {" "}
-          Page {currentPage} of {totalPages}{" "}
-        </span>
-        <button
-          className="btn btn-sm btn-outline-primary"
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </button>
-      </div>
     </div>
   );
 }

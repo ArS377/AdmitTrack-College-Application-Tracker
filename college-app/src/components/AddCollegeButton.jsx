@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 const AddCollegeButton = () => {
   const navigate = useNavigate();
   const goToMyColleges = () => {
-    navigate("/mycolleges");
+    navigate("/addcollege");
   };
 
   return (

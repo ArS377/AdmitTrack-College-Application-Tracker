@@ -10,7 +10,7 @@ function NavBar() {
   };
 
   const goToAddCollege = () => {
-    navigate("/mycolleges");
+    navigate("/addcollege");
   };
 
   const goToResearch = () => {

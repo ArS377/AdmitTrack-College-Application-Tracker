@@ -71,13 +71,13 @@ app.get("/api/colleges", authenticateToken, async (req, res) => {
 });
 
 app.get("/api/colleges/id", authenticateToken, async (req, res) => {
-  const collegeId = req.query.id;
-  if (!collegeId) {
-    return res.status(400).json({ error: "College ID is required." });
+  const unitId = req.query.id;
+  if (!unitId) {
+    return res.status(400).json({ error: "Unit ID is required." });
   }
   try {
     const collection = db.collection("collegeinfo");
-    const result = await collection.findOne({ unitId: collegeId });
+    const result = await collection.findOne({ unitId: unitId });
 
     if (result) {
       res.status(200).json(result);

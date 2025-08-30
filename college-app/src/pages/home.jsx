@@ -15,19 +15,17 @@ export function Home() {
     fmc();
   }, []);
 
-  const deleteCollegeFromList = async (collegeId, collegeName) => {
-    console.log("Deleting college2:", collegeId, collegeName);
+  const deleteCollegeFromList = async (unitId, collegeName) => {
+    console.log("Deleting college2:", unitId, collegeName);
     setCollegeList((prevList) =>
-      prevList.filter(
-        (college) => String(college.collegeId) !== String(collegeId)
-      )
+      prevList.filter((college) => String(college.unitId) !== String(unitId))
     );
 
     try {
       const response = await axios.post(
         `${apiUrl}/mycolleges/delete`,
         {
-          collegeId,
+          unitId,
           collegeName,
         },
         {
