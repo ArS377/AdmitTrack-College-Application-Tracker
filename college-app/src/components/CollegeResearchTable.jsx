@@ -127,7 +127,7 @@ function CollegeResearchTable({ collegeList }) {
   };
 
   const goToCollegeInfo = (college) => {
-    saveLastPaginationState();
+    // Pagination state is automatically saved via useEffect, no need to manually save
     console.log("navigating to CollegeInfo for college: ", college.unitId);
     navigate("/collegeinfo", {
       state: { unitId: college.unitId, collegeInMyList: false },
@@ -162,44 +162,42 @@ function CollegeResearchTable({ collegeList }) {
   // console.log("calculating pagination for data size: ", data.length);
   // store the current values in session.
   const PAGINATION_STATE = "PaginationState";
-  const savePaginationState = (state) => {
-    // set pagination state and store the state in session.
-    setPaginationState(state);
-    sessionStorage.setItem(PAGINATION_STATE, JSON.stringify(state));
-  };
-
-  const saveLastPaginationState = () => {
-    // set pagination state and store the state in session.
-    console.log("****Last pagination state: ", JSON.stringify(paginationState));
-    sessionStorage.setItem(PAGINATION_STATE, JSON.stringify(paginationState));
-  };
 
   // Initialize pagination state from session storage or default
   useEffect(() => {
-    if (!paginationState) {
-      // read pagination state from session if available
-      const stateFromSession = sessionStorage.getItem(PAGINATION_STATE);
-      if (stateFromSession) {
-        console.log(
-          `****pagination state from session:
-          ${stateFromSession}`
-        );
-        setPaginationState(JSON.parse(stateFromSession));
-      } else {
-        // pagination state is not initialized and is not available in the session.
-        // initialize pagination state.
-        console.log(
-          "****initial state of pagination: ",
-          JSON.stringify(paginationState)
-        );
-        savePaginationState({
-          key: "collegeName",
-          direction: "ascending",
-          currentPage: 1,
-        });
-      }
+    // read pagination state from session if available
+    const stateFromSession = sessionStorage.getItem(PAGINATION_STATE);
+    if (stateFromSession) {
+      console.log(
+        `****pagination state from session:
+        ${stateFromSession}`
+      );
+      setPaginationState(JSON.parse(stateFromSession));
+    } else {
+      // pagination state is not initialized and is not available in the session.
+      // initialize pagination state.
+      console.log(
+        "****initial state of pagination: ",
+        JSON.stringify(paginationState)
+      );
+      setPaginationState({
+        key: "collegeName",
+        direction: "ascending",
+        currentPage: 1,
+      });
     }
   }, []);
+
+  // Save pagination state to sessionStorage whenever it changes
+  useEffect(() => {
+    if (paginationState) {
+      console.log(
+        "****Saving pagination state:",
+        JSON.stringify(paginationState)
+      );
+      sessionStorage.setItem(PAGINATION_STATE, JSON.stringify(paginationState));
+    }
+  }, [paginationState]);
   const totalPages = Math.ceil(data.length / itemsPerPage);
   const startIndex = paginationState
     ? (paginationState.currentPage - 1) * itemsPerPage
