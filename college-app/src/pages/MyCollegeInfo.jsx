@@ -52,8 +52,8 @@ export function MyCollegeInfo() {
       }
     };
     if (location.state) {
-      let { unitId, appStatus } = location.state || {};
-      setShowAppStatus(appStatus);
+      let { unitId, collegeInMyList } = location.state || {};
+      setShowAppStatus(collegeInMyList);
       console.log("***MyCollegeInfo.location.state: ", location.state);
       fetchCollegeDetailById(unitId);
       fetchMyCollegeStatusById(unitId);

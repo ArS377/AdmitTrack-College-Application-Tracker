@@ -106,7 +106,7 @@ const getEmailFromAccessToken = (accessToken) => {
 app.post("/api/profile", authenticateToken, async (req, res) => {
   console.log("Updating profile data with body:", req.body);
   const { email } = req.user; // Get email from authenticated user
-  const { firstMajor, secondMajor, satEnglish, satMath, act } = req.body;
+  const { firstMajor, secondMajor, sat, act } = req.body;
   if (!email) {
     return res
       .status(400)
@@ -117,8 +117,7 @@ app.post("/api/profile", authenticateToken, async (req, res) => {
     $set: {
       firstMajor: firstMajor,
       secondMajor: secondMajor,
-      satEnglish: satEnglish,
-      satMath: satMath,
+      sat: sat,
       act: act,
     },
   };

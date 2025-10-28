@@ -9,7 +9,7 @@ Content-Type: application/json
 
 {
     "email": "soma.ellappan@gmail.com",
-    "collegeId": "12345"
+    "unitId": "12345"
 }
 
 
@@ -51,7 +51,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNvbWEuZ
 }
 
 ###
-GET http://localhost:3000/api/auth/accesstoken
+POST http://localhost:3000/api/auth/accesstoken
 
 ###
 POST http://localhost:3000/api/auth/logout
@@ -94,4 +94,9 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3000/api/college-data
+GET http://localhost:3000/api/collegelist/243744
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNvbWEuZWxsYXBwYW5AZ21haWwuY29tIiwiaWQiOiI2ODg2ZTgwNzZiNTE5NzY3MDU2ZGM0MWQiLCJpYXQiOjE3NTU4Mzg4MTQsImV4cCI6MTc1NTgzOTExNH0.B_1owEq6FFQzJ6xtRteLPhvVgiQHAfjXvkyM3UPHZ50
+
+###
+GET http://localhost:3000/api/collegelist?q=Sta
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNvbWEuZWxsYXBwYW5AZ21haWwuY29tIiwiaWQiOiI2ODg2ZTgwNzZiNTE5NzY3MDU2ZGM0MWQiLCJpYXQiOjE3NTU4Mzg4MTQsImV4cCI6MTc1NTgzOTExNH0.B_1owEq6FFQzJ6xtRteLPhvVgiQHAfjXvkyM3UPHZ50

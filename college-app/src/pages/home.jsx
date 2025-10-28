@@ -1,11 +1,12 @@
-import ExpandedCollegeList from "../components/ExpandedCollegeList";
+import ExpandableCollegeList from "../components/ExpandableCollegeList";
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { fetchMyColleges } from "../utils/collegeUtils"; // Assuming you have a utility function to fetch colleges
+import { useNavigate } from "react-router-dom";
+import { fetchMyColleges, deleteFromMyColleges } from "../utils/collegeUtils"; // Assuming you have a utility function to fetch colleges
 
 export function Home() {
   const [collegeList, setCollegeList] = useState([]);
   const apiUrl = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fmc = async () => {
@@ -20,33 +21,26 @@ export function Home() {
     setCollegeList((prevList) =>
       prevList.filter((college) => String(college.unitId) !== String(unitId))
     );
-
-    try {
-      const response = await axios.post(
-        `${apiUrl}/mycolleges/delete`,
-        {
-          unitId,
-          collegeName,
-        },
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      console.log("College deleted successfully:", response.data);
-    } catch (error) {
-      console.error("Error deleting college:", error);
-    }
+    deleteFromMyColleges(unitId, collegeName);
   };
+  const goToAddCollege = (college) => {
+    navigate("/addcollege");
+  };
+
   return (
     <>
       <div>
         <h2>Welcome!</h2>
         <div>
-          <ExpandedCollegeList
+          <ExpandableCollegeList
             collegeList={collegeList}
             deleteCollegeFromList={deleteCollegeFromList}
+            expandedFlag="true"
           />
         </div>
+        <button className="btn btn-primary" onClick={goToAddCollege}>
+          Add More Colleges
+        </button>
       </div>
     </>
   );

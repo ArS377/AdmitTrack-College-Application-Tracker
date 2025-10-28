@@ -41,6 +41,30 @@ export async function addToMyColleges(college) {
   }
 }
 
+export async function deleteFromMyColleges(unitId, collegeName) {
+  try {
+    console.log("Deleting college:", unitId, collegeName);
+    const response = await axios.post(
+      `${apiUrl}/mycolleges/delete`,
+      {
+        unitId,
+        collegeName,
+      },
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    console.log("College deleted successfully:", response.data);
+    if (response && response.status === 200) {
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error deleting college:", error);
+    throw error;
+  }
+}
+
 function getMyCollegeStatusString(college) {
   return JSON.stringify(college);
 }

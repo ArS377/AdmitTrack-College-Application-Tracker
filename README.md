@@ -44,4 +44,4 @@ require('crypto').randomBytes(64).toString('hex')
 ### offline files for setup
 
 Create/update backend/.env
-Create/update backend/collegedata.json
+Create/update backend/data/collegedata-merged.json

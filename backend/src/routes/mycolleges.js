@@ -69,19 +69,32 @@ mycollegeRouter.post("/mycolleges", authenticateToken, async (req, res) => {
   const { email } = req.user; // Get email from authenticated user
   const { unitId, collegeName } = req.body;
 
-  const db = req.db; // Get the database instance from the request
-  const collection = db.collection("userdata");
-  const existingUser = await collection.findOne({ email: email });
-  console.log(email);
-  if (!existingUser) {
-    res.status(404).json({ message: "User not found" });
-  } else {
+  try {
+    const db = req.db; // Get the database instance from the request
+    const collection = db.collection("userdata");
+    const existingUser = await collection.findOne({ email: email });
+    console.log(email);
+    if (!existingUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     existingUser.myColleges.push({ unitId, collegeName });
 
     await collection.findOneAndUpdate(
       { email: email }, //filter by email
       { $set: existingUser }
     );
+
+    console.log(
+      `College ${collegeName} (${unitId}) added successfully for ${email}`
+    );
+    res.status(200).json({
+      message: "College added successfully",
+      college: { unitId, collegeName },
+    });
+  } catch (error) {
+    console.error("Error adding college:", error);
+    res.status(500).json({ error: "Failed to add college" });
   }
 });
 
@@ -110,29 +123,36 @@ mycollegeRouter.put("/mycolleges/:id", authenticateToken, async (req, res) => {
       DueDate = ${dueDate}, Essay=${essayProgress}, App=${appSubmissionStatus}, TestScore=${testScoreStatus} \
       AP/IB=${apibScoreStatus}, LOR=${lorStatus}, Transcript=${transcriptStatus}`);
 
-  const db = req.db; // Get the database instance from the request
-  const collection = db.collection("userdata");
-  const existingUser = await collection.findOne({ email: email });
-  console.log(email);
-  if (!existingUser) {
-    res.status(404).json({ message: "User not found" });
-  } else {
+  try {
+    const db = req.db; // Get the database instance from the request
+    const collection = db.collection("userdata");
+    const existingUser = await collection.findOne({ email: email });
+    console.log(email);
+    if (!existingUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     console.log("MyColleges: ", existingUser.myColleges.length);
     const college = existingUser.myColleges.find(
       (college) => college.unitId === unitId
     );
     console.log("college find result: ", college);
-    if (college) {
-      college.category = category;
-      college.appType = appType;
-      college.dueDate = dueDate;
-      college.essayProgress = essayProgress;
-      college.appSubmissionStatus = appSubmissionStatus;
-      college.testScoreStatus = testScoreStatus;
-      college.apibScoreStatus = apibScoreStatus;
-      college.lorStatus = lorStatus;
-      college.transcriptStatus = transcriptStatus;
+
+    if (!college) {
+      return res
+        .status(404)
+        .json({ message: "College not found in user's list" });
     }
+
+    college.category = category;
+    college.appType = appType;
+    college.dueDate = dueDate;
+    college.essayProgress = essayProgress;
+    college.appSubmissionStatus = appSubmissionStatus;
+    college.testScoreStatus = testScoreStatus;
+    college.apibScoreStatus = apibScoreStatus;
+    college.lorStatus = lorStatus;
+    college.transcriptStatus = transcriptStatus;
 
     console.log(
       `college[${unitId}] in my list: ${getMyCollegeStatusString(college)}`
@@ -142,6 +162,14 @@ mycollegeRouter.put("/mycolleges/:id", authenticateToken, async (req, res) => {
       { email: email }, //filter by email
       { $set: existingUser }
     );
+
+    res.status(200).json({
+      message: "College updated successfully",
+      college,
+    });
+  } catch (error) {
+    console.error("Error updating college:", error);
+    res.status(500).json({ error: "Failed to update college" });
   }
 });
 
@@ -153,18 +181,32 @@ mycollegeRouter.post(
     const { email } = req.user; // Get email from authenticated user
     const { unitId, collegeName } = req.body;
 
-    const db = req.db; // Get the database instance from the request
-    const collection = db.collection("userdata");
-    const existingUser = await collection.findOne({ email: email });
-    console.log("User found. Email:", email);
-    if (!existingUser) {
-      res.status(404).json({ message: "User not found" });
-    } else {
+    try {
+      const db = req.db; // Get the database instance from the request
+      const collection = db.collection("userdata");
+      const existingUser = await collection.findOne({ email: email });
+      console.log("User found. Email:", email);
+      if (!existingUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
       console.log("deleting college: ", unitId);
       await collection.findOneAndUpdate(
         { email: email }, //filter by email
         { $pull: { myColleges: { unitId, collegeName } } }
       );
+
+      console.log(
+        `College ${collegeName} (${unitId}) deleted successfully for ${email}`
+      );
+      res.status(200).json({
+        message: "College deleted successfully",
+        unitId,
+        collegeName,
+      });
+    } catch (error) {
+      console.error("Error deleting college:", error);
+      res.status(500).json({ error: "Failed to delete college" });
     }
   }
 );

@@ -3,8 +3,12 @@ import "./AddCollege.css";
 import SearchBar from "../components/SearchBar";
 import SearchResultsList from "../components/SearchResultsList";
 import CollegeInfoShort from "../components/CollegeInfoShort";
-import CollegeList from "../components/CollegeList";
-import { fetchMyColleges, addToMyColleges } from "../utils/collegeUtils"; // Assuming you have a utility function to fetch colleges
+import ExpandableCollegeList from "../components/ExpandableCollegeList";
+import {
+  fetchMyColleges,
+  addToMyColleges,
+  deleteFromMyColleges,
+} from "../utils/collegeUtils"; // Assuming you have a utility function to fetch colleges
 import axios from "axios";
 
 export function AddCollege() {
@@ -68,29 +72,13 @@ export function AddCollege() {
     );
 
     setSelectedCollege(null);
-
-    try {
-      console.log("Deleting college:", unitId, collegeName);
-      const response = await axios.post(
-        `${apiUrl}/mycolleges/delete`,
-        {
-          unitId,
-          collegeName,
-        },
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      console.log("College deleted successfully:", response.data);
-    } catch (error) {
-      console.error("Error deleting college:", error);
-    }
+    deleteFromMyColleges(unitId, collegeName);
   };
 
   return (
     <div className="container text-center subject">
       <div className="row align-items-start">
-        <div className="col num1 col-auto mb-5">
+        <div className="col-sm-8 num1 col-auto mb-5">
           <h2>Search for Colleges</h2>
           <div className="searchBarContainer">
             <SearchBar setResults={setResults} onSearch={onSelectCollege} />
@@ -108,10 +96,11 @@ export function AddCollege() {
           )}
         </div>
 
-        <div className="col num2 col-auto">
-          <CollegeList
+        <div className="col-sm-4 num2 col-auto">
+          <ExpandableCollegeList
             collegeList={collegeList}
             deleteCollegeFromList={deleteCollegeFromList}
+            expandedFlag={false}
           />
         </div>
       </div>
