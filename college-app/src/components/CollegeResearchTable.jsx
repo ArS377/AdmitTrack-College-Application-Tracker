@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   addToMyColleges,
@@ -14,9 +14,13 @@ function CollegeResearchTable({ collegeList }) {
     maximumFractionDigits: 0,
   });
   console.log("College List Length: ", collegeList.length);
-  const [data, setData] = useState(collegeList);
   const [myColleges, setMyColleges] = useState([]);
-  const [paginationState, setPaginationState] = useState();
+  const [data, setData] = useState(collegeList);
+  const [sortedBy, setSortedBy] = useState({
+    key: "applicants.total",
+    direction: "descending",
+    currentPage: 1,
+  });
   const itemsPerPage = 10; // Can be a state variable for user-controlled options
 
   const fmc = async () => {
@@ -31,14 +35,6 @@ function CollegeResearchTable({ collegeList }) {
       return [];
     }
   };
-
-  useEffect(() => {
-    setData(collegeList);
-  }, [collegeList]);
-
-  useEffect(() => {
-    fmc();
-  }, []);
 
   async function handleAddCollege(college) {
     console.log(
@@ -107,27 +103,30 @@ function CollegeResearchTable({ collegeList }) {
 
   const sortTable = (key) => {
     let direction = "ascending";
-    if (
-      paginationState.key === key &&
-      paginationState.direction === "ascending"
-    ) {
+    if (sortedBy.key === key) {
+      // same key, toggle direction
+      direction =
+        sortedBy.direction === "ascending" ? "descending" : "ascending";
+      console.log("sortTable: toggled direction to: ", direction);
+    } else if (key === "applicants.total") {
+      // different key, use descending for applicants.total and ascending for others
       direction = "descending";
+      console.log("sortTable: set direction to: ", direction);
     }
-
-    const sortedData = [...data].sort((a, b) => {
-      const aVal = getValue(a, key);
-      const bVal = getValue(b, key);
-      if (aVal < bVal) return direction === "ascending" ? -1 : 1;
-      if (aVal > bVal) return direction === "ascending" ? 1 : -1;
-      return 0;
+    console.log("sortTable: setting sortedBy to: ", {
+      key: key,
+      direction: direction,
+      currentPage: 1,
     });
-
-    setData(sortedData);
-    setPaginationState({ key, direction, currentPage: 1 });
+    setSortedBy({
+      key: key,
+      direction: direction,
+      currentPage: 1,
+    });
   };
 
   const goToCollegeInfo = (college) => {
-    // Pagination state is automatically saved via useEffect, no need to manually save
+    // sortedBy is automatically saved via useEffect, no need to manually save
     console.log("navigating to CollegeInfo for college: ", college.unitId);
     navigate("/collegeinfo", {
       state: { unitId: college.unitId, collegeInMyList: false },
@@ -137,8 +136,8 @@ function CollegeResearchTable({ collegeList }) {
   const sortedColumnHeader = (key, columnName) => {
     const ASCENDING_INDICATOR = "▲";
     const DESCENDING_INDICATOR = "▼";
-    if (key === paginationState?.key) {
-      if (paginationState?.direction === "ascending") {
+    if (key === sortedBy?.key) {
+      if (sortedBy?.direction === "ascending") {
         return columnName + " " + ASCENDING_INDICATOR;
       } else {
         return columnName + " " + DESCENDING_INDICATOR;
@@ -148,8 +147,8 @@ function CollegeResearchTable({ collegeList }) {
   };
 
   const sortedColumnStyle = (key, columnName) => {
-    if (key === paginationState?.key) {
-      if (paginationState?.direction === "ascending") {
+    if (key === sortedBy?.key) {
+      if (sortedBy?.direction === "ascending") {
         return { backgroundColor: "#bae6fd" };
       } else {
         return { backgroundColor: "#38bdf8" };
@@ -158,57 +157,63 @@ function CollegeResearchTable({ collegeList }) {
     return { backgroundColor: "#ffffff" };
   };
 
-  // pagination logic
-  // console.log("calculating pagination for data size: ", data.length);
-  // store the current values in session.
-  const PAGINATION_STATE = "PaginationState";
+  const SESSION_KEY_SORTED_BY = "SortedBy";
 
-  // Initialize pagination state from session storage or default
+  // Initialize sortedBy from session storage or default
   useEffect(() => {
-    // read pagination state from session if available
-    const stateFromSession = sessionStorage.getItem(PAGINATION_STATE);
-    if (stateFromSession) {
+    // read sortedBy from session if available
+    const sortedByFromSession = sessionStorage.getItem(SESSION_KEY_SORTED_BY);
+    if (sortedByFromSession) {
       console.log(
-        `****pagination state from session:
-        ${stateFromSession}`
+        `****sortedBy from session:
+        ${sortedByFromSession}`
       );
-      setPaginationState(JSON.parse(stateFromSession));
-    } else {
-      // pagination state is not initialized and is not available in the session.
-      // initialize pagination state.
-      console.log(
-        "****initial state of pagination: ",
-        JSON.stringify(paginationState)
-      );
-      setPaginationState({
-        key: "collegeName",
-        direction: "ascending",
-        currentPage: 1,
-      });
+      setSortedBy(JSON.parse(sortedByFromSession));
     }
+    fmc();
   }, []);
 
-  // Save pagination state to sessionStorage whenever it changes
+  // Save sortedBy to sessionStorage whenever it changes
   useEffect(() => {
-    if (paginationState) {
-      console.log(
-        "****Saving pagination state:",
-        JSON.stringify(paginationState)
-      );
-      sessionStorage.setItem(PAGINATION_STATE, JSON.stringify(paginationState));
+    if (sortedBy) {
+      console.log("****Saving sortedBy:", JSON.stringify(sortedBy));
+      sessionStorage.setItem(SESSION_KEY_SORTED_BY, JSON.stringify(sortedBy));
     }
-  }, [paginationState]);
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-  const startIndex = paginationState
-    ? (paginationState.currentPage - 1) * itemsPerPage
-    : 0;
-  const endIndex = startIndex + itemsPerPage;
-  const currentData = data.slice(startIndex, endIndex);
-  console.log(
-    `totalpages = ${totalPages}, startIndex=${startIndex}, endIndex=${endIndex}, currentDatasize=${
-      currentData && currentData.length
-    }`
-  );
+  }, [sortedBy]);
+
+  // Add this useEffect:
+  useEffect(() => {
+    // Only run if collegeList has data
+    if (collegeList && collegeList.length > 0) {
+      const direction = sortedBy.direction;
+      const key = sortedBy.key;
+
+      const sorted = [...collegeList].sort((a, b) => {
+        const aVal = getValue(a, key);
+        const bVal = getValue(b, key);
+        if (aVal < bVal) return direction === "ascending" ? -1 : 1;
+        if (aVal > bVal) return direction === "ascending" ? 1 : -1;
+        return 0;
+      });
+      setData(sorted);
+    } else {
+      setData([...collegeList]); // will be [] at first render, prevents errors
+    }
+  }, [collegeList, sortedBy.key, sortedBy.direction]);
+
+  const { totalPages, currentData } = useMemo(() => {
+    const totalPagesLocal = Math.ceil(data.length / itemsPerPage) || 1;
+    const start = (sortedBy.currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const currentData = data.slice(start, end);
+    console.log(
+      `totalpages = ${totalPagesLocal}, startIndex=${start}, endIndex=${end}, currentDatasize=${currentData.length}`
+    );
+    return {
+      totalPages: totalPagesLocal,
+      currentData: currentData,
+    };
+  }, [data, sortedBy, itemsPerPage]);
 
   return (
     <div className="college-list-table container-fluid">
@@ -219,28 +224,28 @@ function CollegeResearchTable({ collegeList }) {
           <button
             className="btn btn-sm btn-outline-primary"
             onClick={() =>
-              setPaginationState((prev) => ({
+              setSortedBy((prev) => ({
                 ...prev,
                 currentPage: Math.max(prev.currentPage - 1, 1),
               }))
             }
-            disabled={paginationState?.currentPage === 1}
+            disabled={sortedBy?.currentPage === 1}
           >
             Previous
           </button>
           <span>
             {" "}
-            Page {paginationState?.currentPage} of {totalPages}{" "}
+            Page {sortedBy?.currentPage} of {totalPages}{" "}
           </span>
           <button
             className="btn btn-sm btn-outline-primary"
             onClick={() =>
-              setPaginationState((prev) => ({
+              setSortedBy((prev) => ({
                 ...prev,
                 currentPage: Math.min(prev.currentPage + 1, totalPages),
               }))
             }
-            disabled={paginationState?.currentPage === totalPages}
+            disabled={sortedBy?.currentPage === totalPages}
           >
             Next
           </button>
@@ -308,17 +313,17 @@ function CollegeResearchTable({ collegeList }) {
                 <td>
                   {isCollegeInMyList(item) ? (
                     <button
-                      className="btn btn-secondary"
+                      className="btn btn-sm btn-outline-danger"
                       onClick={() => handleRemoveCollege(item)}
                     >
-                      Remove From List
+                      &#x2796;
                     </button>
                   ) : (
                     <button
                       className="btn btn-sm btn-outline-primary"
                       onClick={() => handleAddCollege(item)}
                     >
-                      Add to List
+                      ➕
                     </button>
                   )}
                 </td>
