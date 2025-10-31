@@ -4,12 +4,12 @@ import DatePicker from "react-datepicker";
 import { useState, useEffect } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { updateMyCollegeDetail } from "../utils/collegeUtils";
-import AddThisCollege from "./AddThisCollege";
 
 const ApplicationStatus = ({
   collegeStatus,
+  isCollegeInMyList,
   collegeDetail,
-  toggleRenderSwitch,
+  handleAddCollege,
 }) => {
   console.log(`collegeStatus = ${JSON.stringify(collegeStatus)}`);
   const [category, setCategory] = useState();
@@ -92,11 +92,20 @@ const ApplicationStatus = ({
 
   return (
     <div className="container">
-      {!collegeStatus ? (
-        <AddThisCollege
-          college={collegeDetail}
-          toggleRenderSwitch={toggleRenderSwitch}
-        />
+      {!isCollegeInMyList ? (
+        <>
+          <h4>
+            You have not added this college to your list. If you would like to
+            apply for this college and track the application status here, please
+            add the college to your list of colleges
+          </h4>
+          <button
+            className="btn btn-sm btn-outline-primary"
+            onClick={() => handleAddCollege()}
+          >
+            Add
+          </button>
+        </>
       ) : (
         <div className="row">
           <div className="col-xl-4 mb-3">

@@ -2,18 +2,24 @@ import FullCollegeDetail from "../components/FullCollegeDetail";
 import { useLayoutEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ApplicationStatus from "../components/ApplicationStatus";
+import { addToMyColleges } from "../utils/collegeUtils";
 import axios from "axios";
 
 export function MyCollegeInfo() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [renderSwitch, setRenderSwitch] = useState(false);
-  const [showAppStatus, setShowAppStatus] = useState(true);
+  const [showAppStatus, setShowAppStatus] = useState(
+    location.state?.showAppStatus || true
+  );
+  const [collegeInMyList, setCollegeInMyList] = useState(
+    location.state?.isCollegeInMyList || false
+  );
+
   const [myCollegeStatus, setMyCollegeStatus] = useState();
   const [collegeDetail, setCollegeDetail] = useState();
   const apiUrl = import.meta.env.VITE_API_URL;
-
+  const unitId = location.state?.unitId || navigate("/home");
   useLayoutEffect(() => {
     const fetchCollegeDetailById = async (unitId) => {
       try {
@@ -51,27 +57,21 @@ export function MyCollegeInfo() {
         );
       }
     };
-    if (location.state) {
-      let { unitId, collegeInMyList } = location.state || {};
-      setShowAppStatus(collegeInMyList);
-      console.log("***MyCollegeInfo.location.state: ", location.state);
-      fetchCollegeDetailById(unitId);
-      fetchMyCollegeStatusById(unitId);
-    } else {
-      navigate("/home");
-    }
-  }, [location.state, renderSwitch]);
-
-  const toggleRenderSwitch = () => {
-    console.log("toggleRenderSwitch invoked");
-    setRenderSwitch((prev) => !prev);
-  };
+    fetchCollegeDetailById(unitId);
+    fetchMyCollegeStatusById(unitId);
+  }, []);
 
   const handleAppStatus = () => {
     setShowAppStatus(true);
   };
   const handleCollegeData = () => {
     setShowAppStatus(false);
+  };
+
+  const handleAddCollege = async () => {
+    await addToMyColleges(collegeDetail);
+    setCollegeInMyList(true);
+    //toggleRenderSwitch();
   };
 
   const handleBackToCollegeList = () => {
@@ -124,14 +124,16 @@ export function MyCollegeInfo() {
         {showAppStatus ? (
           <ApplicationStatus
             collegeStatus={myCollegeStatus}
+            isCollegeInMyList={collegeInMyList}
             collegeDetail={collegeDetail}
-            toggleRenderSwitch={toggleRenderSwitch}
+            handleAddCollege={handleAddCollege}
           />
         ) : (
           <FullCollegeDetail
             collegeStatus={myCollegeStatus}
+            isCollegeInMyList={collegeInMyList}
             collegeDetail={collegeDetail}
-            toggleRenderSwitch={toggleRenderSwitch}
+            handleAddCollege={handleAddCollege}
           />
         )}
       </div>

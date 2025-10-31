@@ -125,11 +125,15 @@ function CollegeResearchTable({ collegeList }) {
     });
   };
 
-  const goToCollegeInfo = (college) => {
+  const goToCollegeInfo = (college, isCollegeInMyList) => {
     // sortedBy is automatically saved via useEffect, no need to manually save
     console.log("navigating to CollegeInfo for college: ", college.unitId);
     navigate("/collegeinfo", {
-      state: { unitId: college.unitId, collegeInMyList: false },
+      state: {
+        unitId: college.unitId,
+        showAppStatus: false,
+        isCollegeInMyList: isCollegeInMyList,
+      },
     });
   };
 
@@ -279,7 +283,7 @@ function CollegeResearchTable({ collegeList }) {
             currentData.map((item) => (
               <tr key={item.unitId}>
                 <td
-                  onClick={() => goToCollegeInfo(item)}
+                  onClick={() => goToCollegeInfo(item, isCollegeInMyList(item))}
                   style={{ cursor: "pointer" }}
                 >
                   {item.collegeName}

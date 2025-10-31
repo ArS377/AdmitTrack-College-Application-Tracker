@@ -15,7 +15,7 @@ const ExpandableCollegeList = ({
   const navigate = useNavigate();
   const goToCollegeInfo = (unitId) => {
     navigate("/collegeinfo", {
-      state: { unitId: unitId, collegeInMyList: true },
+      state: { unitId: unitId, showAppStatus: true, isCollegeInMyList: true },
     });
   };
   const changeCollegeCategory = async (college, newCategory) => {
