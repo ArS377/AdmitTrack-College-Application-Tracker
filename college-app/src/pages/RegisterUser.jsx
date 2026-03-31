@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
+import { setAccessToken } from "../utils/axiosConfig";
 import "../components/FormContainer.css";
-import WelcomeMessage from "../components/WelcomeMessage";
 
 export function RegisterUser() {
   const [fullName, setFullName] = useState("");
@@ -10,101 +10,96 @@ export function RegisterUser() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const apiUrl = import.meta.env.VITE_API_URL;
-
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    const userData = {
-      fullName: fullName,
-      email: email,
-      password: password,
-    };
-
+    if (password !== confirmPassword) {
+      alert("Passwords do not match. Please try again.");
+      return;
+    }
     try {
-      if (password !== confirmPassword) {
-        alert("Passwords do not match. Please try again.");
-        return;
-      }
-      const response = await axios.post(`${apiUrl}/users`, userData, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await axios.post(
+        `${apiUrl}/users`,
+        { fullName, email, password },
+        { headers: { "Content-Type": "application/json" } }
+      );
       if (response && response.status === 200) {
-        console.log("Registration successful:", response.data);
-      } else {
-        console.error(
-          "Registration failed: ",
-          response ? response.data : "No response from server"
+        // Auto-login after successful registration
+        const loginResponse = await axios.post(
+          `${apiUrl}/auth/login`,
+          { email, password },
+          { headers: { "Content-Type": "application/json" } }
         );
-        alert((response && response.data.message) || "Registration failed");
+        if (loginResponse && loginResponse.status === 200) {
+          setAccessToken(loginResponse.data.accessToken);
+          navigate("/home");
+          return;
+        }
       }
     } catch (error) {
-      console.error("Error during registration:", error);
+      const message =
+        error.response?.data?.message ||
+        "Registration failed. Please try again.";
+      alert(message);
     }
-    return navigate("/");
+    navigate("/");
   };
 
   return (
-    <>
-      <WelcomeMessage />
-      <div className="form-container">
-        <div className="form-box">
-          <h2>Register User</h2>
-          {/* Registration form will go here */}
-          <p>Please fill in the details to register</p>
-          <br />
-          <label>Full Name:</label>
+    <div className="form-container">
+      <div className="form-box">
+        <h2>Create Account</h2>
+        <p>Sign up to start your college application journey.</p>
+        <form onSubmit={handleRegister}>
+          <label>Full Name</label>
           <input
-            type="fullName"
-            placeholder="Enter your Full Name"
+            type="text"
+            placeholder="Your full name"
             value={fullName}
             required
             onChange={(e) => setFullName(e.target.value)}
+            autoComplete="name"
           />
-          <br />
-          <label>Email:</label>
+          <label>Email</label>
           <input
             type="email"
-            placeholder="Enter your email"
+            placeholder="you@example.com"
             value={email}
             required
             onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
           />
-          <br />
-          <label>Password:</label>
+          <label>Password</label>
           <input
             type="password"
-            placeholder="Enter your password"
+            placeholder="Create a password"
             value={password}
             required
             onChange={(e) => setPassword(e.target.value)}
+            autoComplete="new-password"
           />
-          <br />
-          <label>Confirm password:</label>
+          <label>Confirm Password</label>
           <input
             type="password"
-            placeholder="Confirm your password"
+            placeholder="Repeat your password"
             value={confirmPassword}
             required
             onChange={(e) => setConfirmPassword(e.target.value)}
+            autoComplete="new-password"
           />
           <br />
-          <br />
-          <button className="btn btn-primary" onClick={handleRegister}>
-            Register
+          <button className="btn btn-primary" type="submit">
+            Create Account
           </button>
-          <br />
-          <br />
-          <p>
-            Already have an account? <a href="/">Login here</a>
-          </p>
-        </div>
-        <p>
-          By registering, you agree to our <a href="/terms">Terms of Service</a>{" "}
-          and <a href="/privacy">Privacy Policy</a>. Need help?{" "}
-          <a href="/help">Contact support</a>
+        </form>
+        <p style={{ textAlign: "center", marginTop: "16px", color: "var(--grey-mid)" }}>
+          Already have an account?{" "}
+          <a href="/" style={{ fontWeight: 600 }}>
+            Sign in here
+          </a>
         </p>
       </div>
-    </>
+    </div>
   );
 }

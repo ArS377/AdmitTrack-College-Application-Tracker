@@ -11,11 +11,8 @@ export default function ForgotPassword() {
 
   useEffect(() => {
     const skipLogin = import.meta.env.VITE_AUTO_FILL_TEST_USER === "true";
-    const testUser =
-      import.meta.env.VITE_TEST_USER || "soma.ellappan@gmail.com";
-    if (skipLogin) {
-      setEmail(testUser);
-    }
+    const testUser = import.meta.env.VITE_TEST_USER || "";
+    if (skipLogin && testUser) setEmail(testUser);
   }, []);
 
   const handleResetPassword = async () => {
@@ -36,28 +33,23 @@ export default function ForgotPassword() {
   return (
     <div className="form-container">
       <div className="form-box">
-        <h2>Forgot Your Password?</h2>
-        <br />
-        <p>Please enter your email to reset your password</p>
-        <label>Email:</label>
+        <h2>Reset Password</h2>
+        <p>Enter your email and we'll send you a reset link.</p>
+        <label>Email</label>
         <input
           type="email"
           value={email}
-          placeholder="Enter your email"
+          placeholder="you@example.com"
           required
-          onChange={(e) => {
-            setEmail(e.target.value);
-          }}
+          autoComplete="email"
+          onChange={(e) => setEmail(e.target.value)}
         />
         <br />
-        <br />
         <button className="btn btn-primary" onClick={handleResetPassword}>
-          Reset Password
+          Send Reset Link
         </button>
-        <br />
-        <br />
-        <p>
-          Remembered your password? <a href="/">Login here</a>.
+        <p style={{ textAlign: "center", marginTop: "16px", color: "var(--grey-mid)" }}>
+          Remembered it? <a href="/">Sign in here</a>
         </p>
       </div>
     </div>

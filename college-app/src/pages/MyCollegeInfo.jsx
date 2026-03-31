@@ -15,115 +15,121 @@ export function MyCollegeInfo() {
   const [collegeInMyList, setCollegeInMyList] = useState(
     location.state?.isCollegeInMyList || false
   );
-
   const [myCollegeStatus, setMyCollegeStatus] = useState();
   const [collegeDetail, setCollegeDetail] = useState();
   const apiUrl = import.meta.env.VITE_API_URL;
   const unitId = location.state?.unitId;
+
   useLayoutEffect(() => {
-    if (!unitId) {
-      navigate("/home");
-      return;
-    }
+    if (!unitId) { navigate("/home"); return; }
+
     const fetchCollegeDetailById = async (unitId) => {
       try {
         const response = await axios.get(`${apiUrl}/collegesearch/${unitId}`);
-        if (response.status === 200) {
-          console.log("College details fetched successfully:", response.data);
-          setCollegeDetail(response.data);
-        } else {
-          console.error("Failed to fetch college details:", response.data);
-        }
+        if (response.status === 200) setCollegeDetail(response.data);
       } catch (error) {
         console.error("Error fetching college details:", error);
       }
     };
+
     const fetchMyCollegeStatusById = async (unitId) => {
       try {
         const response = await axios.get(`${apiUrl}/mycolleges/${unitId}`, {
           params: { id: unitId },
         });
-        if (response.status === 200) {
-          console.log(
-            "College status fetched successfully:",
-            JSON.stringify(response.data)
-          );
-          setMyCollegeStatus(response.data);
-        } else {
-          console.error(
-            "Failed to fetch college from MyCollegeList:",
-            response.data
-          );
-        }
+        if (response.status === 200) setMyCollegeStatus(response.data);
       } catch (error) {
-        console.error(
-          "Failed to fetch college from MyCollegeList. May not be in the list."
-        );
+        console.error("Failed to fetch college from MyCollegeList.");
       }
     };
+
     fetchCollegeDetailById(unitId);
     fetchMyCollegeStatusById(unitId);
   }, []);
 
-  const handleAppStatus = () => {
-    setShowAppStatus(true);
-  };
-  const handleCollegeData = () => {
-    setShowAppStatus(false);
-  };
-
   const handleAddCollege = async () => {
     await addToMyColleges(collegeDetail);
     setCollegeInMyList(true);
-    //toggleRenderSwitch();
-  };
-
-  const handleBackToCollegeList = () => {
-    navigate(-1, { replace: true });
   };
 
   return (
-    <>
-      <div>
-        <div>
-          <a onClick={handleBackToCollegeList} className="btn btn-link">
-            Back to College List
+    <div className="page-content">
+
+      {/* Back link */}
+      <button
+        onClick={() => navigate(-1)}
+        style={{
+          background: "none",
+          border: "none",
+          color: "var(--maroon)",
+          cursor: "pointer",
+          padding: "0 0 16px 0",
+          fontSize: "14px",
+          fontWeight: 500,
+          display: "flex",
+          alignItems: "center",
+          gap: "6px",
+        }}
+      >
+        ← Back to College List
+      </button>
+
+      {/* College header card */}
+      <div className="card" style={{ marginBottom: "20px" }}>
+        <h2 style={{ margin: "0 0 6px 0", color: "var(--maroon-dark)" }}>
+          {collegeDetail?.collegeName || "Loading…"}
+        </h2>
+        {collegeDetail?.info?.website && (
+          <a
+            href={collegeDetail.info.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ fontSize: "14px", color: "var(--sandy)", wordBreak: "break-all" }}
+          >
+            {collegeDetail.info.website}
           </a>
-          <h2>{collegeDetail?.collegeName}</h2>
-          <p>
-            {collegeDetail?.info.website && (
-              <a
-                href={collegeDetail?.info.website}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {collegeDetail?.info.website}
-              </a>
-            )}
-          </p>
+        )}
+        <div style={{ marginTop: "10px", fontSize: "13px", color: "var(--grey-mid)" }}>
+          {collegeDetail?.info?.city && collegeDetail?.info?.state &&
+            `${collegeDetail.info.city}, ${collegeDetail.info.state}`}
         </div>
-        <br />
-        <ul className="nav nav-tabs">
-          <li className="nav-item">
-            <a
-              className={`nav-link ${showAppStatus ? "active" : ""}`}
-              aria-current="page"
-              onClick={handleAppStatus}
-            >
-              Application Status
-            </a>
-          </li>
-          <li className="nav-item">
-            <a
-              className={`nav-link ${!showAppStatus ? "active" : ""}`}
-              onClick={handleCollegeData}
-            >
-              College Data
-            </a>
-          </li>
-        </ul>
       </div>
-      <br />
+
+      {/* Tabs */}
+      <div style={{
+        display: "flex",
+        gap: "4px",
+        marginBottom: "20px",
+        borderBottom: "2px solid var(--sandy-light)",
+        paddingBottom: "0",
+      }}>
+        {[
+          { label: "Application Status", active: showAppStatus, onClick: () => setShowAppStatus(true) },
+          { label: "College Data",       active: !showAppStatus, onClick: () => setShowAppStatus(false) },
+        ].map(({ label, active, onClick }) => (
+          <button
+            key={label}
+            onClick={onClick}
+            style={{
+              background: "none",
+              border: "none",
+              borderBottom: active ? "3px solid var(--maroon)" : "3px solid transparent",
+              padding: "10px 20px",
+              cursor: "pointer",
+              fontWeight: active ? 600 : 400,
+              color: active ? "var(--maroon)" : "var(--grey-mid)",
+              fontSize: "15px",
+              fontFamily: "var(--font)",
+              transition: "color 0.15s ease",
+              marginBottom: "-2px",
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab content */}
       <div>
         {showAppStatus ? (
           <ApplicationStatus
@@ -141,6 +147,7 @@ export function MyCollegeInfo() {
           />
         )}
       </div>
-    </>
+
+    </div>
   );
 }

@@ -1,3 +1,73 @@
-li {
+.app-navbar {
+  background-color: var(--maroon, #8B1A1A);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  height: 58px;
+  box-shadow: 0 2px 8px rgba(92, 16, 16, 0.25);
+}
+
+.app-navbar .navbar-brand {
+  color: var(--white, #FDFAF7) !important;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-right: 32px;
+  padding: 0;
+  text-decoration: none;
+  font-family: var(--font, 'Segoe UI', Arial, sans-serif);
+}
+
+.app-navbar .navbar-brand span {
+  color: var(--sandy, #C4A882);
+}
+
+.app-navbar .navbar-nav {
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 4px;
+  flex: 1;
+}
+
+.app-navbar .nav-item {
+  color: rgba(253, 250, 247, 0.82) !important;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+  user-select: none;
+  font-family: var(--font, 'Segoe UI', Arial, sans-serif);
+  text-decoration: none;
+}
+
+.app-navbar .nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: var(--white, #FDFAF7) !important;
+}
+
+.app-navbar .nav-item.active {
+  background-color: rgba(255, 255, 255, 0.18);
+  color: var(--white, #FDFAF7) !important;
+  border-bottom: 2px solid var(--sandy, #C4A882);
+}
+
+.app-navbar .nav-signout {
+  margin-left: auto;
+  color: rgba(253, 250, 247, 0.7) !important;
+  font-size: 14px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+  font-family: var(--font, 'Segoe UI', Arial, sans-serif);
+}
+
+.app-navbar .nav-signout:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: var(--white, #FDFAF7) !important;
 }

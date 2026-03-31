@@ -2,92 +2,122 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import CollegeCategory from "./CollegeCategory";
 import { useNavigate } from "react-router-dom";
-import { updateCollegeCategory } from "../utils/collegeUtils";
 
 const ExpandableCollegeList = ({
   collegeList,
   deleteCollegeFromList,
   expandedFlag = true,
+  onCategoryChange,
 }) => {
-  console.log(
-    `ExpandedCollegeList collegeList: ${collegeList.length}, ${expandedFlag}`
-  );
   const navigate = useNavigate();
+
   const goToCollegeInfo = (unitId) => {
     navigate("/collegeinfo", {
-      state: { unitId: unitId, showAppStatus: true, isCollegeInMyList: true },
+      state: { unitId, showAppStatus: true, isCollegeInMyList: true },
     });
   };
-  const changeCollegeCategory = async (college, newCategory) => {
-    // TODO change college category in the database.
-    console.log(`change ${college.collegeName} to ${newCategory}`);
-  };
+
+  if (collegeList.length === 0) {
+    return (
+      <>
+        <div style={{
+          textAlign: "center",
+          padding: "32px 16px",
+          color: "var(--grey-mid)",
+          fontSize: "14px",
+        }}>
+          <div style={{ fontSize: "32px", marginBottom: "10px", opacity: 0.4 }}>🏫</div>
+          No colleges added yet.{" "}
+          {expandedFlag && <span>Use <strong>Add College</strong> to get started.</span>}
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
-      <h2>My College List</h2>
-      <br></br>
-
-      {collegeList.length > 0 ? (
-        <table className="table table-hover text-start">
-          {expandedFlag && (
-            <thead>
-              <tr>
-                <th scope="col">College Name</th>
+      <table className="table" style={{ marginBottom: 0 }}>
+        {expandedFlag && (
+          <thead>
+            <tr>
+              <th>College</th>
+              <th>Due Date</th>
+              <th>Progress</th>
+              <th>Category</th>
+              <th></th>
+            </tr>
+          </thead>
+        )}
+        <tbody>
+          {collegeList.map((college) => (
+            <tr key={college.unitId}>
+              <td
+                onClick={() => goToCollegeInfo(college.unitId)}
+                style={{
+                  cursor: "pointer",
+                  color: "var(--maroon)",
+                  fontWeight: 500,
+                  maxWidth: expandedFlag ? "none" : "180px",
+                  whiteSpace: expandedFlag ? "normal" : "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {college.collegeName}
+              </td>
+              {expandedFlag && (
                 <>
-                  <th scope="col">Due Date</th>
-                  <th scope="col">Progress</th>
-                  <th scope="col">Classification</th>
+                  <td style={{ color: "var(--grey-mid)", fontSize: "13px" }}>
+                    {college.dueDate
+                      ? new Date(college.dueDate).toLocaleDateString()
+                      : <span style={{ fontStyle: "italic" }}>—</span>}
+                  </td>
+                  <td>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <div style={{
+                        height: "6px",
+                        width: "80px",
+                        borderRadius: "3px",
+                        background: "var(--grey-pale)",
+                        overflow: "hidden",
+                      }}>
+                        <div style={{
+                          height: "100%",
+                          width: `${college.appProgress || 0}%`,
+                          background: "var(--maroon)",
+                          borderRadius: "3px",
+                        }} />
+                      </div>
+                      <span style={{ fontSize: "12px", color: "var(--grey-mid)" }}>
+                        {college.appProgress || 0}%
+                      </span>
+                    </div>
+                  </td>
+                  <td><CollegeCategory college={college} onCategoryChange={onCategoryChange} /></td>
                 </>
-                <th scope="col"></th>
-              </tr>
-            </thead>
-          )}
-          <tbody>
-            {collegeList.map((college) => (
-              <tr key={college.unitId}>
-                <td
-                  onClick={() => goToCollegeInfo(college.unitId)}
-                  style={{ cursor: "pointer" }}
+              )}
+              <td style={{ width: "40px" }}>
+                <button
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "var(--grey-light)",
+                    cursor: "pointer",
+                    padding: "4px",
+                    transition: "color 0.15s ease",
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = "var(--maroon)"}
+                  onMouseLeave={(e) => e.currentTarget.style.color = "var(--grey-light)"}
+                  onClick={() => deleteCollegeFromList(college.unitId, college.collegeName)}
+                  title="Remove"
                 >
-                  {college.collegeName}
-                </td>
-                {expandedFlag && (
-                  <>
-                    <td>
-                      {college.dueDate ? (
-                        `${new Date(college.dueDate).toDateString()}`
-                      ) : (
-                        <>No Due Date</>
-                      )}
-                    </td>
-                    <td>
-                      {college.appProgress ? `${college.appProgress}` : <>0</>}%
-                      Completed
-                    </td>
-                    <td>{<CollegeCategory college={college} />}</td>
-                  </>
-                )}
-                <td>
-                  <button
-                    className="btn btn-outline-danger btn-sm"
-                    onClick={() => {
-                      console.log("Deleting college:", college);
-                      deleteCollegeFromList(
-                        college.unitId,
-                        college.collegeName
-                      );
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faTrashCan} />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p className="mt-3">Search for colleges to add them to your list.</p>
-      )}
+                  <FontAwesomeIcon icon={faTrashCan} />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </>
   );
 };

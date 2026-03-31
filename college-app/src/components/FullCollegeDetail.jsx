@@ -1,24 +1,23 @@
 import CollegeKeyStats from "./CollegeKeyStats";
 
-const FullCollegeDetail = ({
-  collegeStatus,
-  isCollegeInMyList,
-  collegeDetail,
-  handleAddCollege,
-}) => {
-  console.log("FullCollegeDetail: .....", collegeDetail);
+const FullCollegeDetail = ({ isCollegeInMyList, collegeDetail, handleAddCollege }) => {
+  if (!collegeDetail) return null;
+
   return (
-    collegeDetail && (
-      <div className="selected-college-details">
-        <CollegeKeyStats selectedCollege={collegeDetail} />
+    <div className="card">
+      <h3 className="section-title">College Statistics</h3>
+      <CollegeKeyStats selectedCollege={collegeDetail} />
+      <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
         {!isCollegeInMyList && (
-          <button className="addButton" onClick={handleAddCollege}>
-            Add College
+          <button className="btn btn-primary btn-sm" onClick={handleAddCollege}>
+            + Add to My List
           </button>
         )}
-        <button className="addButton">What are my chances?</button>
+        <button className="btn btn-secondary btn-sm">
+          What are my chances?
+        </button>
       </div>
-    )
+    </div>
   );
 };
 

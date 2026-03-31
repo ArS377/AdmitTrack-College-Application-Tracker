@@ -8,7 +8,7 @@ import {
   fetchMyColleges,
   addToMyColleges,
   deleteFromMyColleges,
-} from "../utils/collegeUtils"; // Assuming you have a utility function to fetch colleges
+} from "../utils/collegeUtils";
 import axios from "axios";
 
 export function AddCollege() {
@@ -27,82 +27,80 @@ export function AddCollege() {
   }, []);
 
   const onSelectCollege = async (college) => {
-    if (!college) {
-      setSelectedCollege(null);
-      return;
-    }
-    console.log("Selected college:", college); //college printed in console
-    const response = await axios.get(
-      `${apiUrl}/collegesearch/${college.unitId}`
-    );
+    if (!college) { setSelectedCollege(null); return; }
+    const response = await axios.get(`${apiUrl}/collegesearch/${college.unitId}`);
     if (response) {
-      const flag = collegeList.some(
+      setAlreadyAdded(collegeList.some(
         (entry) => parseInt(entry.unitId) === college.unitId
-      );
-      console.log("isAlreadyAdded: ", flag);
-      setAlreadyAdded(flag);
-
-      setSelectedCollege(response.data); // set the college data object as the selected college.
+      ));
+      setSelectedCollege(response.data);
     }
-    setResults([]); //clear search results list
+    setResults([]);
   };
 
   const addCollegeToList = async () => {
-    if (selectedCollege) {
-      const isAlreadyAdded = collegeList.some(
-        (college) => parseInt(college.unitId) === selectedCollege.unitId
-      );
-
-      if (isAlreadyAdded) {
-        alert(`${selectedCollege.collegeName} is already in your list.`);
-        return;
-      }
-      addToMyColleges(selectedCollege);
-      setCollegeList((prevList) => [...prevList, selectedCollege]);
-      setSelectedCollege(null); //clears info box
-    } else {
+    if (!selectedCollege) {
       alert("Please select a college from the search results first!");
+      return;
     }
+    if (collegeList.some((c) => parseInt(c.unitId) === selectedCollege.unitId)) {
+      alert(`${selectedCollege.collegeName} is already in your list.`);
+      return;
+    }
+    addToMyColleges(selectedCollege);
+    setCollegeList((prev) => [...prev, selectedCollege]);
+    setSelectedCollege(null);
   };
 
   const deleteCollegeFromList = async (unitId, collegeName) => {
-    console.log("Deleting college2:", unitId, collegeName);
-    setCollegeList((prevList) =>
-      prevList.filter((college) => String(college.unitId) !== String(unitId))
+    setCollegeList((prev) =>
+      prev.filter((college) => String(college.unitId) !== String(unitId))
     );
-
     setSelectedCollege(null);
     deleteFromMyColleges(unitId, collegeName);
   };
 
   return (
-    <div className="container text-center subject">
-      <div className="row align-items-start">
-        <div className="col-sm-8 num1 col-auto mb-5">
-          <h2>Search for Colleges</h2>
-          <div className="searchBarContainer">
-            <SearchBar setResults={setResults} onSearch={onSelectCollege} />
-            <SearchResultsList
-              results={results}
-              onSelectCollege={onSelectCollege}
-            />
+    <div className="page-content subject">
+      <div style={{ marginBottom: "24px" }}>
+        <h2 style={{ margin: 0, color: "var(--maroon-dark)" }}>Add Colleges</h2>
+        <p style={{ color: "var(--grey-mid)", marginTop: "4px" }}>
+          Search for schools and add them to your list.
+        </p>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: "24px", alignItems: "start" }}>
+
+        {/* Left: search + selected college */}
+        <div>
+          <div className="card" style={{ marginBottom: "20px" }}>
+            <h3 className="section-title">Search Colleges</h3>
+            <div className="searchBarContainer">
+              <SearchBar setResults={setResults} onSearch={onSelectCollege} />
+              <SearchResultsList results={results} onSelectCollege={onSelectCollege} />
+            </div>
           </div>
+
           {selectedCollege && (
-            <CollegeInfoShort
-              selectedCollege={selectedCollege}
-              addCollegeToList={() => addCollegeToList()}
-              alreadyAdded={alreadyAdded}
-            />
+            <div className="card">
+              <CollegeInfoShort
+                selectedCollege={selectedCollege}
+                addCollegeToList={addCollegeToList}
+                alreadyAdded={alreadyAdded}
+              />
+            </div>
           )}
         </div>
 
-        <div className="col-sm-4 num2 col-auto">
+        {/* Right: my college list sidebar */}
+        <div className="card">
           <ExpandableCollegeList
             collegeList={collegeList}
             deleteCollegeFromList={deleteCollegeFromList}
             expandedFlag={false}
           />
         </div>
+
       </div>
     </div>
   );

@@ -150,15 +150,11 @@ function CollegeResearchTable({ collegeList }) {
     return columnName;
   };
 
-  const sortedColumnStyle = (key, columnName) => {
+  const sortedColumnStyle = (key) => {
     if (key === sortedBy?.key) {
-      if (sortedBy?.direction === "ascending") {
-        return { backgroundColor: "#bae6fd" };
-      } else {
-        return { backgroundColor: "#38bdf8" };
-      }
+      return { backgroundColor: "var(--sandy-pale, #F5EDE0)", color: "var(--maroon, #8B1A1A)" };
     }
-    return { backgroundColor: "#ffffff" };
+    return {};
   };
 
   const SESSION_KEY_SORTED_BY = "SortedBy";
@@ -219,122 +215,121 @@ function CollegeResearchTable({ collegeList }) {
     };
   }, [data, sortedBy, itemsPerPage]);
 
+  const paginationBtnStyle = (disabled) => ({
+    padding: "6px 14px",
+    borderRadius: "6px",
+    border: "1.5px solid var(--grey-light)",
+    background: disabled ? "var(--grey-pale)" : "var(--white)",
+    color: disabled ? "var(--grey-light)" : "var(--maroon)",
+    cursor: disabled ? "default" : "pointer",
+    fontWeight: 500,
+    fontSize: "13px",
+    fontFamily: "var(--font)",
+  });
+
   return (
-    <div className="college-list-table container-fluid">
-      {/* Pagination Controls */}
-      <div className="row mt-3">
-        <div className="col-9"></div>
-        <div className="col-3">
-          <button
-            className="btn btn-sm btn-outline-primary"
-            onClick={() =>
-              setSortedBy((prev) => ({
-                ...prev,
-                currentPage: Math.max(prev.currentPage - 1, 1),
-              }))
-            }
-            disabled={sortedBy?.currentPage === 1}
-          >
-            Previous
-          </button>
-          <span>
-            {" "}
-            Page {sortedBy?.currentPage} of {totalPages}{" "}
+    <div className="page-content">
+
+      <div style={{ marginBottom: "20px" }}>
+        <h2 style={{ margin: 0, color: "var(--maroon-dark)" }}>Research Colleges</h2>
+        <p style={{ color: "var(--grey-mid)", marginTop: "4px" }}>
+          Browse, sort, and compare schools. Click a name to view details.
+        </p>
+      </div>
+
+      <div className="card" style={{ overflowX: "auto" }}>
+
+        {/* Pagination bar */}
+        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
+          <span style={{ fontSize: "13px", color: "var(--grey-mid)" }}>
+            Page {sortedBy?.currentPage} of {totalPages}
           </span>
           <button
-            className="btn btn-sm btn-outline-primary"
-            onClick={() =>
-              setSortedBy((prev) => ({
-                ...prev,
-                currentPage: Math.min(prev.currentPage + 1, totalPages),
-              }))
-            }
+            style={paginationBtnStyle(sortedBy?.currentPage === 1)}
+            onClick={() => setSortedBy((prev) => ({ ...prev, currentPage: Math.max(prev.currentPage - 1, 1) }))}
+            disabled={sortedBy?.currentPage === 1}
+          >
+            ← Prev
+          </button>
+          <button
+            style={paginationBtnStyle(sortedBy?.currentPage === totalPages)}
+            onClick={() => setSortedBy((prev) => ({ ...prev, currentPage: Math.min(prev.currentPage + 1, totalPages) }))}
             disabled={sortedBy?.currentPage === totalPages}
           >
-            Next
+            Next →
           </button>
         </div>
-      </div>
-      <table className="table table-hover">
-        <thead>
-          <tr>
-            <th onClick={() => sortTable("collegeName")}>
-              {sortedColumnHeader("collegeName", "Name")}
-            </th>
-            <th onClick={() => sortTable("applicants.total")}>
-              {sortedColumnHeader("applicants.total", "Applicants")}
-            </th>
-            <th onClick={() => sortTable("admissions.total_pct")}>
-              {sortedColumnHeader("admissions.total_pct", "Acceptance Rate")}
-            </th>
-            <th>SAT Score Range</th>
-            <th>ACT Score Range</th>
-            <th>
-              Tuition
-              <br />
-              In-State / Out-of-State
-            </th>
-            <th>Location</th>
-            <th>My College List</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentData &&
-            currentData.map((item) => (
+
+        <table className="table table-hover" style={{ minWidth: "900px" }}>
+          <thead>
+            <tr>
+              <th style={{ ...sortedColumnStyle("collegeName"), cursor: "pointer" }} onClick={() => sortTable("collegeName")}>
+                {sortedColumnHeader("collegeName", "College")}
+              </th>
+              <th style={{ ...sortedColumnStyle("applicants.total"), cursor: "pointer" }} onClick={() => sortTable("applicants.total")}>
+                {sortedColumnHeader("applicants.total", "Applicants")}
+              </th>
+              <th style={{ ...sortedColumnStyle("admissions.total_pct"), cursor: "pointer" }} onClick={() => sortTable("admissions.total_pct")}>
+                {sortedColumnHeader("admissions.total_pct", "Accept. Rate")}
+              </th>
+              <th>SAT Range</th>
+              <th>ACT Range</th>
+              <th>Tuition (In / Out)</th>
+              <th>Location</th>
+              <th style={{ textAlign: "center" }}>My List</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentData && currentData.map((item) => (
               <tr key={item.unitId}>
                 <td
                   onClick={() => goToCollegeInfo(item, isCollegeInMyList(item))}
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: "pointer", color: "var(--maroon)", fontWeight: 500 }}
                 >
                   {item.collegeName}
                 </td>
-                <td>{item.applicants.total}</td>
+                <td>{item.applicants.total?.toLocaleString()}</td>
                 <td>{item.admissions.total_pct}</td>
-                <td>
-                  English:[{item.sat.eng25}...{item.sat.eng50}...
-                  {item.sat.eng75}]
-                  <br />
-                  Math:[{item.sat.math25}...{item.sat.math50}...
-                  {item.sat.math75}]
+                <td style={{ fontSize: "12px", lineHeight: 1.6 }}>
+                  <span style={{ color: "var(--grey-mid)" }}>R:</span> {item.sat.eng25}–{item.sat.eng75}<br />
+                  <span style={{ color: "var(--grey-mid)" }}>M:</span> {item.sat.math25}–{item.sat.math75}
                 </td>
-                <td>
-                  Composite:[{item.act.composite25}...{item.act.composite50}...
-                  {item.act.composite75}]
-                  <br />
-                  English:[{item.act.eng25}...{item.act.eng50}...
-                  {item.act.eng75}]
-                  <br />
-                  Math:[{item.act.math25}...{item.act.math50}...
-                  {item.act.math75}]
+                <td style={{ fontSize: "12px", lineHeight: 1.6 }}>
+                  <span style={{ color: "var(--grey-mid)" }}>Comp:</span> {item.act.composite25}–{item.act.composite75}<br />
+                  <span style={{ color: "var(--grey-mid)" }}>Eng:</span> {item.act.eng25}–{item.act.eng75}
                 </td>
-                <td>
-                  {CURRENCY_USD.format(item.tuition.in_state)} /{" "}
-                  {CURRENCY_USD.format(item.tuition.out_of_state)}
+                <td style={{ fontSize: "13px", whiteSpace: "nowrap" }}>
+                  {CURRENCY_USD.format(item.tuition.in_state)}<br />
+                  <span style={{ color: "var(--grey-mid)" }}>{CURRENCY_USD.format(item.tuition.out_of_state)}</span>
                 </td>
-                <td>
+                <td style={{ fontSize: "13px" }}>
                   {item.info.city}, {item.info.state}
                 </td>
-                <td>
+                <td style={{ textAlign: "center" }}>
                   {isCollegeInMyList(item) ? (
                     <button
-                      className="btn btn-sm btn-outline-danger"
+                      className="btn btn-sm"
+                      style={{ background: "var(--sandy-pale)", border: "1px solid var(--sandy)", color: "var(--maroon-dark)", borderRadius: "6px", padding: "4px 12px", fontSize: "12px" }}
                       onClick={() => handleRemoveCollege(item)}
                     >
-                      &#x2796;
+                      Remove
                     </button>
                   ) : (
                     <button
-                      className="btn btn-sm btn-outline-primary"
+                      className="btn btn-sm"
+                      style={{ background: "var(--maroon)", border: "none", color: "white", borderRadius: "6px", padding: "4px 12px", fontSize: "12px" }}
                       onClick={() => handleAddCollege(item)}
                     >
-                      ➕
+                      + Add
                     </button>
                   )}
                 </td>
               </tr>
             ))}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+
+      </div>
     </div>
   );
 }

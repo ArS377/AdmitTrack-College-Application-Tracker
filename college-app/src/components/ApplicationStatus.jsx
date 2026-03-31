@@ -11,7 +11,6 @@ const ApplicationStatus = ({
   collegeDetail,
   handleAddCollege,
 }) => {
-  console.log(`collegeStatus = ${JSON.stringify(collegeStatus)}`);
   const [category, setCategory] = useState();
   const [appType, setAppType] = useState();
   const [dueDate, setDueDate] = useState();
@@ -23,8 +22,6 @@ const ApplicationStatus = ({
   const [transcriptStatus, setTranscriptStatus] = useState();
 
   useEffect(() => {
-    console.log("useEffect called");
-    console.log(`setting value: ${JSON.stringify(collegeStatus)}`);
     setCategory(collegeStatus?.category);
     setAppType(collegeStatus?.appType);
     setDueDate(collegeStatus?.dueDate);
@@ -36,201 +33,143 @@ const ApplicationStatus = ({
     setTranscriptStatus(collegeStatus?.transcriptStatus);
   }, [collegeStatus]);
 
-  const handleCategory = (value) => {
-    // TODO update college category in the database
-    setCategory(value);
-    updateMyCollegeDetail({ ...collegeStatus, category: value });
-  };
+  const handleCategory           = (v) => { setCategory(v);           updateMyCollegeDetail({ ...collegeStatus, category: v }); };
+  const handleAppType            = (v) => { setAppType(v);            updateMyCollegeDetail({ ...collegeStatus, appType: v }); };
+  const handleDueDate            = (v) => { setDueDate(v);            updateMyCollegeDetail({ ...collegeStatus, dueDate: v }); };
+  const handleEssayProgress      = (v) => { setEssayProgress(v);      updateMyCollegeDetail({ ...collegeStatus, essayProgress: v }); };
+  const handleAppSubmissionStatus= (v) => { setAppSubmissionStatus(v);updateMyCollegeDetail({ ...collegeStatus, appSubmissionStatus: v }); };
+  const handleTestScoreStatus    = (v) => { setTestScoreStatus(v);    updateMyCollegeDetail({ ...collegeStatus, testScoreStatus: v }); };
+  const handleApibScoreStatus    = (v) => { setApibScoreStatus(v);    updateMyCollegeDetail({ ...collegeStatus, apibScoreStatus: v }); };
+  const handleLorStatus          = (v) => { setLorStatus(v);          updateMyCollegeDetail({ ...collegeStatus, lorStatus: v }); };
+  const handleTranscriptStatus   = (v) => { setTranscriptStatus(v);   updateMyCollegeDetail({ ...collegeStatus, transcriptStatus: v }); };
 
-  const handleAppType = (value) => {
-    // TODO update college category in the database
-    setAppType(value);
-    updateMyCollegeDetail({ ...collegeStatus, appType: value });
-  };
+  if (!isCollegeInMyList) {
+    return (
+      <div className="card" style={{ textAlign: "center", padding: "40px 32px" }}>
+        <div style={{ fontSize: "36px", marginBottom: "14px", opacity: 0.5 }}>📋</div>
+        <h4 style={{ color: "var(--grey-dark)", marginBottom: "8px" }}>
+          Not in your list yet
+        </h4>
+        <p style={{ color: "var(--grey-mid)", maxWidth: "400px", margin: "0 auto 20px" }}>
+          Add this college to your list to start tracking your application status.
+        </p>
+        <button className="btn btn-primary" onClick={handleAddCollege}>
+          Add to My List
+        </button>
+      </div>
+    );
+  }
 
-  const handleDueDate = (value) => {
-    // TODO update college category in the database
-    setDueDate(value);
-    updateMyCollegeDetail({ ...collegeStatus, dueDate: value });
-  };
-
-  const handleEssayProgress = (value) => {
-    // TODO update college category in the database
-    setEssayProgress(value);
-    updateMyCollegeDetail({ ...collegeStatus, essayProgress: value });
-  };
-
-  const handleAppSubmissionStatus = (value) => {
-    // TODO update college category in the database
-    setAppSubmissionStatus(value);
-    updateMyCollegeDetail({ ...collegeStatus, appSubmissionStatus: value });
-  };
-
-  const handleTestScoreStatus = (value) => {
-    // TODO update college category in the database
-    setTestScoreStatus(value);
-    updateMyCollegeDetail({ ...collegeStatus, testScoreStatus: value });
-  };
-
-  const handleApibScoreStatus = (value) => {
-    // TODO update college category in the database
-    setApibScoreStatus(value);
-    updateMyCollegeDetail({ ...collegeStatus, apibScoreStatus: value });
-  };
-
-  const handleLorStatus = (value) => {
-    // TODO update college category in the database
-    setLorStatus(value);
-    updateMyCollegeDetail({ ...collegeStatus, lorStatus: value });
-  };
-
-  const handleTranscriptStatus = (value) => {
-    // TODO update college category in the database
-    setTranscriptStatus(value);
-    updateMyCollegeDetail({ ...collegeStatus, transcriptStatus: value });
-  };
+  const FormRow = ({ label, children }) => (
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: "200px 1fr",
+      alignItems: "center",
+      padding: "12px 0",
+      borderBottom: "1px solid var(--grey-pale)",
+      gap: "16px",
+    }}>
+      <label style={{
+        margin: 0,
+        fontWeight: 500,
+        fontSize: "14px",
+        color: "var(--grey-dark)",
+      }}>
+        {label}
+      </label>
+      <div>{children}</div>
+    </div>
+  );
 
   return (
-    <div className="container">
-      {!isCollegeInMyList ? (
-        <>
-          <h4>
-            You have not added this college to your list. If you would like to
-            apply for this college and track the application status here, please
-            add the college to your list of colleges
-          </h4>
-          <button
-            className="btn btn-sm btn-outline-primary"
-            onClick={() => handleAddCollege()}
-          >
-            Add
-          </button>
-        </>
-      ) : (
-        <div className="row">
-          <div className="col-xl-4 mb-3">
-            <CollegeDeadlines />
-          </div>
-          <div className="col-xl-8">
-            <form>
-              <div className="row mb-3">
-                <label className="col-sm-6">Application Type:</label>
-                <div className="col-sm-6">
-                  <Dropdown
-                    name="appType"
-                    selected={appType}
-                    options={[
-                      "Early Decision",
-                      "Early Decision II",
-                      "Early Action",
-                      "Restrictive Early Action",
-                      "Regular Decision",
-                    ]}
-                    handleChange={handleAppType}
-                  />
-                </div>
-              </div>
-              <div className="row mb-3">
-                <label className="col-sm-6">Application Due Date</label>
-                <div className="col-sm-6">
-                  <DatePicker
-                    selected={dueDate}
-                    onChange={(date) => handleDueDate(date)}
-                    dateFormat="MM/dd/yyyy"
-                    placeholderText="Select a date"
-                    className="form-control"
-                  />
-                </div>
-              </div>
-              <div className="row mb-3">
-                <label className="col-sm-6">College Classification</label>
-                <div className="col-sm-6">
-                  <Dropdown
-                    name="category"
-                    selected={category}
-                    options={["Dream", "Reach", "Target", "Safety"]}
-                    handleChange={handleCategory}
-                  />
-                </div>
-              </div>
-              <div className="row mb-3">
-                <label className="col-sm-6">Essays / Supplementals</label>
-                <div className="col-sm-6">
-                  <Dropdown
-                    name="essayProgress"
-                    selected={essayProgress}
-                    options={[
-                      "Not Started",
-                      "In Progress",
-                      "Completed / Submitted",
-                    ]}
-                    handleChange={handleEssayProgress}
-                  />
-                </div>
-              </div>
-              <div className="row mb-3">
-                <label className="col-sm-6">
-                  Application Submission Status
-                </label>
-                <div className="col-sm-6">
-                  <Dropdown
-                    name="appSubmissionStatus"
-                    selected={appSubmissionStatus}
-                    options={["Not Submitted", "Submitted"]}
-                    handleChange={handleAppSubmissionStatus}
-                  />
-                </div>
-              </div>
-              <div className="row mb-3">
-                <label className="col-sm-6">
-                  Standardized Test Score Sent Status
-                </label>
-                <div className="col-sm-6">
-                  <Dropdown
-                    name="testScoreStatus"
-                    selected={testScoreStatus}
-                    options={["Not Sent", "Sent"]}
-                    handleChange={handleTestScoreStatus}
-                  />
-                </div>
-              </div>
-              <div className="row mb-3">
-                <label className="col-sm-6">AP / IB Score Send Status</label>
-                <div className="col-sm-6">
-                  <Dropdown
-                    name="apibScoreStatus"
-                    selected={apibScoreStatus}
-                    options={["Not Sent", "Sent"]}
-                    handleChange={handleApibScoreStatus}
-                  />
-                </div>
-              </div>
-              <div className="row mb-3">
-                <label className="col-sm-6">Letters of Recommendation</label>
-                <div className="col-sm-6">
-                  <Dropdown
-                    name="lorStatus"
-                    selected={lorStatus}
-                    options={["Not Sent", "Sent"]}
-                    handleChange={handleLorStatus}
-                  />
-                </div>
-              </div>
-              <div className="row mb-3">
-                <label className="col-sm-6">Transcript Send Status</label>
-                <div className="col-sm-6">
-                  <Dropdown
-                    name="transcriptStatus"
-                    selected={transcriptStatus}
-                    options={["Not Sent", "Sent"]}
-                    handleChange={handleTranscriptStatus}
-                  />
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", alignItems: "start" }}>
+
+      {/* Deadlines card */}
+      <div className="card">
+        <h3 className="section-title">Deadlines</h3>
+        <CollegeDeadlines />
+      </div>
+
+      {/* Application tracking card */}
+      <div className="card">
+        <h3 className="section-title">Application Tracking</h3>
+        <form>
+          <FormRow label="Application Type">
+            <Dropdown
+              name="appType"
+              selected={appType}
+              options={["Early Decision", "Early Decision II", "Early Action", "Restrictive Early Action", "Regular Decision"]}
+              handleChange={handleAppType}
+            />
+          </FormRow>
+          <FormRow label="Due Date">
+            <DatePicker
+              selected={dueDate}
+              onChange={handleDueDate}
+              dateFormat="MM/dd/yyyy"
+              placeholderText="Select a date"
+              className="form-control"
+            />
+          </FormRow>
+          <FormRow label="Classification">
+            <Dropdown
+              name="category"
+              selected={category}
+              options={["Dream", "Reach", "Target", "Safety"]}
+              handleChange={handleCategory}
+            />
+          </FormRow>
+          <FormRow label="Essays / Supplementals">
+            <Dropdown
+              name="essayProgress"
+              selected={essayProgress}
+              options={["Not Started", "In Progress", "Completed / Submitted"]}
+              handleChange={handleEssayProgress}
+            />
+          </FormRow>
+          <FormRow label="Application Submission">
+            <Dropdown
+              name="appSubmissionStatus"
+              selected={appSubmissionStatus}
+              options={["Not Submitted", "Submitted"]}
+              handleChange={handleAppSubmissionStatus}
+            />
+          </FormRow>
+          <FormRow label="Test Scores Sent">
+            <Dropdown
+              name="testScoreStatus"
+              selected={testScoreStatus}
+              options={["Not Sent", "Sent"]}
+              handleChange={handleTestScoreStatus}
+            />
+          </FormRow>
+          <FormRow label="AP / IB Scores Sent">
+            <Dropdown
+              name="apibScoreStatus"
+              selected={apibScoreStatus}
+              options={["Not Sent", "Sent"]}
+              handleChange={handleApibScoreStatus}
+            />
+          </FormRow>
+          <FormRow label="Letters of Rec.">
+            <Dropdown
+              name="lorStatus"
+              selected={lorStatus}
+              options={["Not Sent", "Sent"]}
+              handleChange={handleLorStatus}
+            />
+          </FormRow>
+          <FormRow label="Transcript">
+            <Dropdown
+              name="transcriptStatus"
+              selected={transcriptStatus}
+              options={["Not Sent", "Sent"]}
+              handleChange={handleTranscriptStatus}
+            />
+          </FormRow>
+        </form>
+      </div>
+
     </div>
   );
 };

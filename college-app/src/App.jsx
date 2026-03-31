@@ -16,25 +16,25 @@ import "./utils/axiosConfig.js"; // Import axios configuration
 
 function App() {
   return (
-    <>
-      <BrowserRouter>
-        <NavBar />
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/register" element={<RegisterUser />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route element={<ProtectedRoute />}>
-            <Route path="/home" element={<Home />} />
-            <Route path="/addcollege" element={<AddCollege />} />
-            <Route path="/research" element={<Research />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/collegeinfo" element={<MyCollegeInfo />} />
-          </Route>
-          <Route path="/login" element={<GLogin />} />
-        </Routes>
-      </BrowserRouter>
-    </>
+    <BrowserRouter>
+      <Routes>
+        {/* Public routes — no navbar */}
+        <Route path="/" element={<Landing />} />
+        <Route path="/register" element={<RegisterUser />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/login" element={<GLogin />} />
+
+        {/* Protected routes — with navbar */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/home"       element={<><NavBar /><Home /></>} />
+          <Route path="/addcollege" element={<><NavBar /><AddCollege /></>} />
+          <Route path="/research"   element={<><NavBar /><Research /></>} />
+          <Route path="/profile"    element={<><NavBar /><Profile /></>} />
+          <Route path="/collegeinfo" element={<><NavBar /><MyCollegeInfo /></>} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

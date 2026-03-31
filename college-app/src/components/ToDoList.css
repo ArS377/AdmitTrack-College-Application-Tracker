@@ -1,155 +1,146 @@
-/* Overall container to center the entire app and set base font */
 .main-app {
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    max-width: 500px; /* Adjust max width as desired */
-    margin: 40px auto; /* Centers the container horizontally */
-    padding: 20px;
-    background-color: white;
-    box-shadow: 0 0 10px lightgrey;;
+  font-family: var(--font, 'Segoe UI', Arial, sans-serif);
+  max-width: 900px;
+  margin: 32px auto;
+  padding: 24px;
+  background-color: var(--white, #FDFAF7);
+  box-shadow: var(--shadow-md, 0 4px 20px rgba(139, 26, 26, 0.12));
+  border-radius: var(--radius-lg, 12px);
 }
 
 h1 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 30px;
-    font-size: 2em; /* Larger for the main title */
+  text-align: center;
+  color: var(--maroon-dark, #5C1010);
+  margin-bottom: 28px;
+  font-size: 2em;
 }
 
-/* Input Section */
 .input-section {
-    display: flex;
-    justify-content: center; /* Center the input and button */
-    gap: 10px;
-    margin-bottom: 40px; /* Space below the input section */
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 36px;
 }
 
 .input-section input[type="text"] {
-    width: 300px; /* Fixed width for input when centered */
-    padding: 10px 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-    outline: none;
+  width: 320px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--grey-light, #D0C8C8);
+  border-radius: var(--radius, 8px);
+  font-size: 15px;
+  outline: none;
+  font-family: var(--font, 'Segoe UI', Arial, sans-serif);
 }
 
 .input-section input[type="text"]:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  border-color: var(--maroon, #8B1A1A);
+  box-shadow: 0 0 0 3px rgba(139, 26, 26, 0.1);
 }
 
 .custom-field.one button {
-    padding: 10px 20px;
-    background-color: #4a6bd6;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.2s ease;
+  padding: 10px 20px;
+  background-color: var(--maroon, #8B1A1A);
+  color: white;
+  border: none;
+  border-radius: var(--radius, 8px);
+  cursor: pointer;
+  font-size: 15px;
+  transition: background-color 0.2s ease;
 }
 
 .custom-field.one button:hover {
-    background-color: #0056b3;
+  background-color: var(--maroon-dark, #5C1010);
 }
 
-/* --- Key Changes for Side-by-Side Lists --- */
 .task-status {
-    display: flex; /* Make this the flex container */
-    justify-content: space-around; /* Distribute space around children */
-    gap: 30px; /* Space between the two columns */
-    flex-wrap: wrap; /* Allows columns to wrap to the next line on small screens */
-    margin-bottom: 40px; /* Space below the list sections */
+  display: flex;
+  justify-content: space-around;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
 }
 
 .current-tasks-section,
 .completed-tasks-section {
-    flex: 1; /* Allows both sections to grow and shrink equally */
-    min-width: 300px; /* Minimum width for each section to prevent crushing */
-    max-width: 48%; /* Max width to ensure they don't take up too much space and allow for gap */
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background-color: #f9f9f9;
+  flex: 1;
+  min-width: 280px;
+  max-width: 48%;
+  padding: 20px;
+  border: 1px solid var(--sandy-light, #E8D9C0);
+  border-radius: var(--radius-lg, 12px);
+  background-color: var(--sandy-pale, #F5EDE0);
 }
 
-/* Headings within the sections */
 .current-tasks-section h3,
 .completed-tasks-section h3 {
-    text-align: center;
-    color: #555;
-    margin-top: 0; /* Remove default top margin */
-    margin-bottom: 20px;
-    font-size: 1.5em; /* Adjust font size relative to h1 */
+  text-align: center;
+  color: var(--maroon-dark, #5C1010);
+  margin-top: 0;
+  margin-bottom: 18px;
+  font-size: 1.2em;
 }
 
-/* Paragraph for empty list messages */
 .current-tasks-section p,
 .completed-tasks-section p {
-    text-align: center;
-    color: #666;
-    font-style: italic;
-    margin-top: 20px;
+  text-align: center;
+  color: var(--grey-mid, #6E6666);
+  font-style: italic;
+  margin-top: 16px;
 }
 
-/* --- List Items (li) Styling (ensure consistency) --- */
 .todo-items, .completed-items {
-    list-style: none; /* Remove bullet points */
-    padding: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .todo-items li, .completed-items li {
-    background-color: white;
-    padding: 12px 15px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    display: flex; /* For inner items (check, text, delete) */
-    align-items: center; /* Vertically center content */
-    gap: 8px; /* Space between elements */
-    font-size: 17px;
-    color: #555;
-    box-shadow: 0 0px 10px lightgrey;
+  background-color: var(--white, #FDFAF7);
+  padding: 11px 14px;
+  margin-bottom: 10px;
+  border-radius: var(--radius, 8px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  color: var(--grey-dark, #3A3535);
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(139, 26, 26, 0.08));
 }
 
 .todo-items li span, .completed-items li span {
-    flex-grow: 1; /* Task text takes up available space */
+  flex-grow: 1;
 }
 
-/* Button styles (check and remove) */
 .complete-button {
-    background-color: #28a745; /* Green */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    font-size: 18px;
-    font-weight: bold;
-    transition: background-color 0.2s ease;
-    margin-right: 2px;
+  background-color: #5A8A5A;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 17px;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
 }
-.complete-button:hover { background-color: #218838; }
+.complete-button:hover { background-color: #3E6B3E; }
 
 .remove-button {
-    background-color: #dc3545; /* Red */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    font-size: 18px;
-    font-weight: bold;
-    transition: background-color 0.2s ease;
-    
+  background-color: var(--maroon, #8B1A1A);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 17px;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
 }
-.remove-button:hover { background-color: #c82333; }
-
-/* (Add your .profile-section, .profile-button, .sign-out-link styles here if you add them to the JSX) */
+.remove-button:hover { background-color: var(--maroon-dark, #5C1010); }

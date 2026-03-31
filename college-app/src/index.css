@@ -1,63 +1,192 @@
-.button{
-    background-color: darkblue;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    font-size: medium;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    margin-top: 10px;
+/* ===================== THEME VARIABLES ===================== */
+:root {
+  --maroon:        #8B1A1A;
+  --maroon-dark:   #5C1010;
+  --maroon-light:  #B84040;
+  --sandy:         #C4A882;
+  --sandy-light:   #E8D9C0;
+  --sandy-pale:    #F5EDE0;
+  --grey-dark:     #3A3535;
+  --grey-mid:      #6E6666;
+  --grey-light:    #D0C8C8;
+  --grey-pale:     #F0EDEA;
+  --white:         #FDFAF7;
+  --shadow-sm:     0 2px 8px rgba(139, 26, 26, 0.08);
+  --shadow-md:     0 4px 20px rgba(139, 26, 26, 0.12);
+  --radius:        8px;
+  --radius-lg:     12px;
+  --font:          'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
 }
 
+/* ===================== GLOBAL RESET ===================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--sandy-pale);
+  font-family: var(--font);
+  color: var(--grey-dark);
+  margin: 0;
+  padding: 0;
+}
+
+/* ===================== TYPOGRAPHY ===================== */
+h1, h2, h3, h4 {
+  color: var(--maroon-dark);
+  font-weight: 600;
+}
+
+a {
+  color: var(--maroon);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--maroon-dark);
+  text-decoration: underline;
+}
+
+/* ===================== BUTTONS ===================== */
+.btn-primary {
+  background-color: var(--maroon) !important;
+  border-color: var(--maroon) !important;
+  color: var(--white) !important;
+  font-family: var(--font);
+  font-weight: 500;
+  padding: 9px 22px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--maroon-dark) !important;
+  border-color: var(--maroon-dark) !important;
+  box-shadow: 0 2px 8px rgba(92, 16, 16, 0.3) !important;
+}
+
+.btn-secondary {
+  background-color: var(--sandy-light) !important;
+  border-color: var(--sandy) !important;
+  color: var(--grey-dark) !important;
+  font-family: var(--font);
+  font-weight: 500;
+  padding: 9px 22px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.btn-secondary:hover {
+  background-color: var(--sandy) !important;
+  border-color: var(--sandy) !important;
+}
+
+.btn-danger {
+  background-color: var(--maroon-dark) !important;
+  border-color: var(--maroon-dark) !important;
+  color: var(--white) !important;
+}
+.btn-danger:hover {
+  background-color: #400a0a !important;
+}
+
+.button {
+  background-color: var(--maroon);
+  color: var(--white);
+  padding: 10px 22px;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-family: var(--font);
+  font-weight: 500;
+  border-radius: var(--radius);
+  margin-top: 10px;
+  transition: background-color 0.2s ease;
+}
+.button:hover {
+  background-color: var(--maroon-dark);
+}
+
+/* ===================== INPUTS (GLOBAL) ===================== */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+  border: 1.5px solid var(--grey-light);
+  border-radius: var(--radius);
+  padding: 9px 12px;
+  font-family: var(--font);
+  font-size: 15px;
+  color: var(--grey-dark);
+  background: var(--white);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+}
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--maroon);
+  box-shadow: 0 0 0 3px rgba(139, 26, 26, 0.12);
+}
+
+/* ===================== ANIMATED FLOATING LABEL INPUTS ===================== */
 .custom-field.one {
-    display: flex;
-    align-items: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 28px;
+  width: 300px;
 }
 
-/* Styling for the actual input element */
 .custom-field.one input {
-    background: transparent; /* Ensures no background interferes */
-    border: 2px solid #ddd; /* Light grey border by default */
-    transition: border-color 0.3s ease; /* Smooth transition for border color */
-    width: 100%; /* Make input fill its parent container */
-    padding: 10px 8px; /* Internal spacing for text */
-    box-sizing: border-box; /* Include padding and border in the width calculation */
-    font-size: 16px; /* Ensure readable font size */
-    outline: none; /* Remove default blue focus outline */
+  background: transparent;
+  border: 2px solid var(--grey-light);
+  transition: border-color 0.3s ease;
+  width: 100%;
+  padding: 10px 8px;
+  box-sizing: border-box;
+  font-size: 16px;
+  outline: none;
+  border-radius: var(--radius);
 }
 
-/* Styling for the *visual* placeholder (the span) */
 .custom-field.one input + .placeholder {
-    position: absolute; /* Crucial: Takes it out of flow, positions relative to parent */
-    top: 50%; /* Start vertically centered within the input area */
-    transform: translateY(-50%); /* Adjust for true vertical centering */
-    left: 8px; /* Start at the same left padding as the input text */
-    padding: 0 5px; /* Horizontal padding for when it has a background */
-    background: transparent; /* Initially, no background */
-    transition: all 0.3s ease; /* Smooth transition for all properties */
-    pointer-events: none; /* Allows clicks to pass through to the input */
-    color: #888; /* Default text color, make it look like a placeholder */
-    white-space: nowrap; /* Prevents the label from wrapping */
-    overflow: hidden; /* Hides overflow if it gets too long */
-    text-overflow: ellipsis; /* Adds ellipsis if truncated */
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 10px;
+  padding: 0 5px;
+  background: transparent;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  color: var(--grey-mid);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Styling for the input when it's active (focused, filled, or has 'dirty' class) */
 .custom-field.one input.dirty,
-.custom-field.one input:not(:placeholder-shown), /* When text is entered */
-.custom-field.one input:focus { /* When the input is focused */
-    border-color: #222; /* Darker border when active */
-    transition-delay: 0.1s; /* Slight delay for border transition */
+.custom-field.one input:not(:placeholder-shown),
+.custom-field.one input:focus {
+  border-color: var(--maroon);
+  transition-delay: 0.1s;
 }
 
-/* Styling for the *visual* placeholder when the input is active */
 .custom-field.one input.dirty + .placeholder,
 .custom-field.one input:not(:placeholder-shown) + .placeholder,
 .custom-field.one input:focus + .placeholder {
-    top: 0; /* Moves it to the top of the container */
-    font-size: 10px; /* Makes the font smaller */
-    color: #222; /* Darker text color */
-    background: #fff; /* CRUCIAL: White background to hide the input's placeholder and border */
-    width: auto; /* Allow width to shrink to content */
-    transform: translateY(-50%); /* Keeps it vertically centered on the top border line */
+  top: 0;
+  font-size: 10px;
+  color: var(--maroon);
+  background: var(--white);
+  width: auto;
+  transform: translateY(-50%);
 }

@@ -12,33 +12,29 @@ const Login = () => {
   const testPassword = import.meta.env.VITE_TEST_PASSWORD || "";
 
   const apiUrl = import.meta.env.VITE_API_URL;
-
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e && e.preventDefault();
-    const userData = {
-      email: email,
-      password: password,
-    };
-
+    console.log("[Login] Submitting login for:", email);
     try {
-      const response = await axios.post(`${apiUrl}/auth/login`, userData, {
-        headers: { "Content-Type": "application/json" },
-      });
-
+      const response = await axios.post(
+        `${apiUrl}/auth/login`,
+        { email, password },
+        { headers: { "Content-Type": "application/json" }, withCredentials: true }
+      );
+      console.log("[Login] Response status:", response?.status, "data:", response?.data);
       if (response && response.status === 200) {
-        console.log("Login successful:", response.data);
-        console.log("email:", email);
-        setAccessToken(response.data.accessToken); // Update the access token in UserStore
+        console.log("[Login] Token received:", response.data.accessToken ? "yes" : "NO TOKEN");
+        setAccessToken(response.data.accessToken);
+        console.log("[Login] Navigating to /home");
         navigate("/home");
-      } else {
-        console.error("Login failed:", response.data);
-        alert(response.data.message || "Login failed");
       }
     } catch (error) {
-      console.error("Error during login:", error);
-      const message = error.response?.data?.message || "An error occurred during login. Please try again.";
+      console.error("[Login] Error:", error.response?.status, error.response?.data);
+      const message =
+        error.response?.data?.message ||
+        "An error occurred during login. Please try again.";
       alert(message);
     }
   };
@@ -53,57 +49,43 @@ const Login = () => {
   return (
     <div className="form-container">
       <div className="form-box">
-        <h2>Login</h2>
-        <p>Please enter your credentials to log in</p>
+        <h2>Sign In</h2>
+        <p>Welcome back — enter your credentials to continue.</p>
+        <form onSubmit={handleLogin}>
+          <label>Email</label>
+          <input
+            type="email"
+            value={email}
+            placeholder="you@example.com"
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+          />
+          <label>Password</label>
+          <input
+            type="password"
+            value={password}
+            placeholder="Enter your password"
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="current-password"
+          />
+          <br />
+          <button className="btn btn-primary" type="submit">
+            Sign In
+          </button>
+        </form>
         <br />
-        <label>Email:</label>
-        <input
-          type="text"
-          value={email}
-          placeholder="Enter your email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <br />
-        <label>Password:</label>
-        <input
-          type="password"
-          value={password}
-          placeholder="Enter your password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <br />
-        <br />
-        <button className="btn btn-primary" onClick={handleLogin}>
-          Login
-        </button>
-        <br />
-        <br />
-        <p>
-          Don't have an account? <a href="/register">Register here</a>.<br />
-          Forgot your password? <a href="/forgot-password">
-            Reset it here
-          </a>.{" "}
+        <p style={{ textAlign: "center", marginTop: "16px", color: "var(--grey-mid)" }}>
+          Don't have an account?{" "}
+          <a href="/register" style={{ fontWeight: 600 }}>
+            Create one here
+          </a>
         </p>
-        <p>
-          Or sign in with: <button className="btn btn-secondary">Google</button>{" "}
-          <button className="btn btn-secondary">Facebook</button>{" "}
-          <button className="btn btn-secondary">Twitter</button>
+        <p style={{ textAlign: "center", color: "var(--grey-mid)", fontSize: "13px" }}>
+          <a href="/forgot-password">Forgot your password?</a>
         </p>
       </div>
-      <p>
-        By logging in, you agree to our <a href="/terms">Terms of Service</a>{" "}
-        and <a href="/privacy">Privacy Policy</a>. Need help?{" "}
-        <a href="/help">Contact support</a>. Check out our{" "}
-        <a href="/features">Features</a> and <a href="/pricing">Pricing</a>.
-        Follow us on <a href="/social-media">Social Media</a> for updates. Read
-        our <a href="/blog">Blog</a> for tips and news. Join our community on{" "}
-        <a href="/forum">Forum</a>. Subscribe to our{" "}
-        <a href="/newsletter">Newsletter</a> for the latest updates. Check out
-        our <a href="/faq">FAQ</a> for common questions. Want to learn more?
-        Visit our <a href="/about">About Us</a> page. Have feedback?{" "}
-        <a href="/feedback">Share your thoughts</a>. Want to collaborate?{" "}
-        <a href="/partnerships">Partner with us</a>.
-      </p>
     </div>
   );
 };

@@ -65,42 +65,42 @@ export default function ResetPassword() {
   return (
     <div className="form-container">
       <div className="form-box">
-        <h2>Update Password</h2>
-        <p>Please enter your email to update your password</p>
-        <br />
-        <label>Email:</label>
+        <h2>Set New Password</h2>
+        <p>Choose a strong password for your account.</p>
+        <label>Email</label>
         <input
           type="email"
           value={email}
-          placeholder="Enter your email"
+          placeholder="you@example.com"
           required
+          readOnly
           onChange={(e) => setEmail(e.target.value)}
+          style={{ background: "var(--grey-pale)", cursor: "default" }}
         />
-        <label>New Password:</label>
+        <label>New Password</label>
         <input
           type="password"
           value={newPassword}
           required
-          placeholder="Enter your new password"
+          placeholder="Create a new password"
+          autoComplete="new-password"
           onChange={(e) => setNewPassword(e.target.value)}
         />
-        <label>Confirm New Password:</label>
+        <label>Confirm New Password</label>
         <input
           type="password"
           value={confirmPassword}
           required
-          placeholder="Confirm your new password"
+          placeholder="Repeat your new password"
+          autoComplete="new-password"
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
-        <br />
         <br />
         <button className="btn btn-primary" onClick={handleUpdatePassword}>
           Update Password
         </button>
-        <br />
-        <br />
-        <p>
-          Remembered your password? <a href="/">Login here</a>.
+        <p style={{ textAlign: "center", marginTop: "16px", color: "var(--grey-mid)" }}>
+          Remembered it? <a href="/">Sign in here</a>
         </p>
       </div>
     </div>

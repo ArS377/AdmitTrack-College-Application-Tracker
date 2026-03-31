@@ -1,0 +1,74 @@
+/* Page wrapper — gives all main pages consistent padding */
+.page-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+/* Card style used across pages */
+.card {
+  background: var(--white, #FDFAF7);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: var(--shadow-md, 0 4px 20px rgba(139, 26, 26, 0.12));
+  padding: 28px 32px;
+  margin-bottom: 24px;
+}
+
+/* Section headings */
+.section-title {
+  color: var(--maroon-dark, #5C1010);
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--sandy-light, #E8D9C0);
+}
+
+/* Bootstrap table overrides */
+.table {
+  background: var(--white, #FDFAF7);
+  border-radius: var(--radius, 8px);
+  overflow: hidden;
+  font-family: var(--font, 'Segoe UI', Arial, sans-serif);
+}
+
+.table thead th {
+  background-color: var(--maroon, #8B1A1A);
+  color: var(--white, #FDFAF7);
+  font-weight: 600;
+  border: none;
+  padding: 12px 14px;
+}
+
+.table tbody tr:hover {
+  background-color: var(--sandy-pale, #F5EDE0);
+}
+
+.table tbody td {
+  border-color: var(--grey-pale, #F0EDEA);
+  padding: 10px 14px;
+  color: var(--grey-dark, #3A3535);
+  vertical-align: middle;
+}
+
+/* Badge / tag style */
+.tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background-color: var(--sandy-light, #E8D9C0);
+  color: var(--maroon-dark, #5C1010);
+}
+
+/* Alert-style info box */
+.info-box {
+  background-color: var(--sandy-pale, #F5EDE0);
+  border-left: 4px solid var(--sandy, #C4A882);
+  border-radius: 0 var(--radius, 8px) var(--radius, 8px) 0;
+  padding: 14px 18px;
+  color: var(--grey-dark, #3A3535);
+  font-size: 14px;
+  margin-bottom: 16px;
+}

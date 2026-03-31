@@ -1,0 +1,19 @@
+.dropdown select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1.5px solid var(--grey-light, #D0C8C8);
+  border-radius: var(--radius, 8px);
+  background: var(--white, #FDFAF7);
+  color: var(--grey-dark, #3A3535);
+  font-family: var(--font, 'Segoe UI', Arial, sans-serif);
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+  appearance: auto;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dropdown select:focus {
+  border-color: var(--maroon, #8B1A1A);
+  box-shadow: 0 0 0 3px rgba(139, 26, 26, 0.1);
+}
