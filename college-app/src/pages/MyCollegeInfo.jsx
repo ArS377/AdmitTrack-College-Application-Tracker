@@ -19,8 +19,12 @@ export function MyCollegeInfo() {
   const [myCollegeStatus, setMyCollegeStatus] = useState();
   const [collegeDetail, setCollegeDetail] = useState();
   const apiUrl = import.meta.env.VITE_API_URL;
-  const unitId = location.state?.unitId || navigate("/home");
+  const unitId = location.state?.unitId;
   useLayoutEffect(() => {
+    if (!unitId) {
+      navigate("/home");
+      return;
+    }
     const fetchCollegeDetailById = async (unitId) => {
       try {
         const response = await axios.get(`${apiUrl}/collegesearch/${unitId}`);

@@ -8,6 +8,14 @@ dotenv.config();
 const { sign, verify } = pkg;
 const authRouter = Router();
 
+function parseDurationToMs(duration) {
+  const match = String(duration).match(/^(\d+)([smhd])$/);
+  if (!match) return 0;
+  const value = parseInt(match[1]);
+  const units = { s: 1000, m: 60000, h: 3600000, d: 86400000 };
+  return value * (units[match[2]] || 0);
+}
+
 // get access token from refresh token
 authRouter.post("/auth/accesstoken", (req, res) => {
   console.log("request received to refresh token.");
@@ -86,7 +94,7 @@ authRouter.post("/auth/login", async (req, res) => {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production", // true in production (HTTPS)
           sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // prevent CSRF
-          maxAge: parseInt(process.env.REFRESH_TOKEN_EXPIRY),
+          maxAge: parseDurationToMs(process.env.REFRESH_TOKEN_EXPIRY),
         });
         console.log("Login successful. Setting cookies: ", res.cookie);
 
@@ -107,7 +115,7 @@ authRouter.post("/auth/login", async (req, res) => {
 
 authRouter.post("/auth/logout", (req, res) => {
   console.log("received logout.");
-  res.clearCookie("refresh_token"); // Clear the refresh token cookie
+  res.clearCookie("refreshToken");
   res.status(200).json({ message: "Logged out successfully" });
 });
 

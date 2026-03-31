@@ -19,7 +19,7 @@ userRouter.post("/users", async (req, res) => {
     const existingUser = await loginCollection.findOne({ email: email });
     if (!existingUser) {
       const myColleges = [];
-      hashedPassword = await hash(password, 10); // Hash the password
+      const hashedPassword = await hash(password, 10);
       const loginResult = await loginCollection.insertOne({
         email,
         hashedPassword,
@@ -103,7 +103,7 @@ userRouter.delete("/users", authenticateToken, async (req, res) => {
     const profileCollection = db.collection("userdata");
     const loginResult = await loginCollection.deleteOne({ email: email });
     const profileResult = await profileCollection.deleteOne({ email: email });
-    if (result.deletedCount === 1 && profileResult.deletedCount === 1) {
+    if (loginResult.deletedCount === 1 && profileResult.deletedCount === 1) {
       res.status(200).json({ message: "User deleted successfully." });
     } else {
       res.status(404).json({ error: "User not found." });

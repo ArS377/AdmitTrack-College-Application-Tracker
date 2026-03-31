@@ -228,36 +228,3 @@ export function retrieveCollegeListBasedOnTestScore(sat, act) {
   return expression.evaluate(collegeData);
 }
 
-let result = undefined;
-//result = await retrieveCollegeInfo(231624);
-//console.log("retrieveCollegeInfo: ", result);
-
-//result = await retrieveCollegeInfo(243744);
-//console.log("retrieveCollegeInfo: ", result);
-
-//result = await retrieveCollegeInfo(236948);
-//console.log("retrieveCollegeInfo: ", result);
-
-const criteria = [{ path: "admissions.total_pct", expr: "<90" }];
-let fields = undefined;
-fields = ["unitId", "collegeName", "admissions.total_pct"];
-//fields = ["unitId", "collegeName", "admissions.total_pct", "act", "sat"];
-
-result = retrieveCollegeListByNamePrefix(
-  "University of Wisconsin",
-  fields,
-  criteria
-);
-result = retrieveCollegeListByNamePrefix("San Jose");
-//console.log("retrieveCollegeListByNamePrefix: ", result);
-
-const sat = { math: 800, eng: 720 };
-const act = undefined;
-//result = await retrieveCollegeListBasedOnTestScore(sat, act);
-//console.log("retrieveCollegeListBasedOnTestScore: ", result);
-
-//result = retrieveCollegeListByAcceptanceRate(10);
-//console.log("retrieveCollegeListByAcceptanceRate: ", result);
-
-//result = await retrieveCollegeListByState("CA");
-//console.log("retrieveCollegeListByState: ", result);

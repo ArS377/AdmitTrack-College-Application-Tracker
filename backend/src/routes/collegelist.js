@@ -25,7 +25,7 @@ collegeListRouter.get("/collegelist", authenticateToken, async (req, res) => {
   const { q } = req.query;
   const requestType = parseIntOrNull(q);
   if (!requestType) {
-    res.status(400).send();
+    return res.status(400).send();
   }
 
   /*

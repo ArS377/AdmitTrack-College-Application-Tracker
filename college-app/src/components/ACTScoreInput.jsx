@@ -33,7 +33,7 @@ const ACTScoreInput = ({ show, onClose, onSave }) => {
   return (
     <div className="dialog-overlay">
       <div className="dialog-box">
-        <h2>SAT Score</h2>
+        <h2>ACT Score</h2>
         <form onSubmit={handleSave}>
           <div className="form-field">
             <label htmlFor="testDate">Test Date:</label>
@@ -49,10 +49,10 @@ const ACTScoreInput = ({ show, onClose, onSave }) => {
             />
           </div>
           <div className="form-field">
-            <label htmlFor="english">Composite:</label>
+            <label htmlFor="composite">Composite:</label>
             <input
               type="text"
-              id="english"
+              id="composite"
               value={composite}
               onChange={(e) => setComposite(e.target.value)}
               required

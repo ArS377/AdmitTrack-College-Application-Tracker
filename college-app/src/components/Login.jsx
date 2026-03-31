@@ -8,8 +8,8 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const skipLogin = import.meta.env.VITE_AUTO_FILL_TEST_USER === "true";
-  const testUser = import.meta.env.VITE_TEST_USER || "soma.ellappan@gmail.com";
-  const testPassword = import.meta.env.VITE_TEST_PASSWORD || "password123";
+  const testUser = import.meta.env.VITE_TEST_USER || "";
+  const testPassword = import.meta.env.VITE_TEST_PASSWORD || "";
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -38,7 +38,8 @@ const Login = () => {
       }
     } catch (error) {
       console.error("Error during login:", error);
-      alert("An error occurred during login. Please try again.");
+      const message = error.response?.data?.message || "An error occurred during login. Please try again.";
+      alert(message);
     }
   };
 

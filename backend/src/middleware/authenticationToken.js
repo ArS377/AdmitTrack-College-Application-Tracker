@@ -3,13 +3,14 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const { verify } = pkg;
+
 export function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1]; // Bearer <token>
   console.log("Received token for verification:", token);
   if (!token) return res.sendStatus(401); // Unauthorized
 
-  const { verify } = pkg;
   verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) {
       console.error(

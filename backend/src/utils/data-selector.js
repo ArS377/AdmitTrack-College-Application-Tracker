@@ -108,8 +108,3 @@ export function pickFieldsWithCriteria(obj, fields) {
 }
   */
 
-const collegeData = getCollegeData();
-const fields = ["unitId", "collegeName", "admissions.total_pct", "act", "sat"];
-const subset = pickFields(collegeData, fields);
-
-//console.log(JSON.stringify(subset, null, 2));

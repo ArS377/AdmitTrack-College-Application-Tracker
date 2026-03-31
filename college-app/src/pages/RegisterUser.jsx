@@ -29,7 +29,7 @@ export function RegisterUser() {
       const response = await axios.post(`${apiUrl}/users`, userData, {
         headers: { "Content-Type": "application/json" },
       });
-      if (response && response.status === 201) {
+      if (response && response.status === 200) {
         console.log("Registration successful:", response.data);
       } else {
         console.error(

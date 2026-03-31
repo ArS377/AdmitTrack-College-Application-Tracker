@@ -18,11 +18,14 @@ const app = express();
 const PORT = 3000;
 
 app.use((req, res, next) => {
+  if (!db) {
+    return res.status(503).json({ message: "Database not connected. Please try again later." });
+  }
   req.db = db; // Attach db instance to request
   next();
 });
 
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(cors({ origin: ["http://localhost:5173", "http://localhost:5174"], credentials: true }));
 app.use(json());
 app.use(cookieParser()); // Middleware to parse cookies
 
@@ -131,7 +134,7 @@ app.post("/api/profile", authenticateToken, async (req, res) => {
     res.status(200).json({
       //to send message back to client side --> response.ok() == true
       message: "Profile data updated successfully!",
-      profile: result.value,
+      profile: result,
     });
   } catch (e) {
     console.error("Error updating profile data:", e);
@@ -140,13 +143,13 @@ app.post("/api/profile", authenticateToken, async (req, res) => {
 });
 
 async function startServer() {
-  // Connet to database
-  await connectToDatabase();
-
-  //start server
+  //start server first so it's available immediately
   app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
+
+  // Connect to database (server stays up even if this fails)
+  await connectToDatabase();
 }
 
 startServer();

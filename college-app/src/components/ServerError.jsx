@@ -1,5 +1,5 @@
 export function ServerError({ error }) {
-  const errorMessage = null;
+  let errorMessage = null;
   if (error.code === "ECONNREFUSED") {
     errorMessage =
       "❌ Connection refused: The server is down or not reachable.";

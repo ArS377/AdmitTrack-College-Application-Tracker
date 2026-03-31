@@ -92,36 +92,35 @@ export async function updateMyCollegeDetail(college) {
 }
 
 export async function updateCollegeCategory(college, category) {
-  // TODO update college category
   college = { ...college, category };
-  updateMyCollegeDetail(college);
+  return updateMyCollegeDetail(college);
 }
 
 export async function updateCollegeAppType(college, appType) {
   college = { ...college, appType };
-  updateMyCollegeDetail(college);
+  return updateMyCollegeDetail(college);
 }
 export async function updateEssayProgress(college, essayProgress) {
   college = { ...college, essayProgress };
-  updateMyCollegeDetail(college);
+  return updateMyCollegeDetail(college);
 }
 export async function updateAppSubmissionStatus(college, appSubmissionStatus) {
   college = { ...college, appSubmissionStatus };
-  updateMyCollegeDetail(college);
+  return updateMyCollegeDetail(college);
 }
 export async function updateTestScoreStatus(college, testScoreStatus) {
   college = { ...college, testScoreStatus };
-  updateMyCollegeDetail(college);
+  return updateMyCollegeDetail(college);
 }
 export async function updateApibScoreStatus(college, apibScoreStatus) {
   college = { ...college, apibScoreStatus };
-  updateMyCollegeDetail(college);
+  return updateMyCollegeDetail(college);
 }
 export async function updateLorStatus(college, lorStatus) {
   college = { ...college, lorStatus };
-  updateMyCollegeDetail(college);
+  return updateMyCollegeDetail(college);
 }
 export async function updateTranscriptStatus(college, transcriptStatus) {
   college = { ...college, transcriptStatus };
-  updateMyCollegeDetail(college);
+  return updateMyCollegeDetail(college);
 }
